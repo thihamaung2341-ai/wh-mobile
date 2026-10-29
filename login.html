@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WH Mobile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=Noto+Sans+Myanmar:wght@400;700&display=swap">
+<link rel="stylesheet" href="auth.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="brand" href="index.html"><span class="emblem">WH</span>WH MOBILE</a>
+    <div class="langs"><button type="button" data-lang="en">EN</button><button type="button" data-lang="my">မြန်မာ</button></div>
+  </div>
+  <main class="card">
+    <h1 data-i18n="loginTitle"></h1>
+    <p class="sub" data-i18n="loginSub"></p>
+    <form data-mode="login">
+      <label for="email" data-i18n="email">Email</label>
+      <input id="email" name="email" type="email" autocomplete="email" required>
+      <label for="password" data-i18n="password">Password</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" required>
+      <button class="go" type="submit" data-i18n="loginBtn"></button>
+      <button type="button" id="forgot" class="linkbtn" data-i18n="forgot">Forgot password?</button>
+      <div id="msg" class="msg" role="alert"></div>
+    </form>
+    <p class="alt"><span data-i18n="noAccount">No account yet?</span> <a href="register.html" data-i18n="toRegister">Create one</a></p>
+  </main>
+  <a class="home" href="index.html" data-i18n="home">Back to shop</a>
+</div>
+<script type="module" src="auth.js"></script>
+</body>
+</html>

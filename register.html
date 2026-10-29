@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WH Mobile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&family=Noto+Sans+Myanmar:wght@400;700&display=swap">
+<link rel="stylesheet" href="auth.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="brand" href="index.html"><span class="emblem">WH</span>WH MOBILE</a>
+    <div class="langs"><button type="button" data-lang="en">EN</button><button type="button" data-lang="my">မြန်မာ</button></div>
+  </div>
+  <main class="card">
+    <h1 data-i18n="registerTitle"></h1>
+    <p class="sub" data-i18n="registerSub"></p>
+    <form data-mode="register">
+      <label for="name" data-i18n="name">Full name</label>
+      <input id="name" name="name" type="text" autocomplete="name" required>
+      <label for="email" data-i18n="email">Email</label>
+      <input id="email" name="email" type="email" autocomplete="email" required>
+      <label for="password" data-i18n="password">Password</label>
+      <input id="password" name="password" type="password" autocomplete="new-password" minlength="6" required>
+      <label for="confirm" data-i18n="confirm">Confirm password</label>
+      <input id="confirm" name="confirm" type="password" autocomplete="new-password" minlength="6" required>
+      <button class="go" type="submit" data-i18n="registerBtn"></button>
+      
+      <div id="msg" class="msg" role="alert"></div>
+    </form>
+    <p class="alt"><span data-i18n="haveAccount">Already have an account?</span> <a href="login.html" data-i18n="toLogin">Log in</a></p>
+  </main>
+  <a class="home" href="index.html" data-i18n="home">Back to shop</a>
+</div>
+<script type="module" src="auth.js"></script>
+</body>
+</html>
