@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>WH Mobile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0b1a3a;--blue:#1f6fff;--sky:#e8f0ff;--bg:#f6f8fc;--card:#fff;--text:#0b1a3a;--muted:#55627f;--line:#d9e1f0;--hero:#0b1a3a;--hero-text:#fff;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a1226;--card:#121d3a;--text:#eef3ff;--muted:#9fb0d4;--line:#24355f;--sky:#16264d;--hero:#07102a}}
+:root[data-theme="dark"]{--bg:#0a1226;--card:#121d3a;--text:#eef3ff;--muted:#9fb0d4;--line:#24355f;--sky:#16264d;--hero:#07102a}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Noto Sans Myanmar","Myanmar Text",Padauk,system-ui,sans-serif;line-height:1.9}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+header{background:var(--navy);color:#fff;position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--navy);z-index:10}
+.bar{display:flex;align-items:center;gap:16px;padding:10px 0;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.02em}
+.brand img{width:44px;height:44px;border-radius:50%;background:#fff;display:block}
+nav{display:flex;gap:20px;margin-left:auto;flex-wrap:wrap;font-size:.95rem}
+nav a{opacity:.85}nav a:hover{opacity:1}
+.btn{display:inline-block;border:0;border-radius:10px;padding:8px 18px;font-weight:600;font-size:.95rem;font-family:inherit;cursor:pointer;background:var(--blue);color:#fff;line-height:1.8}
+.btn.ghost{background:transparent;border:1.5px solid rgba(255,255,255,.5)}
+.btn.out{background:transparent;color:var(--text);border:1.5px solid var(--line)}
+.hero{background:var(--hero);color:var(--hero-text);padding:52px 0 60px}
+.hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+h1{font-size:clamp(1.7rem,4.5vw,2.7rem);line-height:1.5;margin:0 0 14px;font-weight:800}
+.hero p{color:#b9c8ee;max-width:48ch;margin:0 0 24px}
+.finder{background:var(--card);color:var(--text);border-radius:16px;padding:22px;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+.finder h2{margin:0 0 4px;font-size:1.2rem;line-height:1.6}.finder small{color:var(--muted)}
+label{display:block;font-size:.88rem;font-weight:600;margin:14px 0 4px}
+select,input{width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--text);font:inherit}
+#result{margin-top:16px;padding:12px 14px;border-radius:10px;background:var(--sky);min-height:52px;font-size:.95rem}
+section{padding:52px 0}
+h2.t{font-size:1.6rem;margin:0 0 4px;line-height:1.6}
+.sub{color:var(--muted);margin:0 0 24px}
+.cats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px}
+.cat{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:16px;font-weight:600}
+.cat span{display:block;color:var(--muted);font-weight:400;font-size:.85rem;line-height:1.7}
+.cat:hover{border-color:var(--blue)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:18px}
+.card{background:var(--card);border:1.5px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+.pic{height:150px;background:var(--sky);display:grid;place-items:center}
+.ph{width:64px;height:112px;border-radius:12px;background:linear-gradient(160deg,var(--navy),var(--blue));border:3px solid var(--navy);position:relative}
+.ph::after{content:"";position:absolute;top:6px;left:50%;width:14px;height:4px;border-radius:4px;background:rgba(255,255,255,.4);transform:translateX(-50%)}
+.info{padding:16px;display:flex;flex-direction:column;gap:4px;flex:1}
+.info h3{margin:0;font-size:1.05rem;line-height:1.6}.info .meta{color:var(--muted);font-size:.85rem}
+.price{font-weight:800;font-size:1.2rem;margin-top:auto}
+.tag{font-size:.75rem;background:var(--blue);color:#fff;border-radius:6px;padding:0 8px;align-self:flex-start}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+.panel{background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:24px}
+.svc{list-style:none;padding:0;margin:0 0 18px;display:grid;gap:10px}
+.svc li{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding-bottom:8px}
+.why{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
+.why b{display:block;margin-bottom:2px}
+.why p{margin:0;color:var(--muted)}
+.ph-note{border:1.5px dashed var(--blue);border-radius:8px;padding:0 8px;color:var(--blue);font-size:.9rem;white-space:nowrap}
+footer{background:var(--navy);color:#c4d1f2;padding:40px 0}
+footer .wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:28px}
+footer h4{color:#fff;margin:0 0 6px}
+footer p{margin:4px 0}
+footer .ph-note{color:#8fb5ff;border-color:#8fb5ff}
+dialog{border:0;border-radius:16px;padding:24px;max-width:380px;width:92%;background:var(--card);color:var(--text)}
+dialog::backdrop{background:rgba(5,12,30,.6)}
+@media (max-width:760px){.hero .wrap,.two{grid-template-columns:1fr}nav{margin-left:0;width:100%}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header>
+<div class="wrap bar">
+<a class="brand" href="#top" aria-label="WH Mobile">
+<img src="data:image/jpeg;base64,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" alt="WH Mobile logo" width="44" height="44">
+WH MOBILE</a>
+<nav aria-label="Main">
+<a href="#finder">မှန်ရှာရန်</a><a href="#phones">ဖုန်းများ</a><a href="#categories">ဆက်စပ်ပစ္စည်းများ</a><a href="#repairs">ပြုပြင်ရေး</a><a href="#contact">ဆက်သွယ်ရန်</a>
+</nav>
+<button class="btn ghost" data-login>ဝင်ရောက်ရန်</button>
+<button class="btn" data-login>စာရင်းသွင်းရန်</button>
+</div>
+</header>
+
+<main id="top">
+<section class="hero">
+<div class="wrap">
+<div>
+<h1>WH Mobile တွင် ဖုန်း၊ ဆက်စပ်ပစ္စည်းနှင့် ပြုပြင်ရေး အားလုံး တစ်နေရာတည်း။</h1>
+<p>ဖုန်းများကို ဈေးနှုန်းနှင့်တကွ ကြည့်ရှုပြီး အွန်လိုင်းမှ မှာယူနိုင်ပါသည်။ ပြုပြင်ရန် ကြိုတင်ရက်ချိန်းလည်း ယူနိုင်ပါသည်။ အကောင့်တစ်ခုဖြင့် အားလုံးကို တစ်နေရာတည်းတွင် စောင့်ကြည့်နိုင်ပါသည်။</p>
+<a class="btn" href="#phones">ဖုန်းများ ဝယ်ယူရန်</a>
+<a class="btn ghost" href="#repairs">ပြုပြင်ရန် ချိန်းဆိုရန်</a>
+</div>
+<div class="finder" id="finder">
+<h2>သင့်ဖုန်းနှင့် ကိုက်ညီသော မှန်ကို ရှာပါ</h2>
+<small>ဖုန်းကို ရွေးပါ။ ကိုက်ညီသော ဖန်သားပြင်မှန်ကို ပြပေးပါမည်။</small>
+<label for="brand">ဘရန်း</label>
+<select id="brand"><option value="">ဘရန်း ရွေးပါ</option></select>
+<label for="model">ဖုန်းမော်ဒယ်</label>
+<select id="model" disabled><option value="">မော်ဒယ် ရွေးပါ</option></select>
+<div id="result" aria-live="polite">ရလဒ်ကို ဤနေရာတွင် မြင်ရပါမည်။</div>
+</div>
+</div>
+</section>
+
+<section id="categories"><div class="wrap">
+<h2 class="t">ကဏ္ဍအလိုက် ဝယ်ယူရန်</h2>
+<p class="sub">ဖုန်းအတွက် လိုအပ်သမျှ တစ်နေရာတည်း။</p>
+<div class="cats">
+<a class="cat" href="#phones">ဖုန်းများ<span>အသစ်နှင့် အသုံးပြုပြီး</span></a>
+<a class="cat" href="#phones">ဖန်သားပြင်မှန်<span>Tempered နှင့် Premium</span></a>
+<a class="cat" href="#phones">အားသွင်းကိရိယာ<span>Original နှင့် ပုံမှန်</span></a>
+<a class="cat" href="#phones">ကေဘယ်ကြိုး<span>Type-C၊ Lightning၊ Micro</span></a>
+<a class="cat" href="#phones">နားကြပ်<span>ကြိုးရှိနှင့် ကြိုးမဲ့</span></a>
+<a class="cat" href="#phones">ပါဝါဘဏ်<span>10,000 mAh နှင့် အထက်</span></a>
+<a class="cat" href="#phones">ဖုန်းအိတ်<span>အသုံးများသော မော်ဒယ်များအတွက်</span></a>
+<a class="cat" href="#phones">ဘက်ထရီ<span>ဖုန်းမော်ဒယ်အလိုက်</span></a>
+</div>
+</div></section>
+
+<section id="phones" style="background:var(--card)"><div class="wrap">
+<h2 class="t">လက်ကျန်ရှိသော ဖုန်းများ</h2>
+<p class="sub">နမူနာ ပစ္စည်းနှင့် ဈေးနှုန်းများ ဖြစ်ပါသည်။ သင့်စာရင်းအမှန်ဖြင့် အစားထိုးပါ။</p>
+<div class="grid" id="catalog"></div>
+</div></section>
+
+<section id="repairs"><div class="wrap two">
+<div>
+<h2 class="t">ပြုပြင်ရေးနှင့် ဝန်ဆောင်မှုများ</h2>
+<p class="sub">ဖုန်းမှာ ဘာဖြစ်နေသည်ကို ပြောပြပြီး အချိန်ရွေးပါ။ ဖုန်း သို့မဟုတ် မက်ဆေ့ချ်ဖြင့် အတည်ပြုပေးပါမည်။</p>
+<ul class="svc">
+<li><span>ဖန်သားပြင် လဲလှယ်ခြင်း</span><span class="ph-note">ဈေးနှုန်း</span></li>
+<li><span>ဘက်ထရီ လဲလှယ်ခြင်း</span><span class="ph-note">ဈေးနှုန်း</span></li>
+<li><span>အားသွင်းပေါက် ပြုပြင်ခြင်း</span><span class="ph-note">ဈေးနှုန်း</span></li>
+<li><span>ရေဝင်ခြင်း စစ်ဆေးခြင်း</span><span class="ph-note">ဈေးနှုန်း</span></li>
+<li><span>ဆော့ဖ်ဝဲ ပြင်ခြင်းနှင့် Unlock ဖွင့်ခြင်း</span><span class="ph-note">ဈေးနှုန်း</span></li>
+</ul>
+</div>
+<div class="panel">
+<h3 style="margin-top:0">ပြုပြင်ရန် ချိန်းဆိုရန်</h3>
+<label for="rtype">ဘာကို ပြင်ရမည်နည်း</label>
+<select id="rtype"><option>ဖန်သားပြင် လဲလှယ်ခြင်း</option><option>ဘက်ထရီ လဲလှယ်ခြင်း</option><option>အားသွင်းပေါက် ပြုပြင်ခြင်း</option><option>ရေဝင်ခြင်း စစ်ဆေးခြင်း</option><option>ဆော့ဖ်ဝဲ ပြင်ခြင်းနှင့် Unlock ဖွင့်ခြင်း</option><option>အခြား</option></select>
+<label for="rphone">ဖုန်းမော်ဒယ်</label>
+<input id="rphone" placeholder="ဥပမာ - Galaxy A15">
+<label for="rdate">ကြိုက်နှစ်သက်သော ရက်စွဲ</label>
+<input id="rdate" type="date">
+<p style="margin:16px 0 0"><button class="btn" data-login style="width:100%">ချိန်းဆိုရန် ဝင်ရောက်ပါ</button></p>
+</div>
+</div></section>
+
+<section style="background:var(--card)"><div class="wrap">
+<h2 class="t">WH Mobile ကို ဘာကြောင့် ရွေးသင့်သလဲ</h2>
+<p class="sub">ရိုးရှင်း၊ ရှင်းလင်းပြီး ဒေသတွင်း ဆိုင်ဖြစ်ပါသည်။</p>
+<div class="why">
+<div><b>ပွင့်လင်းမြင်သာသော ဈေးနှုန်း</b><p>ဖုန်းနှင့် ဆက်စပ်ပစ္စည်းတိုင်းတွင် မှာယူမည့်အချိန်မတိုင်မီ ဈေးနှုန်းကို မြင်ရပါမည်။</p></div>
+<div><b>အာမခံကို ကြိုတင်ဖော်ပြသည်</b><p>မဝယ်မီ ပစ္စည်းတိုင်း၏ အာမခံကာလကို ကြည့်နိုင်ပါသည်။</p></div>
+<div><b>အွန်လိုင်းမှ မှာယူနိုင်သည်</b><p>စာရင်းထဲထည့်၊ အတည်ပြုပါ။ ကျွန်ုပ်တို့ ချက်ချင်း ဆက်သွယ်ပါမည်။</p></div>
+<div><b>ရက်ချိန်းဖြင့် ပြုပြင်ခြင်း</b><p>အချိန်ရွေးပြီး ဖုန်းလာပို့ပါ။ တန်းစီစောင့်စရာ မလိုပါ။</p></div>
+</div>
+</div></section>
+</main>
+
+<footer id="contact"><div class="wrap">
+<div><h4>WH Mobile</h4><p>ဖုန်း၊ ဆက်စပ်ပစ္စည်းနှင့် ပြုပြင်ရေး။</p></div>
+<div><h4>ဖွင့်ချိန်</h4><p><span class="ph-note">ဖွင့်ချိန် ထည့်ပါ</span></p></div>
+<div><h4>ဆိုင်တည်နေရာ</h4><p><span class="ph-note">လိပ်စာ ထည့်ပါ</span></p></div>
+<div><h4>ဆက်သွယ်ရန်</h4><p><span class="ph-note">ဖုန်းနှင့် chat လင့်ခ်များ ထည့်ပါ</span></p></div>
+</div></footer>
+
+<dialog id="login">
+<h3 style="margin-top:0">ဆက်လက်ရန် ဝင်ရောက်ပါ</h3>
+<p style="color:var(--muted);margin-top:0">အော်ဒါမှာရန် သို့မဟုတ် ပြုပြင်ရန် ချိန်းဆိုရန် အကောင့် လိုအပ်ပါသည်။</p>
+<label for="em">အီးမေးလ် သို့မဟုတ် ဖုန်းနံပါတ်</label><input id="em">
+<label for="pw">စကားဝှက်</label><input id="pw" type="password">
+<p style="display:flex;gap:10px;margin:18px 0 0"><button class="btn" style="flex:1">ဝင်ရောက်ရန်</button><button class="btn out" id="close">မလုပ်တော့ပါ</button></p>
+</dialog>
+
+<script>
+var glass={"Apple":["iPhone 15","iPhone 14","iPhone 13"],"Samsung":["Galaxy A15","Galaxy A54","Galaxy S23"],"Xiaomi":["Redmi Note 12","Redmi 12C"],"Oppo":["A58","Reno 8"]};
+var phones=[["Galaxy A15","Samsung","4 GB / 128 GB","189"],["Redmi Note 12","Xiaomi","6 GB / 128 GB","229"],["iPhone 13","Apple","128 GB၊ အသုံးပြုပြီး","549"],["Oppo A58","Oppo","8 GB / 128 GB","199"]];
+var def="ရလဒ်ကို ဤနေရာတွင် မြင်ရပါမည်။";
+var b=document.getElementById("brand"),m=document.getElementById("model"),r=document.getElementById("result");
+Object.keys(glass).forEach(function(k){b.add(new Option(k,k))});
+b.onchange=function(){m.length=1;m.disabled=!b.value;r.textContent=def;(glass[b.value]||[]).forEach(function(x){m.add(new Option(x,x))})};
+m.onchange=function(){r.textContent=m.value?b.value+" "+m.value+" အတွက် ကိုက်ညီသော ဖန်သားပြင်မှန်ကို ပြသမည်။ (နမူနာရလဒ် ဖြစ်ပြီး သင့်မှန်လက်ကျန်စာရင်းနှင့် ချိတ်ဆက်ရန် လိုပါသည်။)":def};
+var c=document.getElementById("catalog");
+phones.forEach(function(p){c.insertAdjacentHTML("beforeend",'<article class="card"><div class="pic"><div class="ph"></div></div><div class="info"><span class="tag">ကုန်ရှိသည်</span><h3>'+p[1]+" "+p[0]+'</h3><div class="meta">'+p[2]+'</div><div class="price">$'+p[3]+'</div><button class="btn" data-login>မှာယူရန် ဝင်ရောက်ပါ</button></div></article>')});
+var d=document.getElementById("login");
+document.addEventListener("click",function(e){if(e.target.closest("[data-login]")){d.showModal()}});
+document.getElementById("close").onclick=function(){d.close()};
+</script>
+</body>
+</html>
