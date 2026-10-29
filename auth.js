@@ -23,7 +23,8 @@ const T = {
     badEmail: "That email address isn't valid.",
     tooMany: "Too many attempts. Wait a few minutes and try again.",
     network: "Can't connect. Check your internet and try again.",
-    generic: "Something went wrong. Try again."
+    generic: "Something went wrong. Try again.",
+    showPw: "Show password", hidePw: "Hide password"
   },
   my: {
     loginTitle: "အကောင့်ဝင်ရန်", registerTitle: "အကောင့်ဖွင့်ရန်",
@@ -43,7 +44,8 @@ const T = {
     badEmail: "အီးမေးလ် လိပ်စာ မမှန်ပါ။",
     tooMany: "ကြိုးစားမှု များလွန်းသည်။ မိနစ်အနည်းငယ်စောင့်ပြီး ပြန်စမ်းပါ။",
     network: "ချိတ်ဆက်မှု မရပါ။ အင်တာနက်စစ်ပြီး ပြန်စမ်းပါ။",
-    generic: "တစ်ခုခု မှားယွင်းသွားသည်။ ပြန်စမ်းပါ။"
+    generic: "တစ်ခုခု မှားယွင်းသွားသည်။ ပြန်စမ်းပါ။",
+    showPw: "စကားဝှက်ကို ပြရန်", hidePw: "စကားဝှက်ကို ဖျောက်ရန်"
   }
 };
 
@@ -69,6 +71,7 @@ function applyLang() {
   document.querySelectorAll("[data-i18n]").forEach(el => el.textContent = T[lang][el.dataset.i18n]);
   document.querySelectorAll("[data-ph]").forEach(el => el.placeholder = T[lang][el.dataset.ph]);
   document.querySelectorAll("[data-lang]").forEach(b => b.setAttribute("aria-pressed", b.dataset.lang === lang));
+  document.querySelectorAll(".eye").forEach(setEye);
   if (last) show(last.key, last.type);
 }
 
@@ -113,6 +116,28 @@ document.getElementById("forgot")?.addEventListener("click", async () => {
   if (!email) return show("needEmail", "error");
   try { await sendPasswordResetEmail(auth, email); show("resetSent", "ok"); }
   catch (err) { show(ERR[err.code] || "generic", "error"); }
+});
+
+const EYE = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+const EYE_OFF = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.9 10.9 0 0 1 12 19c-6.5 0-10-7-10-7a18.6 18.6 0 0 1 5.06-5.94M9.9 4.24A10.9 10.9 0 0 1 12 4c6.5 0 10 7 10 7a18.5 18.5 0 0 1-2.16 3.19M1 1l22 22"/><path d="M14.12 14.12A3 3 0 1 1 9.88 9.88"/></svg>';
+function setEye(b) {
+  const shown = b.previousElementSibling.type === "text";
+  b.innerHTML = shown ? EYE_OFF : EYE;
+  b.setAttribute("aria-label", T[lang][shown ? "hidePw" : "showPw"]);
+  b.setAttribute("aria-pressed", shown);
+}
+document.querySelectorAll("input[type=password]").forEach(input => {
+  const box = document.createElement("div");
+  box.className = "pw";
+  input.parentNode.insertBefore(box, input);
+  box.appendChild(input);
+  const b = document.createElement("button");
+  b.type = "button"; b.className = "eye";
+  b.addEventListener("click", () => {
+    input.type = input.type === "password" ? "text" : "password";
+    setEye(b);
+  });
+  box.appendChild(b);
 });
 
 applyLang();
