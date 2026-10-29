@@ -1,0 +1,54 @@
+/* WH Mobile dark mode theme
+   Add this stylesheet to each page. Replace card selectors with your actual class names if needed. */
+:root {
+  color-scheme: light;
+  --bg: #f1f5fb;
+  --card: #ffffff;
+  --text: #0b1f41;
+  --muted: #60718e;
+  --border: #d1dced;
+  --input: #ffffff;
+  --primary: #2166ff;
+}
+
+html.dark-mode {
+  color-scheme: dark;
+  --bg: #0b1120;
+  --card: #151e30;
+  --text: #f1f5ff;
+  --muted: #a8b6ce;
+  --border: #34435b;
+  --input: #101827;
+  --primary: #3977ff;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  transition: background-color 0.25s, color 0.25s;
+}
+
+.card, .register-card, .auth-card {
+  background-color: var(--card);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+input, select, textarea {
+  background-color: var(--input);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+h1, h2, h3, label, p {
+  color: var(--text);
+}
+
+.subtitle, .muted, small {
+  color: var(--muted);
+}
+
+button.primary, .btn-primary {
+  background-color: var(--primary);
+  color: #ffffff;
+}
