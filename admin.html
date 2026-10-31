@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>WH Mobile — Admin</title>
 <style>
-:root{font-family:Arial,sans-serif;color:#14213d;background:#f2f5fa}*{box-sizing:border-box}body{margin:0;padding:24px}.wrap{max-width:1000px;margin:auto}.panel{background:white;border:1px solid #dbe3ef;border-radius:14px;padding:20px;margin:16px 0}h1,h2{margin-top:0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}label{display:block;font-weight:600;margin:10px 0}input,select,textarea{display:block;width:100%;padding:11px;border:1px solid #cbd5e1;border-radius:8px;margin-top:6px;font:inherit}button{border:0;border-radius:8px;background:#2166ff;color:white;padding:11px 16px;font-weight:700;cursor:pointer;margin:5px 5px 5px 0}button.secondary{background:#e8eef8;color:#14213d}button:disabled{opacity:.55;cursor:not-allowed}.item{border-top:1px solid #e2e8f0;padding:12px 0;display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap}.muted{color:#64748b}.status{padding:12px;border-radius:8px;background:#eaf1ff;white-space:pre-wrap}#app[hidden],#login[hidden]{display:none!important}@media(max-width:520px){body{padding:12px}.panel{padding:15px}}
+:root{font-family:Arial,sans-serif;color:#14213d;background:#f2f5fa}*{box-sizing:border-box}body{margin:0;padding:24px}.wrap{max-width:1000px;margin:auto}.panel{background:white;border:1px solid #dbe3ef;border-radius:14px;padding:20px;margin:16px 0}h1,h2{margin-top:0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}label{display:block;font-weight:600;margin:10px 0}input,select,textarea{display:block;width:100%;padding:11px;border:1px solid #cbd5e1;border-radius:8px;margin-top:6px;font:inherit}button{border:0;border-radius:8px;background:#2166ff;color:white;padding:11px 16px;font-weight:700;cursor:pointer;margin:5px 5px 5px 0}button.secondary{background:#e8eef8;color:#14213d}button:disabled{opacity:.55;cursor:not-allowed}.item{border-top:1px solid #e2e8f0;padding:12px 0;display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap}.muted{color:#64748b}.photo-preview{display:block;max-width:180px;max-height:140px;object-fit:contain;border:1px solid #dbe3ef;border-radius:10px;margin-top:8px}.product-thumb{width:72px;height:72px;object-fit:cover;border-radius:9px;background:#eef2f7}.file-input{padding:8px}.status{padding:12px;border-radius:8px;background:#eaf1ff;white-space:pre-wrap}#app[hidden],#login[hidden]{display:none!important}@media(max-width:520px){body{padding:12px}.panel{padding:15px}}
 </style>
 </head>
 <body><main class="wrap">
@@ -24,6 +24,8 @@
 <label>Stock quantity<input id="stock" type="number" min="0" step="1" value="1" required></label>
 </div>
 <label>Description<input id="description" maxlength="180"></label>
+<label>Product photo (JPG, PNG or WebP; max 5 MB)<input class="file-input" id="productImage" type="file" accept="image/jpeg,image/png,image/webp"></label>
+<img id="imagePreview" class="photo-preview" alt="Selected product photo preview" hidden>
 <button type="submit">Add product</button>
 </form></section>
 <section class="panel"><h2>Products & inventory</h2><div id="products">Loading products…</div></section>
