@@ -4,7 +4,7 @@ service cloud.firestore {
     // Replace this UID with the store owner's Firebase Authentication UID.
     function isAdmin() {
       return request.auth != null &&
-        request.auth.uid == "REPLACE_WITH_YOUR_FIREBASE_AUTH_UID";
+        request.auth.uid == "SpebSv19yPPE92rdn75zL4fG8sm2";
     }
 
     match /products/{productId} {
