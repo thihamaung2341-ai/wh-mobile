@@ -109,6 +109,10 @@ button:disabled{opacity:.55;cursor:not-allowed;transform:none}
 <label>Category<input id="category" required maxlength="50" placeholder="Phones, accessories…"></label>
 <label>Price (MMK)<input id="price" type="number" min="0" step="1" required placeholder="0"></label>
 <label>Stock quantity<input id="stock" type="number" min="0" step="1" value="1" required></label>
+<label>Storage (GB)<input id="storageGb" type="number" min="0" step="1" placeholder="e.g. 128"></label>
+<label>RAM (GB)<input id="ramGb" type="number" min="0" step="1" placeholder="e.g. 4"></label>
+<label>Color<input id="color" maxlength="40" placeholder="e.g. Black"></label>
+<label>Condition<select id="condition"><option value="">Choose condition (optional)</option><option>New</option><option>Used</option><option>Refurbished</option></select></label>
 </div>
 <label>Description<input id="description" maxlength="180" placeholder="Short product details"></label>
 <label>Product photo <span class="muted">(JPG, PNG or WebP; max 5 MB)</span><input class="file-input" id="productImage" type="file" accept="image/jpeg,image/png,image/webp"></label>
