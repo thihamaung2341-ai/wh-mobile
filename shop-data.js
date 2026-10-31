@@ -21,6 +21,8 @@ function addCatalogStyles() {
     .product-stock{display:inline-flex;align-items:center;gap:6px;margin:8px 0;color:var(--muted,#64748b);font-size:.84rem}
     .product-stock:before{content:"";width:8px;height:8px;border-radius:50%;background:#c2413b}
     .product-stock.available:before{background:#16845b}
+    .product-specs{display:flex;flex-wrap:wrap;gap:6px;margin:5px 0 10px}
+    .product-specs span{padding:4px 8px;border-radius:999px;background:var(--surface,#f1f5fb);color:var(--muted,#64748b);font-size:.76rem}
     .product-card{display:flex;flex-direction:column}
     .product-card .btn{margin-top:auto}
     .catalog-empty{grid-column:1/-1;padding:24px;text-align:center;color:var(--muted,#64748b);background:var(--card,#fff);border:1px solid var(--border,#d9e0ea);border-radius:14px}
@@ -109,7 +111,7 @@ function renderCatalog() {
   const term = String(window.searchQuery || "").trim().toLocaleLowerCase();
 
   let products = productState.all.filter(product => {
-    const searchable = [product.n, product.brand, product.category, product.t].join(" ").toLocaleLowerCase();
+    const searchable = [product.n, product.brand, product.category, product.t, product.storageGb, product.ramGb, product.color, product.condition].join(" ").toLocaleLowerCase();
     return (!brand || product.brand === brand)
       && (!category || product.category === category)
       && (min === null || product.p >= min)
@@ -163,6 +165,18 @@ function renderCatalog() {
     const description = document.createElement("p");
     description.className = "sub";
     description.textContent = product.t;
+    const specs = document.createElement("div");
+    specs.className = "product-specs";
+    [
+      product.storageGb ? Number(product.storageGb) + " GB storage" : "",
+      product.ramGb ? Number(product.ramGb) + " GB RAM" : "",
+      product.color,
+      product.condition
+    ].filter(Boolean).forEach(value => {
+      const chip = document.createElement("span");
+      chip.textContent = value;
+      specs.append(chip);
+    });
     const price = document.createElement("div");
     price.className = "price";
     price.textContent = "Ks" + product.p.toLocaleString("en-US");
@@ -180,6 +194,7 @@ function renderCatalog() {
     card.append(photo, title);
     if (meta.textContent) card.append(meta);
     if (product.t) card.append(description);
+    if (specs.childElementCount) card.append(specs);
     card.append(price, stockLabel, add);
     return card;
   }));
@@ -209,6 +224,10 @@ async function loadProducts() {
         brand,
         category,
         stock: Number.isFinite(stock) ? stock : 0,
+        storageGb: p.storageGb == null ? "" : Number(p.storageGb),
+        ramGb: p.ramGb == null ? "" : Number(p.ramGb),
+        color: safeText(p.color || ""),
+        condition: safeText(p.condition || ""),
         t: safeText(p.description || ""),
         i: safeText(p.imageUrl || ""),
         createdAt
