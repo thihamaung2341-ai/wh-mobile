@@ -45,3 +45,30 @@ Signed-in customers can submit phone reservations and repair bookings from the h
 The admin form accepts JPG, PNG and WebP photos up to 5 MB. Photos are stored in the `products/{productId}/` folder and their download URL is saved with the product document in Firestore. The storefront displays the saved photo automatically. Existing products can also have photos added or replaced from the Products & inventory list.
 
 Storage may require enabling billing depending on your Firebase project's current Storage plan and bucket eligibility. Follow the Firebase Console prompts; do not enter payment information unless you and the account owner have reviewed the plan and charges.
+
+## 6. Telegram booking notifications
+
+The backend includes a Firestore trigger that sends a Telegram message when a new reservation or repair booking is saved. It includes the customer's name and phone number, the requested item, preferred time, notes, and booking status. It sends new submissions only; existing bookings are not replayed.
+
+### Create a Telegram bot
+
+1. In Telegram, open **@BotFather**, send `/newbot`, and follow its prompts.
+2. Keep the bot token private. Do not paste it into GitHub, the website, or this chat.
+3. Open your new bot and send it `/start` so it is allowed to message you.
+4. Get your numeric Telegram user ID from **@userinfobot**. For a private chat with your own bot, this is the chat ID.
+
+### Store the credentials and deploy
+
+From a local copy of this repository, install the Firebase CLI if needed, then run these commands from the repository folder:
+
+```sh
+firebase login
+firebase functions:secrets:set TELEGRAM_BOT_TOKEN --project wh-mobile
+firebase functions:secrets:set TELEGRAM_CHAT_ID --project wh-mobile
+firebase deploy --only functions:notifyBooking --project wh-mobile
+```
+
+The secret commands prompt for their values and store them in Google Secret Manager. Enter the bot token and chat ID there; do not add them to a file or share them in chat. After deployment, submit a test reservation from a customer account to confirm the message arrives.
+
+**Billing:** Deploying Firebase Cloud Functions requires the Firebase project to use the pay-as-you-go **Blaze** plan. Linking billing enables usage-based charges; review the Firebase pricing and configure budget alerts before upgrading. Secret Manager and function deployment/build resources may also have charges. The code is committed, but the bot will not send messages until the bot, secrets, billing plan, and function deployment are set up.
+
