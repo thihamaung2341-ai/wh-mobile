@@ -73,11 +73,11 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:30px 20px 40p
 <h2>Repairs &amp; services</h2>
 <p class="sub">Prices start from; final quote after a quick check.</p>
 <div class="card">
-<div class="row"><span>Screen replacement</span><b>from ฿1,500</b></div>
-<div class="row"><span>Battery replacement</span><b>from ฿800</b></div>
-<div class="row"><span>Charging port repair</span><b>from ฿600</b></div>
-<div class="row"><span>Water damage check</span><b>from ฿500</b></div>
-<div class="row"><span>Screen protector &amp; case fitting</span><b>from ฿100</b></div>
+<div class="row"><span>Screen replacement</span><b>from Ks1,500</b></div>
+<div class="row"><span>Battery replacement</span><b>from Ks800</b></div>
+<div class="row"><span>Charging port repair</span><b>from Ks600</b></div>
+<div class="row"><span>Water damage check</span><b>from Ks500</b></div>
+<div class="row"><span>Screen protector &amp; case fitting</span><b>from Ks100</b></div>
 </div>
 </section>
 
@@ -129,7 +129,7 @@ var PHONES=[
 {n:"OPPO Reno 12",p:13500,c:"OPPO",t:"256 GB · New"}];
 var cats=["All"].concat(PHONES.map(function(x){return x.c}).filter(function(v,i,a){return a.indexOf(v)===i}));
 var cur="All",mode="reserve";
-function fmt(n){return "฿"+n.toLocaleString("en-US")}
+function fmt(n){return "Ks"+n.toLocaleString("en-US")}
 function render(){
  document.getElementById("chips").innerHTML=cats.map(function(c){return '<button class="chip'+(c===cur?' on':'')+'" data-c="'+c+'">'+c+'</button>'}).join("");
  document.getElementById("grid").innerHTML=PHONES.filter(function(x){return cur==="All"||x.c===cur}).map(function(x,i){
