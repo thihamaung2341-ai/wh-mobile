@@ -101,15 +101,16 @@
   font.href = "https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@400;700&display=swap";
   document.head.appendChild(font);
 
-  var nav = document.querySelector("nav"), logo = nav && nav.querySelector("b");
+  var header = document.querySelector(".head-tools");
   var sw = document.createElement("div");
   sw.className = "langsw";
   sw.innerHTML = '<button type="button" data-lang="en">EN</button><button type="button" data-lang="my">မြန်မာ</button>';
+  sw.setAttribute("aria-label", "Choose language");
   sw.addEventListener("click", function (e) {
     var l = e.target.getAttribute && e.target.getAttribute("data-lang");
     if (l) setLang(l);
   });
-  if (logo) logo.after(sw); else if (nav) nav.appendChild(sw);
+  if (header) header.appendChild(sw);
 
   obs = new MutationObserver(function (muts) {
     if (lang !== "my") return;
