@@ -4,7 +4,7 @@ import { collection, addDoc, getDocs, query, orderBy, doc, updateDoc, serverTime
 
 // IMPORTANT: Replace this with the UID of your own Firebase admin account.
 // Find it in Firebase Console > Authentication > Users after creating your account.
-const ADMIN_UID = "REPLACE_WITH_YOUR_FIREBASE_AUTH_UID";
+const ADMIN_UID = "SpebSv19yPPE92rdn75zL4fG8sm2";
 const $ = id => document.getElementById(id);
 const loginBox = $("login"), app = $("app");
 function status(message){ $("status").textContent = message; }
