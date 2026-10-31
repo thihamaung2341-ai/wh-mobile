@@ -56,6 +56,10 @@ button:disabled{opacity:.55;cursor:not-allowed;transform:none}
 #productForm button[type=submit]{margin-top:9px}
 .photo-preview{display:block;max-width:190px;max-height:150px;object-fit:contain;border:1px solid #e2e8f2;border-radius:12px;margin:0;background:#f7f9fc}.photo-preview-wrap{position:relative;display:inline-block;max-width:100%;margin:10px 0 4px}.photo-preview-wrap[hidden]{display:none!important}.remove-photo{position:absolute;top:-9px;right:-9px;width:30px;height:30px;display:grid;place-items:center;padding:0;margin:0;border:2px solid #fff;border-radius:50%;background:#e14c55;color:#fff;font-size:21px;line-height:1;box-shadow:0 4px 12px #18284435}.remove-photo:hover{background:#c93540;transform:scale(1.06)}
 .file-input{padding:8px;background:#f8faff}
+.preorder-option{display:flex;align-items:center;gap:11px;margin:13px 0;padding:12px 14px;border:1px solid #e3eaf5;border-radius:12px;background:#f8faff;color:#263650;font-size:12px;letter-spacing:0}
+.preorder-option input{display:inline-block;width:18px;height:18px;flex:none;margin:0;accent-color:#df512c}
+.preorder-option span{display:grid;gap:3px}
+.preorder-option small{color:#748199;font-size:11px;font-weight:500;letter-spacing:0}
 .item{border:1px solid #e8edf5;border-radius:13px;padding:15px;margin:10px 0;display:flex;gap:16px;justify-content:space-between;align-items:center;flex-wrap:wrap;background:linear-gradient(120deg,#fff,#fcfdff)}
 .item>div:last-child{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
 .item input,.item select{width:auto;min-width:90px;margin:0;padding:9px 10px}
@@ -103,6 +107,7 @@ button:disabled{opacity:.55;cursor:not-allowed;transform:none}
 <label>Price (MMK)<input id="price" type="number" min="0" step="1" required placeholder="0"></label>
 <label>Stock quantity<input id="stock" type="number" min="0" step="1" value="1" required></label>
 </div>
+<label class="preorder-option"><input id="preorder" type="checkbox"><span><strong>Accept pre-orders</strong><small>Show “PRE-ORDER NOW” and collect a request. No payment is taken online.</small></span></label>
 <label>Description<input id="description" maxlength="180" placeholder="Short product details"></label>
 <label>Product photo <span class="muted">(JPG, PNG or WebP; max 5 MB)</span><input class="file-input" id="productImage" type="file" accept="image/jpeg,image/png,image/webp"></label>
 <div class="photo-preview-wrap" id="previewWrap" hidden><img id="imagePreview" class="photo-preview" alt="Selected product photo preview" hidden><button id="removeImage" class="remove-photo" type="button" aria-label="Remove selected product photo" title="Remove selected photo" hidden>×</button></div>
