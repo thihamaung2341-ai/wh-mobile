@@ -36,19 +36,33 @@ async function uploadProductImage(productId,file){
   return {imageUrl:await getDownloadURL(fileRef),imagePath:path};
 }
 const imageInput = $("productImage");
+const previewWrap = $("previewWrap");
+const removeImageButton = $("removeImage");
+function clearSelectedPhoto(){
+  if(imageInput) imageInput.value="";
+  const preview=$("imagePreview");
+  preview.hidden=true;
+  preview.removeAttribute("src");
+  previewWrap.hidden=true;
+  removeImageButton.hidden=true;
+}
 if(imageInput){
   imageInput.addEventListener("change",()=>{
     const file=imageInput.files?.[0], preview=$("imagePreview");
-    if(!file){preview.hidden=true;preview.removeAttribute("src");return;}
+    if(!file){clearSelectedPhoto();return;}
     try{
       validateImage(file);
       preview.src=URL.createObjectURL(file);
       preview.hidden=false;
+      previewWrap.hidden=false;
+      removeImageButton.hidden=false;
     }catch(error){
-      imageInput.value="";preview.hidden=true;status(error.message);
+      clearSelectedPhoto();
+      status(error.message);
     }
   });
 }
+removeImageButton?.addEventListener("click",clearSelectedPhoto);
 onAuthStateChanged(auth, async user => {
   if(user && requireAdmin(user)){
     loginBox.hidden=true; app.hidden=false;
@@ -84,7 +98,7 @@ $("productForm").addEventListener("submit",async e=>{
       description:$("description").value.trim(),active:true,
       ...(uploaded || {}),createdAt:serverTimestamp()
     });
-    e.target.reset();$("stock").value="1";$("imagePreview").hidden=true;
+    e.target.reset();$("stock").value="1";$("imagePreview").hidden=true;$("previewWrap").hidden=true;$("removeImage").hidden=true;
     status("Product and photo saved successfully.");await loadProducts();
   }catch(err){
     if(uploaded?.imagePath){
