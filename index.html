@@ -107,6 +107,20 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:30px 20px 40p
 @media(max-width:900px){.main-head{gap:12px}.brand-link{flex-basis:190px}.service-link{display:none}.main-nav{justify-content:flex-start}}
 @media(max-width:680px){.main-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:10px 12px}.brand-link{grid-column:1;grid-row:1;flex:auto}.head-tools{grid-column:2;grid-row:1;gap:6px}.search-wrap{grid-column:1/-1;grid-row:2;max-width:none;width:100%}.main-nav{gap:17px}.main-nav a{font-size:12px}}
 
+/* Light mode: make both header bars white while preserving dark mode colors. */
+:root[data-theme="light"] .site-header,
+:root[data-theme="light"] .main-head,
+:root[data-theme="light"] .main-nav{background:#ffffff!important;color:#17243a!important;border-color:#e4eaf2!important;box-shadow:0 1px 0 #e4eaf2}
+:root[data-theme="light"] .main-nav a{color:#17243a!important}
+:root[data-theme="light"] .main-nav a:hover{color:#2868e8!important}
+:root[data-theme="light"] .brand-link{color:#17243a!important}
+:root[data-theme="light"] .service-link{color:#17243a!important}
+:root[data-theme="light"] .service-link small{color:#718096!important}
+:root[data-theme="light"] .search-wrap{background:#f4f7fb!important;border-color:#e0e6ef!important;color:#718096!important}
+:root[data-theme="light"] .search-wrap input{color:#17243a!important}
+:root[data-theme="light"] .search-wrap input::placeholder{color:#718096!important}
+:root[data-theme="light"] .icon-tool{background:#f4f7fb!important;border-color:#e0e6ef!important;color:#17243a!important}
+:root[data-theme="light"] .sign-link{color:#17243a!important}
 /* Dark-mode header row matches the requested charcoal surface. */
 :root[data-theme="dark"] .main-nav{background:#0f1318!important;border-color:#2a323d!important}
 :root[data-theme="dark"] .site-header,
