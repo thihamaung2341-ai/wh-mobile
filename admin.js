@@ -118,7 +118,7 @@ $("productForm").addEventListener("submit",async e=>{
       description:$("description").value.trim(),active:true,
       ...(uploaded || {}),createdAt:serverTimestamp()
     });
-    e.target.reset();$("stock").value="1";$("imagePreview").hidden=true;$("previewWrap").hidden=true;$("removeImage").hidden=true;
+    e.target.reset();$("stock").value="1";updateRamField();$("imagePreview").hidden=true;$("previewWrap").hidden=true;$("removeImage").hidden=true;
     announce("Product saved successfully. Refreshing inventory…");
     await loadProducts();
     announce("Product saved successfully.");
