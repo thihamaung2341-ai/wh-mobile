@@ -168,7 +168,7 @@ function renderCatalog() {
     const specs = document.createElement("div");
     specs.className = "product-specs";
     [
-      product.storageGb ? Number(product.storageGb) + " GB storage" : "",
+      product.storageGb ? (Number(product.storageGb) >= 1024 ? (Number(product.storageGb) / 1024) + " TB storage" : Number(product.storageGb) + " GB storage") : "",
       product.ramGb ? Number(product.ramGb) + " GB RAM" : "",
       product.color,
       product.condition
