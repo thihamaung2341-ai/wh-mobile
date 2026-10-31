@@ -52,7 +52,7 @@ if(imageInput){
 onAuthStateChanged(auth, async user => {
   if(user && requireAdmin(user)){
     loginBox.hidden=true; app.hidden=false;
-    await Promise.all([loadProducts(),loadBookings()]);
+    await Promise.all([loadProducts(),loadBookings(),loadOrders()]);
     status("Signed in as "+(user.email || user.uid));
   } else {
     loginBox.hidden=false; app.hidden=true;
@@ -142,4 +142,22 @@ async function loadBookings(){
       row.append(info,select);$("bookings").append(row);
     });
   }catch(err){$("bookings").textContent="Could not load bookings: "+err.message;}
+}
+
+async function loadOrders(){
+ try{
+  const snap=await getDocs(query(collection(db,"orders"),orderBy("createdAt","desc")));
+  const root=$("orders");if(!root)return;root.replaceChildren();
+  if(snap.empty){root.textContent="No customer orders yet.";return;}
+  snap.forEach(s=>{
+   const o=s.data(),row=document.createElement("div");row.className="item";
+   const info=document.createElement("div");const title=document.createElement("strong");title.textContent="Order "+s.id.slice(0,8).toUpperCase()+" · "+(o.customerName||"Customer");
+   const detail=document.createElement("div");detail.className="muted";detail.textContent=(o.phone||"No phone")+" · Ks"+Number(o.total||0).toLocaleString()+" · "+(o.deliveryAddress||"No address")+" · "+(o.notes||"");
+   const products=document.createElement("div");products.className="muted";products.textContent=(o.items||[]).map(p=>p.name+" × "+p.quantity).join(", ");
+   info.append(title,detail,products);
+   const select=document.createElement("select");select.setAttribute("aria-label","Order status");["pending","confirmed","processing","ready_to_ship","shipped","delivered","cancelled"].forEach(v=>{const op=document.createElement("option");op.value=v;op.textContent=v.replaceAll("_"," ");op.selected=(o.status||"pending")===v;select.append(op)});
+   select.addEventListener("change",async()=>{try{await updateDoc(doc(db,"orders",s.id),{status:select.value,updatedAt:serverTimestamp()});status("Order status updated.");}catch(err){status("Could not update order: "+err.message)}});
+   row.append(info,select);root.append(row);
+  });
+ }catch(err){const root=$("orders");if(root)root.textContent="Could not load orders: "+err.message;}
 }
