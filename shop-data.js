@@ -15,7 +15,7 @@ function addCatalogStyles() {
   style.textContent = `
     .catalog-tools{display:grid;grid-template-columns:repeat(5,minmax(130px,1fr));gap:12px;margin:16px 0}
     .catalog-tools label{display:grid;gap:6px;color:var(--muted,#64748b);font-size:.84rem;font-weight:600}
-    .catalog-tools input,.catalog-tools select{width:100%;min-width:0;box-sizing:border-box;padding:10px 12px;border:1px solid var(--border,#d9e0ea);border-radius:10px;background:var(--card,#fff);color:var(--text,#172033);font:inherit}
+    .catalog-tools input,.catalog-tools select{width:100%;min-width:0;box-sizing:border-box;padding:10px 12px;border:1px solid var(--line,#d9e0ea);border-radius:10px;background:var(--card,#fff);color:var(--text,#172033);font:inherit}
     .catalog-summary{color:var(--muted,#64748b);margin:10px 0 14px}
     .product-stock{display:inline-flex;align-items:center;gap:6px;margin:8px 0;color:var(--muted,#64748b);font-size:.84rem}
     .product-stock:before{content:"";width:8px;height:8px;border-radius:50%;background:#c2413b}
@@ -128,7 +128,9 @@ function renderCatalog() {
     : products.length + (products.length === 1 ? " product" : " products");
 
   if (!productState.all.length) {
-    grid.innerHTML = '<div class="catalog-empty">No active products are available yet. Please check back soon.</div>';
+    grid.innerHTML = productState.error
+      ? '<div class="catalog-empty">Products could not be loaded. Please check your connection and try again.</div>'
+      : '<div class="catalog-empty">No active products are available yet. Please check back soon.</div>';
     return;
   }
   if (!products.length) {
@@ -189,6 +191,7 @@ async function loadProducts() {
   ensureCatalogTools();
   const chips = document.getElementById("chips");
   if (chips) { chips.replaceChildren(); chips.hidden = true; }
+  grid.innerHTML = '<div class="catalog-empty">Loading products…</div>';
   try {
     const snap = await getDocs(query(collection(db, "products"), where("active", "==", true)));
     productState.all = snap.docs.map(docSnap => {
@@ -225,6 +228,7 @@ async function loadProducts() {
     productState.loaded = true;
     productState.error = true;
     productState.all = [];
+    window.PHONES = [];
     renderCatalog();
   }
 }
