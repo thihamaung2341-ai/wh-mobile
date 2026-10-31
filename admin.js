@@ -79,7 +79,7 @@ $("productForm").addEventListener("submit",async e=>{
       uploaded=await uploadProductImage(productRef.id,file);
     }
     await setDoc(productRef,{
-      name:$("productName").value.trim(),category:$("category").value.trim(),
+      name:$("productName").value.trim(),brand:$("brand").value.trim(),category:$("category").value.trim(),
       price:Number($("price").value),stock:Number($("stock").value),
       description:$("description").value.trim(),active:true,
       ...(uploaded || {}),createdAt:serverTimestamp()
