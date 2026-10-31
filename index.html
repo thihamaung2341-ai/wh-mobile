@@ -59,7 +59,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:30px 20px 40p
 .icon-tool{position:relative;width:44px;height:44px;display:grid;place-items:center;flex:none;border:1px solid #292b30;border-radius:50%;background:#151619;color:#f4f5f7;text-decoration:none;font-size:23px;cursor:pointer}
 .icon-tool:hover{border-color:#7b8798;background:#22242a}.theme-toggle{padding:0;font-size:24px}.language-tools{position:relative}.language-tools .icon-tool{border-radius:13px}.language-menu{display:none;position:absolute;right:0;top:50px;min-width:150px;padding:6px;background:#17191e;border:1px solid #30343b;border-radius:12px;box-shadow:0 10px 30px #0008}.language-menu.open{display:grid}.language-menu button{padding:10px;border:0;background:transparent;color:#fff;text-align:left;cursor:pointer;border-radius:7px}.language-menu button:hover{background:#292d35}
 .cart-badge{position:absolute;right:-4px;top:-7px;min-width:19px;height:19px;padding:0 5px;border-radius:20px;background:#e11d32;color:white;font-size:11px;font-weight:800;display:grid;place-items:center}
-.sign-link{color:#fff;text-decoration:none;font-size:13px;font-weight:700;white-space:nowrap}
+.header-account-wrap{position:relative;display:inline-flex;align-items:center}.sign-link{color:#fff;text-decoration:none;font-size:13px;font-weight:700;white-space:nowrap;max-width:180px;overflow:hidden;text-overflow:ellipsis}.account-menu{position:absolute;z-index:1000;top:calc(100% + 10px);right:0;min-width:210px;padding:12px;display:grid;gap:10px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--text);box-shadow:0 12px 32px #0003}.account-menu[hidden]{display:none}.account-menu strong{overflow-wrap:anywhere;font-size:13px}.account-menu a,.account-menu button{display:block;width:100%;padding:9px 10px;border:0;border-radius:8px;background:transparent;color:var(--text);font:inherit;text-align:left;text-decoration:none;cursor:pointer}.account-menu a:hover,.account-menu button:hover{background:var(--bg)}
 .main-nav{max-width:1440px;margin:auto;display:flex;justify-content:center;align-items:center;gap:clamp(14px,2vw,30px);padding:10px 20px 14px;overflow-x:auto;scrollbar-width:thin}
 .main-nav a{color:#f3f4f6;text-decoration:none;font-size:14px;font-weight:750;white-space:nowrap}.main-nav a:hover{color:#ff5965}
 @media(max-width:1050px){.main-head{gap:14px;padding:12px 16px}.brand-link{flex-basis:220px}.service-link{display:none}.main-nav{justify-content:flex-start}}
@@ -141,7 +141,14 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:30px 20px 40p
    <a class="icon-tool" href="account.html" aria-label="Wishlist" title="Wishlist">♡</a>
    <a class="icon-tool cart-tool" href="cart.html" aria-label="Shopping cart" title="Shopping cart">🛒<span class="cart-badge" id="cartCountTop">0</span></a>
    <a class="icon-tool account-tool" href="account.html" aria-label="My account" title="My account">♙</a>
-   <a class="sign-link" href="login.html">Sign in</a>
+   <div class="header-account-wrap">
+    <a class="sign-link" id="headerAccountButton" href="login.html?next=index.html" aria-haspopup="true" aria-expanded="false">Sign in</a>
+    <div class="account-menu" id="headerAccountMenu" role="menu" hidden>
+     <strong id="headerAccountName" aria-live="polite"></strong>
+     <a href="account.html" role="menuitem">My account</a>
+     <button id="headerSignOut" type="button" role="menuitem">Sign out</button>
+    </div>
+   </div>
   </div>
  </div>
  <nav class="main-nav" aria-label="Main navigation">
@@ -323,5 +330,6 @@ onAuthStateChanged(auth, user => {
 </script>
 <script src="lang.js"></script>
 <script type="module" src="shop-data.js"></script>
+ <script type="module" src="header-auth.js"></script>
 </body>
 </html>
