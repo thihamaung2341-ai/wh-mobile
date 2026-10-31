@@ -118,6 +118,7 @@ button:disabled{opacity:.55;cursor:not-allowed;transform:none}
 <label>Product photo <span class="muted">(JPG, PNG or WebP; max 5 MB)</span><input class="file-input" id="productImage" type="file" accept="image/jpeg,image/png,image/webp"></label>
 <div class="photo-preview-wrap" id="previewWrap" hidden><img id="imagePreview" class="photo-preview" alt="Selected product photo preview" hidden><button id="removeImage" class="remove-photo" type="button" aria-label="Remove selected product photo" title="Remove selected photo" hidden>×</button></div>
 <button type="submit">Add product</button>
+<p id="productFormStatus" class="status" role="status" aria-live="polite"></p>
 </form></section>
 <div class="section-heading"><div><h2>Products & inventory</h2><p class="section-copy">Update stock, product photos, and storefront visibility.</p></div><span class="section-index">02</span></div>
 <section class="panel"><div id="products">Loading products…</div></section>
