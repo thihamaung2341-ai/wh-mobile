@@ -34,6 +34,8 @@ footer{text-align:center;color:#98a3b4;font-size:12px;padding:35px 16px}
    <form id="profileForm">
     <label for="name">Full name</label><input id="name" maxlength="80" autocomplete="name" required>
     <label for="email">Email address</label><input id="email" type="email" readonly>
+    <label for="phone">Phone number</label><input id="phone" type="tel" maxlength="25" autocomplete="tel" placeholder="+95..." required>
+    <label for="address">Delivery address</label><input id="address" type="text" maxlength="300" autocomplete="street-address" placeholder="Township, street, building and room number" required>
     <div class="actions"><button class="btn primary" type="submit" id="save">Save changes</button></div>
     <div class="msg" id="message" role="status"></div>
    </form>
