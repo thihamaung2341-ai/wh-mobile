@@ -95,6 +95,17 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:30px 20px 40p
 .main-nav a:hover,.main-nav a:focus-visible{color:#fff;border-bottom-color:#fff;outline:none}
 @media(max-width:1050px){.brand-link{flex-basis:230px}.main-head{gap:14px;padding:12px 16px}}
 @media(max-width:680px){.main-head{padding:10px 12px;gap:9px}.brand-link{flex-basis:auto}.main-nav{justify-content:flex-start;padding:9px 14px 12px;gap:20px}}
+
+/* Hide any legacy promo ribbon and keep the header compact */
+.promo-strip,.promo-track{display:none!important;height:0!important;visibility:hidden!important}
+.main-head{max-width:1500px;gap:clamp(12px,2vw,26px);padding:12px clamp(14px,2vw,28px)}
+.brand-link{flex:0 1 260px;min-width:150px}
+.search-wrap{flex:1 1 320px;min-width:160px;max-width:680px}
+.head-tools{gap:9px;flex:0 0 auto}
+.main-nav{max-width:1500px;justify-content:center;gap:clamp(12px,1.6vw,25px);padding:11px 16px 14px}
+.main-nav a{font-size:13px}
+@media(max-width:900px){.main-head{gap:12px}.brand-link{flex-basis:190px}.service-link{display:none}.main-nav{justify-content:flex-start}}
+@media(max-width:680px){.main-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:10px 12px}.brand-link{grid-column:1;grid-row:1;flex:auto}.head-tools{grid-column:2;grid-row:1;gap:6px}.search-wrap{grid-column:1/-1;grid-row:2;max-width:none;width:100%}.main-nav{gap:17px}.main-nav a{font-size:12px}}
 </style>
 </head>
 <body>
@@ -115,7 +126,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:30px 20px 40p
  <nav class="main-nav" aria-label="Main navigation">
   <a href="#home">Home</a>
   <a href="#phones">Brands</a>
-  <a href="#categoryFilters">Categories</a>
+  <a href="#chips">Categories</a>
   <a href="#phones">Shop</a>
   <a href="#phones" id="offersNav">Special Offers</a>
   <a href="#order">Server Order</a>
