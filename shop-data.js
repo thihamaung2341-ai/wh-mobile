@@ -7,6 +7,7 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/f
 const form = document.getElementById("f");
 const grid = document.getElementById("grid");
 const productState = { all: [], loaded: false, error: false };
+let bookingType = "reservation";
 
 function addCatalogStyles() {
   if (document.getElementById("catalogStyles")) return;
@@ -20,6 +21,9 @@ function addCatalogStyles() {
     .product-stock{display:inline-flex;align-items:center;gap:6px;margin:8px 0;color:var(--muted,#64748b);font-size:.84rem}
     .product-stock:before{content:"";width:8px;height:8px;border-radius:50%;background:#c2413b}
     .product-stock.available:before{background:#16845b}
+    .product-stock.preorder:before{background:#e85b32}
+    .preorder-badge{align-self:flex-start;margin:10px 0 4px;padding:6px 10px;border-radius:999px;background:#fff0e8;color:#b83c1c;font-size:.72rem;font-weight:850;letter-spacing:.055em}
+    .preorder-action{background:linear-gradient(135deg,#f16a3b,#d94722);color:#fff}
     .product-card{display:flex;flex-direction:column}
     .product-card .btn{margin-top:auto}
     .catalog-empty{grid-column:1/-1;padding:24px;text-align:center;color:var(--muted,#64748b);background:var(--card,#fff);border:1px solid var(--border,#d9e0ea);border-radius:14px}
@@ -166,17 +170,30 @@ function renderCatalog() {
     price.className = "price";
     price.textContent = "Ks" + product.p.toLocaleString("en-US");
     const stockLabel = document.createElement("div");
-    stockLabel.className = "product-stock" + (product.stock > 0 ? " available" : "");
-    stockLabel.textContent = product.stock > 0 ? "In stock · " + product.stock : "Out of stock";
+    stockLabel.className = "product-stock" + (product.preorder ? " preorder" : product.stock > 0 ? " available" : "");
+    stockLabel.textContent = product.preorder ? "Pre-order requests open" : product.stock > 0 ? "In stock · " + product.stock : "Out of stock";
 
     const add = document.createElement("button");
     add.className = "btn";
     add.type = "button";
-    add.dataset.add = product.id;
-    add.textContent = product.stock > 0 ? "Add to cart" : "Out of stock";
-    add.disabled = product.stock <= 0;
+    if (product.preorder) {
+      add.classList.add("preorder-action");
+      add.dataset.preorderId = product.id;
+      add.textContent = "PRE-ORDER NOW";
+    } else {
+      add.dataset.add = product.id;
+      add.textContent = product.stock > 0 ? "Add to cart" : "Out of stock";
+      add.disabled = product.stock <= 0;
+    }
 
-    card.append(photo, title);
+    card.append(photo);
+    if (product.preorder) {
+      const badge = document.createElement("span");
+      badge.className = "preorder-badge";
+      badge.textContent = "PRE-ORDER NOW";
+      card.append(badge);
+    }
+    card.append(title);
     if (meta.textContent) card.append(meta);
     if (product.t) card.append(description);
     card.append(price, stockLabel, add);
@@ -185,6 +202,36 @@ function renderCatalog() {
 }
 
 window.render = renderCatalog;
+
+document.addEventListener("click", event => {
+  const button = event.target.closest?.("[data-preorder-id]");
+  if (!button) return;
+  const product = productState.all.find(item => item.id === button.dataset.preorderId);
+  if (!product) return;
+
+  if (typeof window.setMode === "function") window.setMode("reserve");
+  bookingType = "preorder";
+  const modelSelect = document.getElementById("s");
+  const modelOption = product.n + " (" + Number(product.p || 0).toLocaleString("en-US") + ")";
+  if (modelSelect && [...modelSelect.options].some(option => option.value === modelOption)) {
+    modelSelect.value = modelOption;
+  }
+  const submit = form?.querySelector('button[type="submit"]');
+  if (submit) submit.textContent = "Send pre-order request";
+  const output = document.getElementById("out");
+  if (output) output.textContent = "";
+  document.getElementById("order")?.scrollIntoView({ behavior: "smooth", block: "start" });
+});
+
+document.querySelector(".tabs")?.addEventListener("click", event => {
+  const tab = event.target.closest?.("[data-t]");
+  if (!tab) return;
+  bookingType = tab.dataset.t === "repair" ? "repair" : "reservation";
+  const submit = form?.querySelector('button[type="submit"]');
+  if (submit) submit.textContent = "Prepare request";
+});
+
+form?.addEventListener("reset", () => { bookingType = "reservation"; });
 
 async function loadProducts() {
   if (!grid) return;
@@ -210,6 +257,7 @@ async function loadProducts() {
         stock: Number.isFinite(stock) ? stock : 0,
         t: safeText(p.description || ""),
         i: safeText(p.imageUrl || ""),
+        preorder: p.preorder === true,
         createdAt
       };
     });
@@ -244,21 +292,24 @@ if (form) {
     const value = id => document.getElementById(id)?.value?.trim() || "";
     if (!user) {
       output.style.display = "block";
-      output.textContent = "Please log in before submitting a reservation or repair booking.";
+      output.textContent = "Please log in before submitting a pre-order, reservation, or repair booking.";
       return;
     }
 
     const submit = form.querySelector('button[type="submit"]');
     submit.disabled = true;
     submit.textContent = "Saving…";
+    let requestType = "reservation";
 
     try {
       const isRepair = document.querySelector(".tabs .chip.on")?.dataset.t === "repair";
+      const isPreorder = bookingType === "preorder" && !isRepair;
+      requestType = isRepair ? "repair" : isPreorder ? "preorder" : "reservation";
       const record = {
         userId: user.uid,
         customerName: value("n"),
         phone: value("p"),
-        type: isRepair ? "repair" : "reservation",
+        type: requestType,
         item: value("s"),
         preferredAt: value("d") || null,
         notes: value("m"),
@@ -267,7 +318,9 @@ if (form) {
       };
       await addDoc(collection(db, "bookings"), record);
       output.style.display = "block";
-      output.textContent = "Your request has been saved successfully. WH Mobile will contact you to confirm it.";
+      output.textContent = isPreorder
+        ? "Your pre-order request has been saved. WH Mobile will contact you to confirm availability and next steps."
+        : "Your request has been saved successfully. WH Mobile will contact you to confirm it.";
       form.reset();
     } catch (error) {
       console.error("Booking save failed:", error);
@@ -275,7 +328,7 @@ if (form) {
       output.textContent = "We couldn't save your request. Please check your connection or try again later.";
     } finally {
       submit.disabled = false;
-      submit.textContent = "Submit request";
+      submit.textContent = requestType === "preorder" ? "Send pre-order request" : requestType === "repair" ? "Submit repair request" : "Submit reservation";
     }
   }, true);
 }
@@ -285,7 +338,7 @@ onAuthStateChanged(auth, user => {
     const note = document.createElement("p");
     note.dataset.loginNote = "true";
     note.className = "sub";
-    note.textContent = "Log in to submit a reservation or repair booking.";
+    note.textContent = "Log in to submit a pre-order, reservation, or repair booking.";
     form.prepend(note);
   }
 });
