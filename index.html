@@ -83,8 +83,13 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:30px 20px 40p
 
 <section id="order">
 <h2>Order, reserve or book</h2>
-<p class="sub">An account is needed to reserve a phone or book a repair.</p>
-<div class="card" id="acct" style="margin-bottom:18px"></div>
+<p class="sub">Log in to reserve a phone or book a repair.</p>
+<div class="card" id="acct" style="margin-bottom:18px">
+ <b>Have an account?</b>
+ <p class="sub" style="margin:4px 0 12px">Log in to continue, or create an account if you are new.</p>
+ <a class="btn" href="login.html?next=index.html%3Fsection%3Dorder" style="display:inline-block;text-align:center">Log in</a>
+ <a class="chip" href="register.html?next=index.html%3Fsection%3Dorder" style="display:inline-block;text-align:center">Create account</a>
+</div>
 <div id="ordWrap" style="display:none">
 <div class="tabs">
 <button class="chip on" data-t="reserve">Reserve a phone</button>
@@ -159,27 +164,7 @@ document.getElementById("f").addEventListener("submit",function(e){
  a.href="sms:+66000000000?body="+encodeURIComponent(txt);
  o.appendChild(a);
 });
-var ACC=null;
-function ld(){try{ACC=JSON.parse(localStorage.getItem("acct")||"null")}catch(e){ACC=null}}
-function showAcct(){
- var box=document.getElementById("acct"),w=document.getElementById("ordWrap");
- if(ACC){
-  w.style.display="block";
-  document.getElementById("n").value=ACC.name;document.getElementById("p").value=ACC.phone;
-  box.innerHTML='<div class="row"><span>Signed in as <b></b></span><button class="chip" id="so">Sign out</button></div>';
-  box.querySelector("b").textContent=ACC.name;
-  document.getElementById("so").onclick=function(){ACC=null;try{localStorage.removeItem("acct")}catch(e){}showAcct();};
- }else{
-  w.style.display="none";
-  box.innerHTML='<b>Create your account</b><p class="sub" style="margin:4px 0 12px">Takes 10 seconds. Next time you will be signed in on this device.</p><form id="af"><label>Name<input id="an" required></label><label>Phone number<input id="ap" type="tel" required></label><label>Email<input id="ae" type="email" required></label><button class="btn" type="submit">Create account</button></form>';
-  document.getElementById("af").addEventListener("submit",function(e){
-   e.preventDefault();
-   ACC={name:document.getElementById("an").value,phone:document.getElementById("ap").value,email:document.getElementById("ae").value};
-   try{localStorage.setItem("acct",JSON.stringify(ACC))}catch(x){}
-   showAcct();
-  });
- }
-}
+function showAcct(){ /* Firebase authentication controls order access below. */ }
 
 function initTheme(){
  var key="wh-mobile-theme";
@@ -206,7 +191,28 @@ function initTheme(){
 }
 initTheme();
 
-ld();render();setMode("reserve");showAcct();
+render();setMode("reserve");
+</script>
+<script type="module">
+import { auth } from "./firebase-config.js";
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+const box = document.getElementById("acct");
+const wrap = document.getElementById("ordWrap");
+onAuthStateChanged(auth, user => {
+  if (user) {
+    wrap.style.display = "block";
+    box.innerHTML = '<div class="row"><span>Logged in as <b id="accountName"></b></span><button class="chip" id="orderSignOut" type="button">Log out</button></div>';
+    document.getElementById("accountName").textContent = user.displayName || user.email || "Account";
+    if (user.displayName) document.getElementById("n").value = user.displayName;
+    document.getElementById("orderSignOut").addEventListener("click", async () => {
+      await signOut(auth);
+      location.reload();
+    });
+  } else {
+    wrap.style.display = "none";
+    box.innerHTML = '<b>Have an account?</b><p class="sub" style="margin:4px 0 12px">Log in to continue, or create an account if you are new.</p><a class="btn" href="login.html?next=index.html%3Fsection%3Dorder" style="display:inline-block;text-align:center">Log in</a> <a class="chip" href="register.html?next=index.html%3Fsection%3Dorder" style="display:inline-block;text-align:center">Create account</a>';
+  }
+});
 </script>
 <script src="lang.js"></script>
 <script type="module" src="shop-data.js"></script>
