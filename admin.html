@@ -56,6 +56,13 @@ button:disabled{opacity:.55;cursor:not-allowed;transform:none}
 #productForm button[type=submit]{margin-top:9px}
 .photo-preview{display:block;max-width:190px;max-height:150px;object-fit:contain;border:1px solid #e2e8f2;border-radius:12px;margin:0;background:#f7f9fc}.photo-preview-wrap{position:relative;display:inline-block;max-width:100%;margin:10px 0 4px}.photo-preview-wrap[hidden]{display:none!important}.remove-photo{position:absolute;top:-9px;right:-9px;width:30px;height:30px;display:grid;place-items:center;padding:0;margin:0;border:2px solid #fff;border-radius:50%;background:#e14c55;color:#fff;font-size:21px;line-height:1;box-shadow:0 4px 12px #18284435}.remove-photo:hover{background:#c93540;transform:scale(1.06)}
 .file-input{padding:8px;background:#f8faff}
+.completed-archive{margin-top:16px;border:1px solid #e3e9f2;border-radius:13px;background:#f9fbff}
+.completed-archive summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 15px;color:#455773;font-size:12px;font-weight:800;cursor:pointer}
+.completed-archive summary::-webkit-details-marker{display:none}
+.completed-archive summary:after{content:"⌄";margin-left:auto;color:#8190a8;font-size:16px;transition:transform .15s}
+.completed-archive[open] summary:after{transform:rotate(180deg)}
+.archive-count{display:inline-grid;min-width:26px;height:26px;place-items:center;padding:0 7px;border-radius:9px;background:#eaf1ff;color:#2767e8;font-size:11px}
+#bookingsArchive{padding:0 10px 7px}
 .item{border:1px solid #e8edf5;border-radius:13px;padding:15px;margin:10px 0;display:flex;gap:16px;justify-content:space-between;align-items:center;flex-wrap:wrap;background:linear-gradient(120deg,#fff,#fcfdff)}
 .item>div:last-child{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
 .item input,.item select{width:auto;min-width:90px;margin:0;padding:9px 10px}
@@ -112,8 +119,8 @@ button:disabled{opacity:.55;cursor:not-allowed;transform:none}
 <section class="panel"><div id="products">Loading products…</div></section>
 <div class="section-heading"><div><h2>Customer orders</h2><p class="section-copy">Review orders and keep customers up to date on fulfilment.</p></div><span class="section-index">03</span></div>
 <section class="panel"><div id="orders">Loading orders…</div></section>
-<div class="section-heading"><div><h2>Reservations & repair bookings</h2><p class="section-copy">Track incoming requests and update their status.</p></div><span class="section-index">04</span></div>
-<section class="panel"><div id="bookings">Loading bookings…</div></section>
+<div class="section-heading"><div><h2>Reservations & repair bookings</h2><p class="section-copy">Track incoming requests. Completed requests move into the archive below.</p></div><span class="section-index">04</span></div>
+<section class="panel"><div id="bookings">Loading bookings…</div><details class="completed-archive"><summary>Completed requests <span id="bookingArchiveCount" class="archive-count">0</span></summary><div id="bookingsArchive">Loading completed requests…</div></details></section>
 </section>
 </main>
 <script type="module" src="admin.js"></script>
