@@ -1,7 +1,7 @@
 import { auth, db, storage } from "./firebase-config.js";
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 import { collection, addDoc, getDocs, query, orderBy, doc, updateDoc, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
-import { ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js";
+import { ref as storageRef, uploadBytesResumable, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js";
 
 const ADMIN_UID = "SpebSv19yPPE92rdn75zL4fG8sm2";
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
@@ -28,12 +28,18 @@ function validateImage(file){
 function safeFileName(name){
   return name.toLowerCase().replace(/[^a-z0-9._-]+/g,"-").slice(-90) || "product-image";
 }
-async function uploadProductImage(productId,file){
+async function uploadProductImage(productId,file,onProgress=()=>{}){
   validateImage(file);
   const path = "products/" + productId + "/" + Date.now() + "-" + safeFileName(file.name);
   const fileRef = storageRef(storage,path);
-  await uploadBytes(fileRef,file,{contentType:file.type});
-  return {imageUrl:await getDownloadURL(fileRef),imagePath:path};
+  const task = uploadBytesResumable(fileRef,file,{contentType:file.type});
+  await new Promise((resolve,reject)=>{
+    task.on("state_changed",snapshot=>{
+      const percent=snapshot.totalBytes ? Math.round(snapshot.bytesTransferred/snapshot.totalBytes*100) : 0;
+      onProgress(percent);
+    },reject,resolve);
+  });
+  return {imageUrl:await getDownloadURL(task.snapshot.ref),imagePath:path};
 }
 const imageInput = $("productImage");
 const previewWrap = $("previewWrap");
@@ -82,6 +88,8 @@ $("productForm").addEventListener("submit",async e=>{
   e.preventDefault();
   if(!requireAdmin(auth.currentUser)) return;
   const submit=e.target.querySelector('button[type="submit"]');
+  const formStatus=$("productFormStatus");
+  const announce=message=>{status(message);if(formStatus)formStatus.textContent=message;};
   const file=imageInput?.files?.[0] || null;
   let uploaded=null, productRef=null;
   submit.disabled=true;submit.textContent="Saving product…";
@@ -89,9 +97,10 @@ $("productForm").addEventListener("submit",async e=>{
     validateImage(file);
     productRef=doc(collection(db,"products"));
     if(file){
-      status("Uploading product photo…");
-      uploaded=await uploadProductImage(productRef.id,file);
+      announce("Uploading product photo… 0%");
+      uploaded=await uploadProductImage(productRef.id,file,percent=>announce("Uploading product photo… "+percent+"%"));
     }
+    announce("Saving product details to Firestore…");
     await setDoc(productRef,{
       name:$("productName").value.trim(),brand:$("brand").value.trim(),category:$("category").value.trim(),
       price:Number($("price").value),stock:Number($("stock").value),
@@ -102,12 +111,15 @@ $("productForm").addEventListener("submit",async e=>{
       ...(uploaded || {}),createdAt:serverTimestamp()
     });
     e.target.reset();$("stock").value="1";$("imagePreview").hidden=true;$("previewWrap").hidden=true;$("removeImage").hidden=true;
-    status("Product and photo saved successfully.");await loadProducts();
+    announce("Product saved successfully. Refreshing inventory…");
+    await loadProducts();
+    announce("Product saved successfully.");
   }catch(err){
     if(uploaded?.imagePath){
       try{await deleteObject(storageRef(storage,uploaded.imagePath));}catch(cleanupError){console.warn("Image cleanup failed",cleanupError);}
     }
-    status("Could not save product: "+err.message);
+    const reason=err?.code ? err.code+" — "+err.message : (err?.message || String(err));
+    announce("Could not save product: "+reason);
   }finally{submit.disabled=false;submit.textContent="Add product";}
 });
 async function loadProducts(){
