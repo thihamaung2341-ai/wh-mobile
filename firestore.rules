@@ -27,7 +27,7 @@ service cloud.firestore {
       allow update, delete: if isAdmin();
     }
 
-    // Customer profile documents are private to their owner and store admin.
+    match /orders/{orderId} {\n      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid\n        && request.resource.data.status == 'pending'\n        && request.resource.data.currency == 'MMK'\n        && request.resource.data.items is list\n        && request.resource.data.items.size() > 0\n        && request.resource.data.items.size() <= 30\n        && request.resource.data.total is number\n        && request.resource.data.total >= 0;\n      allow read: if isAdmin() || (request.auth != null && resource.data.userId == request.auth.uid);\n      allow update, delete: if isAdmin();\n    }\n\n    // Customer profile documents are private to their owner and store admin.
     match /customers/{userId} {
       allow read, create, update: if isAdmin() ||
         (request.auth != null && request.auth.uid == userId);
