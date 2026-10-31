@@ -109,8 +109,27 @@ button:disabled{opacity:.55;cursor:not-allowed;transform:none}
 <label>Category<input id="category" required maxlength="50" placeholder="Phones, accessories…"></label>
 <label>Price (MMK)<input id="price" type="number" min="0" step="1" required placeholder="0"></label>
 <label>Stock quantity<input id="stock" type="number" min="0" step="1" value="1" required></label>
-<label>Storage (GB)<input id="storageGb" type="number" min="0" step="1" placeholder="e.g. 128"></label>
-<label>RAM (GB)<input id="ramGb" type="number" min="0" step="1" placeholder="e.g. 4"></label>
+<label>Storage
+<select id="storageGb">
+<option value="">Choose storage (optional)</option>
+<option value="128">128 GB</option>
+<option value="256">256 GB</option>
+<option value="512">512 GB</option>
+<option value="1024">1 TB</option>
+<option value="2048">2 TB</option>
+</select>
+</label>
+<label id="ramField">RAM (GB)
+<select id="ramGb">
+<option value="">Choose RAM (optional)</option>
+<option value="4">4 GB</option>
+<option value="6">6 GB</option>
+<option value="8">8 GB</option>
+<option value="12">12 GB</option>
+<option value="24">24 GB</option>
+<option value="32">32 GB</option>
+</select>
+</label>
 <label>Color<input id="color" maxlength="40" placeholder="e.g. Black"></label>
 <label>Condition<select id="condition"><option value="">Choose condition (optional)</option><option>New</option><option>Used</option><option>Refurbished</option></select></label>
 </div>
