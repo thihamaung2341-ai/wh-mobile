@@ -20,7 +20,8 @@ async function loadProducts() {
         n: String(p.name || "Unnamed product"),
         p: Number(p.price || 0),
         c: String(p.category || "Other"),
-        t: String(p.description || (Number(p.stock || 0) + " in stock"))
+        t: String(p.description || (Number(p.stock || 0) + " in stock")),
+        i: String(p.imageUrl || "")
       };
     });
     window.cats = ["All"].concat([...new Set(window.PHONES.map(p => p.c))]);
