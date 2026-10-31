@@ -1,0 +1,19 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isAdmin() {
+      return request.auth != null &&
+        request.auth.uid == "SpebSv19yPPE92rdn75zL4fG8sm2";
+    }
+
+    // Product photos are publicly readable by the storefront.
+    // Only the authenticated WH Mobile admin can upload, replace or delete them.
+    match /products/{productId}/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin()
+        && request.resource != null
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/(jpeg|png|webp)');
+    }
+  }
+}
