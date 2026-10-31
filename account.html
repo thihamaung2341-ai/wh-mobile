@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Account | WH Mobile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap">
+<style>
+:root{--ink:#17243a;--muted:#718096;--blue:#3478f6;--blue2:#eaf1ff;--line:#e4eaf2;--bg:#f5f7fb;--white:#fff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Manrope,system-ui,sans-serif}
+header{background:#fff;border-bottom:1px solid var(--line)}.bar{max-width:1120px;margin:auto;padding:18px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{font-weight:800;letter-spacing:.04em;color:#17243a;text-decoration:none;display:flex;align-items:center;gap:10px}.logo{width:38px;height:38px;border-radius:12px;background:#17243a;color:#fff;display:grid;place-items:center;font-weight:800}
+nav{display:flex;gap:20px;align-items:center}nav a{color:#536178;text-decoration:none;font-size:13px;font-weight:700}nav a.active{color:var(--blue)}
+main{max-width:1120px;margin:36px auto;padding:0 24px}.heading{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:24px}.heading h1{font-size:27px;margin:0 0 5px}.heading p{margin:0;color:var(--muted);font-size:14px}
+.layout{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(260px,.8fr);gap:22px}.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:25px;box-shadow:0 8px 24px rgba(23,36,58,.04)}
+.profile{display:flex;align-items:center;gap:15px;padding-bottom:22px;border-bottom:1px solid var(--line);margin-bottom:20px}.avatar{width:62px;height:62px;border-radius:18px;background:var(--blue2);color:var(--blue);display:grid;place-items:center;font-size:24px;font-weight:800}.profile h2{font-size:17px;margin:0 0 4px}.profile p{font-size:13px;color:var(--muted);margin:0}
+h3{font-size:16px;margin:0 0 5px}.hint{font-size:12px;color:var(--muted);margin:0 0 18px}
+label{display:block;font-size:12px;font-weight:700;margin:15px 0 7px}input{width:100%;border:1px solid #dce3ed;border-radius:10px;padding:12px 13px;font:inherit;font-size:14px;color:var(--ink);background:#fff}input:focus{outline:3px solid #dce8ff;border-color:var(--blue)}input[readonly]{background:#f7f9fc;color:#718096}
+.actions{display:flex;gap:10px;align-items:center;margin-top:20px;flex-wrap:wrap}.btn{border:0;border-radius:10px;padding:12px 17px;font:inherit;font-size:13px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;justify-content:center;align-items:center}.primary{background:var(--blue);color:white}.secondary{background:var(--blue2);color:#245fc7}.danger{background:#fff1f1;color:#c43b46;border:1px solid #ffd9dc;width:100%;margin-top:16px}.msg{font-size:13px;min-height:20px;margin-top:12px;color:var(--muted)}.msg.error{color:#c43b46}.msg.ok{color:#16845b}
+.side{display:grid;gap:16px;align-content:start}.quick{display:flex;align-items:center;justify-content:space-between;padding:15px 0;border-bottom:1px solid var(--line);text-decoration:none;color:var(--ink);font-size:13px;font-weight:700}.quick:last-child{border:0;padding-bottom:0}.quick span:last-child{color:var(--blue);font-size:19px}.note{background:#f8faff;border:1px dashed #cbd9f5;border-radius:12px;padding:14px;color:#64748b;font-size:12px;line-height:1.6;margin-top:18px}
+footer{text-align:center;color:#98a3b4;font-size:12px;padding:35px 16px}
+@media(max-width:720px){.bar{padding:14px 18px}nav{gap:12px}nav a:not(.active){display:none}main{margin:24px auto;padding:0 16px}.layout{grid-template-columns:1fr}.heading h1{font-size:23px}.panel{padding:20px}}
+</style>
+</head>
+<body>
+<header><div class="bar"><a class="brand" href="index.html"><span class="logo">WH</span> WH MOBILE</a><nav><a href="index.html">Shop</a><a href="index.html#order">Reserve / Repair</a><a class="active" href="account.html">My Account</a></nav></div></header>
+<main>
+ <div class="heading"><div><h1>Account overview</h1><p>Manage your WH Mobile account and personal information.</p></div><a class="btn secondary" href="index.html">← Back to shop</a></div>
+ <div class="layout">
+  <section class="panel">
+   <div class="profile"><div class="avatar" id="avatar">W</div><div><h2 id="displayName">Your account</h2><p id="displayEmail">Loading account…</p></div></div>
+   <h3>Personal information</h3><p class="hint">Update the name shown on your WH Mobile account.</p>
+   <form id="profileForm">
+    <label for="name">Full name</label><input id="name" maxlength="80" autocomplete="name" required>
+    <label for="email">Email address</label><input id="email" type="email" readonly>
+    <div class="actions"><button class="btn primary" type="submit" id="save">Save changes</button></div>
+    <div class="msg" id="message" role="status"></div>
+   </form>
+   <button class="btn danger" id="logout" type="button">Log out</button>
+  </section>
+  <aside class="side">
+   <section class="panel"><h3>Quick links</h3><a class="quick" href="index.html#order">Reserve a phone <span>→</span></a><a class="quick" href="index.html#order">Book a repair <span>→</span></a><a class="quick" href="index.html#shop">Browse phones <span>→</span></a><div class="note">Your account is used to access reservations and repair bookings. Order history and saved favorites can be added when those features are connected.</div></section>
+   <section class="panel"><h3>Need help?</h3><p class="hint" style="margin:9px 0 14px">Contact WH Mobile if you need assistance with your account or a booking.</p><a class="btn secondary" href="https://wa.me/959793777772" target="_blank" rel="noopener noreferrer">Contact us</a></section>
+  </aside>
+ </div>
+</main>
+<footer>© WH Mobile · Your mobile store</footer>
+<script type="module" src="account.js"></script>
+</body></html>
