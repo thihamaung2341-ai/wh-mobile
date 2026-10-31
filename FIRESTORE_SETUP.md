@@ -33,3 +33,15 @@ Signed-in customers can submit phone reservations and repair bookings from the h
 - The existing sample catalog remains visible until at least one active product is added in the admin dashboard.
 - The homepage currently has product cards and booking records, not a payment checkout. Do not store card numbers or payment credentials in Firestore.
 - This is a starter shop-management workflow. Before public launch, test rules with separate customer and admin accounts and add spam protection / App Check.
+
+
+## 5. Enable Firebase Storage for product photos
+1. In Firebase Console, open **Build → Storage** (or https://console.firebase.google.com/project/wh-mobile/storage).
+2. Click **Get started** and create the default Storage bucket. Choose a region close to your Firestore region when prompted.
+3. Open the Storage **Rules** tab.
+4. Copy the complete contents of the repository's `storage.rules` file into the editor and click **Publish**.
+5. Wait for the bucket to finish provisioning, then reload `admin.html`.
+
+The admin form accepts JPG, PNG and WebP photos up to 5 MB. Photos are stored in the `products/{productId}/` folder and their download URL is saved with the product document in Firestore. The storefront displays the saved photo automatically. Existing products can also have photos added or replaced from the Products & inventory list.
+
+Storage may require enabling billing depending on your Firebase project's current Storage plan and bucket eligibility. Follow the Firebase Console prompts; do not enter payment information unless you and the account owner have reviewed the plan and charges.
