@@ -104,7 +104,7 @@ async function loadProducts(){
       if(p.imageUrl){const image=document.createElement("img");image.className="product-thumb";image.src=p.imageUrl;image.alt=p.name||"Product";info.append(image);}
       const textWrap=document.createElement("div");
       const strong=document.createElement("strong");strong.textContent=p.name||"Unnamed";
-      const detail=document.createElement("div");detail.className="muted";detail.textContent=(p.category||"Other")+" · Price: "+Number(p.price||0).toLocaleString()+" · Stock: "+Number(p.stock||0)+" · "+(p.active===false?"Hidden":"Active");
+      const detail=document.createElement("div");detail.className="muted";detail.textContent=(p.category||"Other")+" · Price (MMK): "+Number(p.price||0).toLocaleString()+" · Stock: "+Number(p.stock||0)+" · "+(p.active===false?"Hidden":"Active");
       textWrap.append(strong,detail);info.append(textWrap);
       const actions=document.createElement("div");
       const stock=document.createElement("input");stock.type="number";stock.min="0";stock.value=Number(p.stock||0);stock.setAttribute("aria-label","Stock quantity for "+(p.name||"product"));stock.style.width="95px";
