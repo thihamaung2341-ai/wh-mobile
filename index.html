@@ -64,6 +64,19 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:30px 20px 40p
 .main-nav a{color:#f3f4f6;text-decoration:none;font-size:14px;font-weight:750;white-space:nowrap}.main-nav a:hover{color:#ff5965}
 @media(max-width:1050px){.main-head{gap:14px;padding:12px 16px}.brand-link{flex-basis:220px}.service-link{display:none}.main-nav{justify-content:flex-start}}
 @media(max-width:680px){.promo-strip{height:28px;font-size:11px}.main-head{min-height:0;display:grid;grid-template-columns:1fr auto;gap:10px;padding:12px}.brand-link{grid-column:1;grid-row:1;flex-basis:auto}.brand-link img{width:42px;height:42px}.brand-link>b{font-size:15px}.head-tools{grid-column:2;grid-row:1;gap:6px}.head-tools .icon-tool{width:36px;height:36px;font-size:19px}.sign-link{display:none}.search-wrap{grid-column:1/-1;grid-row:2;max-width:none;height:44px}.main-nav{padding:9px 12px;gap:20px}.main-nav a{font-size:13px}}
+
+/* Match the reference's pure-black header and deep-red promo strip */
+.promo-strip{background:#c90012;color:#fff}
+.site-header{background:#000;color:#fff;border-bottom:1px solid #202020}
+.main-head{background:#000}
+.search-wrap{background:#171717;border-color:#252525}
+.icon-tool{background:#111;border-color:#292929;color:#fff}
+.main-nav{background:#000}
+.main-nav a{color:#f7f7f7}
+.main-nav a:hover{color:#ff424e}
+.header-theme-button{font-size:23px}
+.language-tools,.language-menu{display:none!important}
+@media(max-width:680px){.main-head,.main-nav{background:#000}}
 </style>
 </head>
 <body>
@@ -74,8 +87,8 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:30px 20px 40p
   <div class="search-wrap"><span aria-hidden="true">⌕</span><input id="siteSearch" type="search" placeholder="Search by name, brand, model or code..." aria-label="Search products"><button id="clearSearch" type="button" aria-label="Clear search">×</button></div>
   <div class="head-tools">
    <a class="service-link" href="#visit"><small>Customer Service</small><strong>+959 793 777 772</strong></a>
-   <button type="button" class="icon-tool theme-toggle" id="themeToggle" aria-label="Switch theme">☼</button>
-   <div class="language-tools"><button type="button" class="icon-tool" id="languageToggle" aria-label="Language">🇬🇧</button><div class="language-menu" id="languageMenu"><button type="button" data-language="en">🇬🇧 English</button><button type="button" data-language="my">🇲🇲 မြန်မာ</button></div></div>
+   <button type="button" class="icon-tool header-theme-button" id="headerThemeButton" aria-label="Switch theme">☼</button>
+   
    <a class="icon-tool" href="account.html" aria-label="Wishlist" title="Wishlist">♡</a>
    <a class="icon-tool cart-tool" href="cart.html" aria-label="Shopping cart" title="Shopping cart">🛒<span class="cart-badge" id="cartCountTop">0</span></a>
    <a class="icon-tool account-tool" href="account.html" aria-label="My account" title="My account">♙</a>
@@ -247,9 +260,8 @@ onAuthStateChanged(auth, user => {
  const search=document.getElementById("siteSearch"),clear=document.getElementById("clearSearch");
  if(search)search.addEventListener("input",function(){searchQuery=search.value.trim().toLowerCase();render();document.getElementById("phones").scrollIntoView({behavior:"smooth",block:"start"})});
  if(clear)clear.addEventListener("click",function(){if(search){search.value="";searchQuery="";render();search.focus()}});
- const lang=document.getElementById("languageToggle"),menu=document.getElementById("languageMenu");
- if(lang&&menu){lang.addEventListener("click",()=>menu.classList.toggle("open"));menu.addEventListener("click",e=>{const b=e.target.closest("[data-language]");if(!b)return;const v=b.getAttribute("data-language");lang.textContent=v==="my"?"🇲🇲":"🇬🇧";menu.classList.remove("open");try{localStorage.setItem("wh-language",v)}catch(err){};document.documentElement.lang=v==="my"?"my":"en";});}
- const savedLang=(()=>{try{return localStorage.getItem("wh-language")}catch(e){return "en"}})();if(lang&&savedLang==="my"){lang.textContent="🇲🇲";document.documentElement.lang="my"}
+ const themeBtn=document.getElementById("headerThemeButton");
+ if(themeBtn){themeBtn.addEventListener("click",function(){const dark=document.documentElement.getAttribute("data-theme")!=="dark";document.documentElement.setAttribute("data-theme",dark?"dark":"light");themeBtn.textContent=dark?"☾":"☼";themeBtn.setAttribute("aria-label",dark?"Switch to light theme":"Switch to dark theme");try{localStorage.setItem("wh-mobile-theme",dark?"dark":"light")}catch(e){}});const saved=(()=>{try{return localStorage.getItem("wh-mobile-theme")}catch(e){return "light"}})();themeBtn.textContent=saved==="dark"?"☾":"☼";}
 })();
 </script>
 <script src="lang.js"></script>
