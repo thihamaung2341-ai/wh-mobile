@@ -95,7 +95,7 @@ $("productForm").addEventListener("submit",async e=>{
     await setDoc(productRef,{
       name:$("productName").value.trim(),brand:$("brand").value.trim(),category:$("category").value.trim(),
       price:Number($("price").value),stock:Number($("stock").value),
-      description:$("description").value.trim(),active:true,preorder:$("preorder").checked,
+      description:$("description").value.trim(),active:true,
       ...(uploaded || {}),createdAt:serverTimestamp()
     });
     e.target.reset();$("stock").value="1";$("imagePreview").hidden=true;$("previewWrap").hidden=true;$("removeImage").hidden=true;
@@ -118,7 +118,7 @@ async function loadProducts(){
       if(p.imageUrl){const image=document.createElement("img");image.className="product-thumb";image.src=p.imageUrl;image.alt=p.name||"Product";info.append(image);}
       const textWrap=document.createElement("div");
       const strong=document.createElement("strong");strong.textContent=p.name||"Unnamed";
-      const detail=document.createElement("div");detail.className="muted";detail.textContent=(p.category||"Other")+" · Price (MMK): "+Number(p.price||0).toLocaleString()+" · Stock: "+Number(p.stock||0)+" · "+(p.active===false?"Hidden":"Active")+" · Pre-orders: "+(p.preorder===true?"Open":"Closed");
+      const detail=document.createElement("div");detail.className="muted";detail.textContent=(p.category||"Other")+" · Price (MMK): "+Number(p.price||0).toLocaleString()+" · Stock: "+Number(p.stock||0)+" · "+(p.active===false?"Hidden":"Active");
       textWrap.append(strong,detail);info.append(textWrap);
       const actions=document.createElement("div");
       const stock=document.createElement("input");stock.type="number";stock.min="0";stock.value=Number(p.stock||0);stock.setAttribute("aria-label","Stock quantity for "+(p.name||"product"));stock.style.width="95px";
@@ -136,8 +136,7 @@ async function loadProducts(){
         finally{upload.disabled=false;upload.textContent="Upload / replace photo";}
       });
       const toggle=document.createElement("button");toggle.className="secondary";toggle.textContent=p.active===false?"Make active":"Hide";toggle.addEventListener("click",async()=>{try{await updateDoc(doc(db,"products",s.id),{active:p.active===false});await loadProducts();status("Product visibility updated.");}catch(err){status(err.message);}});
-      const preorderToggle=document.createElement("button");preorderToggle.className="secondary";preorderToggle.textContent=p.preorder===true?"Close pre-orders":"Enable pre-orders";preorderToggle.setAttribute("aria-pressed",String(p.preorder===true));preorderToggle.addEventListener("click",async()=>{try{await updateDoc(doc(db,"products",s.id),{preorder:p.preorder!==true});await loadProducts();status(p.preorder===true?"Pre-orders closed.":"Pre-orders enabled.");}catch(err){status("Could not update pre-order setting: "+err.message);}});
-      actions.append(stock,save,photo,upload,preorderToggle,toggle);row.append(info,actions);$("products").append(row);
+      actions.append(stock,save,photo,upload,toggle);row.append(info,actions);$("products").append(row);
     });
   }catch(err){$("products").textContent="Could not load products: "+err.message;}
 }
@@ -149,7 +148,7 @@ async function loadBookings(){
     snap.forEach(s=>{
       const b=s.data(),row=document.createElement("div");row.className="item";
       const info=document.createElement("div");
-      const title=document.createElement("strong");title.textContent=(b.type==="repair"?"Repair booking":b.type==="preorder"?"Pre-order request":"Phone reservation")+" · "+(b.item||"Item");
+      const title=document.createElement("strong");title.textContent=(b.type==="repair"?"Repair booking":"Phone reservation")+" · "+(b.item||"Item");
       const detail=document.createElement("div");detail.className="muted";detail.textContent=(b.customerName||"Customer")+" · "+(b.phone||"No phone")+" · "+(b.status||"pending")+" · "+(b.notes||"No notes");
       info.append(title,detail);
       const select=document.createElement("select");select.setAttribute("aria-label","Booking status");["pending","confirmed","in_progress","completed","cancelled"].forEach(v=>{const o=document.createElement("option");o.value=v;o.textContent=v.replace("_"," ");o.selected=(b.status||"pending")===v;select.append(o);});
