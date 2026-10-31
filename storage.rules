@@ -10,10 +10,11 @@ service firebase.storage {
     // Only the authenticated WH Mobile admin can upload, replace or delete them.
     match /products/{productId}/{fileName} {
       allow read: if true;
-      allow write: if isAdmin()
-        && request.resource != null
-        && request.resource.size < 5 * 1024 * 1024
-        && request.resource.contentType.matches('image/(jpeg|png|webp)');
+      allow write: if isAdmin() && (
+        request.resource == null ||
+        (request.resource.size <= 5 * 1024 * 1024 &&
+         request.resource.contentType.matches('image/(jpeg|png|webp)'))
+      );
     }
   }
 }
