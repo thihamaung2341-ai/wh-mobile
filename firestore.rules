@@ -20,7 +20,7 @@ service cloud.firestore {
           'userId', 'customerName', 'phone', 'type', 'item',
           'preferredAt', 'notes', 'status', 'createdAt'
         ])
-        && request.resource.data.type in ['reservation', 'repair']
+        && request.resource.data.type in ['reservation', 'repair', 'preorder']
         && request.resource.data.status == 'pending';
       allow read: if isAdmin() ||
         (request.auth != null && resource.data.userId == request.auth.uid);
