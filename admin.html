@@ -53,7 +53,7 @@ button:disabled{opacity:.55;cursor:not-allowed;transform:none}
 #productForm .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 18px}
 #productForm>label{margin-top:14px}
 #productForm button[type=submit]{margin-top:9px}
-.photo-preview{display:block;max-width:190px;max-height:150px;object-fit:contain;border:1px solid #e2e8f2;border-radius:12px;margin:10px 0;background:#f7f9fc}
+.photo-preview{display:block;max-width:190px;max-height:150px;object-fit:contain;border:1px solid #e2e8f2;border-radius:12px;margin:0;background:#f7f9fc}.photo-preview-wrap{position:relative;display:inline-block;max-width:100%;margin:10px 0 4px}.photo-preview-wrap[hidden]{display:none!important}.remove-photo{position:absolute;top:-9px;right:-9px;width:30px;height:30px;display:grid;place-items:center;padding:0;margin:0;border:2px solid #fff;border-radius:50%;background:#e14c55;color:#fff;font-size:21px;line-height:1;box-shadow:0 4px 12px #18284435}.remove-photo:hover{background:#c93540;transform:scale(1.06)}
 .file-input{padding:8px;background:#f8faff}
 .item{border:1px solid #e8edf5;border-radius:13px;padding:15px;margin:10px 0;display:flex;gap:16px;justify-content:space-between;align-items:center;flex-wrap:wrap;background:linear-gradient(120deg,#fff,#fcfdff)}
 .item>div:last-child{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
@@ -104,7 +104,7 @@ button:disabled{opacity:.55;cursor:not-allowed;transform:none}
 </div>
 <label>Description<input id="description" maxlength="180" placeholder="Short product details"></label>
 <label>Product photo <span class="muted">(JPG, PNG or WebP; max 5 MB)</span><input class="file-input" id="productImage" type="file" accept="image/jpeg,image/png,image/webp"></label>
-<img id="imagePreview" class="photo-preview" alt="Selected product photo preview" hidden>
+<div class="photo-preview-wrap" id="previewWrap" hidden><img id="imagePreview" class="photo-preview" alt="Selected product photo preview" hidden><button id="removeImage" class="remove-photo" type="button" aria-label="Remove selected product photo" title="Remove selected photo" hidden>×</button></div>
 <button type="submit">Add product</button>
 </form></section>
 <div class="section-heading"><div><h2>Products & inventory</h2><p class="section-copy">Update stock, product photos, and storefront visibility.</p></div><span class="section-index">02</span></div>
