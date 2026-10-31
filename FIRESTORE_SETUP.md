@@ -19,10 +19,10 @@ This repository now has a Firestore starter integration for products and custome
 Do not publish the rules with the placeholder unchanged: admin access will remain locked. Never put a password or service-account private key in GitHub.
 
 ## 3. Use the admin dashboard
-Visit `https://thihamaung2341-ai.github.io/wh-mobile/admin.html`, sign in with the owner account, and add products. Product fields include name, brand, category, price, stock, description and photo. Active products appear on the homepage after Firestore has products. Turn on **Accept pre-orders** for a product to show its **PRE-ORDER NOW** badge and collect pre-order requests; this does not take payment.
+Visit `https://thihamaung2341-ai.github.io/wh-mobile/admin.html`, sign in with the owner account, and add products. Product fields include name, brand, category, price, stock, description and photo. Active products appear on the homepage after Firestore has products.
 
 ## 4. Customer flow
-Signed-in customers can submit phone reservations, pre-order requests and repair bookings from the homepage. Each is saved in the `bookings` collection with status `pending` and its type (`reservation`, `preorder` or `repair`). Pre-orders are requests only; they do not create a paid order or charge a customer. The admin dashboard can change request status to confirmed, in progress, completed or cancelled. If you published Firestore rules before this pre-order update, publish the current `firestore.rules` again in Firebase Console so the new `preorder` request type is accepted.
+Signed-in customers can submit phone reservations and repair bookings from the homepage. The requests are saved in the `bookings` collection with status `pending`. The admin dashboard can change status to confirmed, in progress, completed or cancelled.
 
 ## Collections
 - `products`: public active catalog; writes restricted to admin.
