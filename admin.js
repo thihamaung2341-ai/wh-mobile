@@ -141,21 +141,38 @@ async function loadProducts(){
   }catch(err){$("products").textContent="Could not load products: "+err.message;}
 }
 async function loadBookings(){
+  const activeRoot=$("bookings"),archiveRoot=$("bookingsArchive"),archiveCount=$("bookingArchiveCount");
   try{
     const snap=await getDocs(query(collection(db,"bookings"),orderBy("createdAt","desc")));
-    $("bookings").replaceChildren();
-    if(snap.empty){$("bookings").textContent="No orders or repair bookings yet.";return;}
+    activeRoot.replaceChildren();
+    archiveRoot?.replaceChildren();
+    let activeTotal=0,completedTotal=0;
+    if(snap.empty){
+      activeRoot.textContent="No orders or repair bookings yet.";
+      if(archiveRoot)archiveRoot.textContent="No completed requests yet.";
+      if(archiveCount)archiveCount.textContent="0";
+      return;
+    }
     snap.forEach(s=>{
-      const b=s.data(),row=document.createElement("div");row.className="item";
+      const b=s.data(),isCompleted=b.status==="completed";
+      const target=isCompleted&&archiveRoot?archiveRoot:activeRoot;
+      const row=document.createElement("div");row.className="item";
       const info=document.createElement("div");
       const title=document.createElement("strong");title.textContent=(b.type==="repair"?"Repair booking":"Phone reservation")+" · "+(b.item||"Item");
       const detail=document.createElement("div");detail.className="muted";detail.textContent=(b.customerName||"Customer")+" · "+(b.phone||"No phone")+" · "+(b.status||"pending")+" · "+(b.notes||"No notes");
       info.append(title,detail);
       const select=document.createElement("select");select.setAttribute("aria-label","Booking status");["pending","confirmed","in_progress","completed","cancelled"].forEach(v=>{const o=document.createElement("option");o.value=v;o.textContent=v.replace("_"," ");o.selected=(b.status||"pending")===v;select.append(o);});
-      select.addEventListener("change",async()=>{try{await updateDoc(doc(db,"bookings",s.id),{status:select.value,updatedAt:serverTimestamp()});status("Booking status updated.");}catch(err){status(err.message);}});
-      row.append(info,select);$("bookings").append(row);
+      select.addEventListener("change",async()=>{try{await updateDoc(doc(db,"bookings",s.id),{status:select.value,updatedAt:serverTimestamp()});status("Booking status updated.");await loadBookings();}catch(err){status(err.message);}});
+      row.append(info,select);target.append(row);
+      if(isCompleted&&archiveRoot)completedTotal++;else activeTotal++;
     });
-  }catch(err){$("bookings").textContent="Could not load bookings: "+err.message;}
+    if(!activeTotal)activeRoot.textContent="No active requests. Completed requests are in the archive below.";
+    if(archiveRoot&&!completedTotal)archiveRoot.textContent="No completed requests yet.";
+    if(archiveCount)archiveCount.textContent=String(completedTotal);
+  }catch(err){
+    activeRoot.textContent="Could not load bookings: "+err.message;
+    if(archiveRoot)archiveRoot.textContent="Could not load completed requests.";
+  }
 }
 
 async function loadOrders(){
