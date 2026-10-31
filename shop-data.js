@@ -187,6 +187,8 @@ window.render = renderCatalog;
 async function loadProducts() {
   if (!grid) return;
   ensureCatalogTools();
+  const chips = document.getElementById("chips");
+  if (chips) { chips.replaceChildren(); chips.hidden = true; }
   try {
     const snap = await getDocs(query(collection(db, "products"), where("active", "==", true)));
     productState.all = snap.docs.map(docSnap => {
@@ -209,6 +211,7 @@ async function loadProducts() {
       };
     });
     productState.loaded = true;
+    window.PHONES = productState.all;
     const brands = productState.all.map(product => product.brand);
     const categories = productState.all.map(product => product.category);
     setOptions("catalogBrand", brands, "All brands");
