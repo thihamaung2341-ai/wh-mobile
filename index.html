@@ -126,7 +126,7 @@ function fmt(n){return "Ks"+n.toLocaleString("en-US")}
 function render(){
  document.getElementById("chips").innerHTML=cats.map(function(c){return '<button class="chip'+(c===cur?' on':'')+'" data-c="'+c+'">'+c+'</button>'}).join("");
  document.getElementById("grid").innerHTML=PHONES.filter(function(x){return cur==="All"||x.c===cur}).map(function(x,i){
-  return '<div class="card"><div class="ph">'+(x.i?'<img src="'+x.i+'" alt="'+x.n+'" loading="lazy">':'📱')+'</div><b>'+x.n+'</b><div class="tag">'+x.t+'</div><div class="price">'+fmt(x.p)+'</div><a class="btn" href="#order" data-m="'+x.n+'">Reserve</a></div>'}).join("");
+  return '<div class="card"><div class="ph">'+(x.i?'<img src="'+x.i+'" alt="'+x.n+'" loading="lazy">':'📱')+'</div><b>'+x.n+'</b><div class="tag">'+x.t+'</div><div class="price">'+fmt(x.p)+'</div><button class="btn" type="button" data-add="'+(x.id||x.n)+'">Add to cart</button></div>'}).join("");
 }
 document.addEventListener("click",function(e){
  var c=e.target.getAttribute&&e.target.getAttribute("data-c");
