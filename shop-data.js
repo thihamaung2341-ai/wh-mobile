@@ -120,7 +120,7 @@ function conditionGroup(value) {
 function demoProducts() {
   const now = Date.now();
   return [
-    {id:"demo-iphone-15",n:"iPhone 15",p:1599000,brand:"Apple",category:"Phones",stock:3,storageGb:128,condition:"New",t:"Sample listing · replace with your live inventory",i:"",createdAt:now,isDemo:true},
+    {id:"demo-iphone-15",n:"iPhone 15",p:1599000,brand:"Apple",category:"Phones",stock:3,storageGb:128,condition:"New",t:"Sample listing · replace with your live inventory",i:"assets/iphone-15-blue-catalog.jpg",createdAt:now,isDemo:true},
     {id:"demo-iphone-13-a",n:"iPhone 13 · Grade A",p:1199000,brand:"Apple",category:"Phones",stock:2,storageGb:256,condition:"Refurbished - Grade A",t:"Sample listing · replace with your live inventory",i:"",createdAt:now-1,isDemo:true},
     {id:"demo-galaxy-s24",n:"Galaxy S24",p:1899000,brand:"Samsung",category:"Phones",stock:2,storageGb:256,condition:"New",t:"Sample listing · replace with your live inventory",i:"",createdAt:now-2,isDemo:true},
     {id:"demo-galaxy-s23-a",n:"Galaxy S23 · Grade A",p:1399000,brand:"Samsung",category:"Phones",stock:1,storageGb:128,condition:"Refurbished - Grade A",t:"Sample listing · replace with your live inventory",i:"",createdAt:now-3,isDemo:true},
@@ -258,6 +258,7 @@ async function loadProducts() {
     const snap = await getDocs(query(collection(db, "products"), where("active", "==", true)));
     productState.all = snap.docs.map(docSnap => {
       const p = docSnap.data();
+      const productName = safeText(p.name || "Unnamed product");
       const stock = Number(p.stock ?? 0);
       const createdAt = p.createdAt?.toMillis?.() ?? (p.createdAt?.seconds ? p.createdAt.seconds * 1000 : 0);
       const category = safeText(p.category || "Other");
@@ -265,7 +266,7 @@ async function loadProducts() {
       const brand = safeText(p.brand || category);
       return {
         id: docSnap.id,
-        n: safeText(p.name || "Unnamed product"),
+        n: productName,
         p: Number(p.price ?? 0),
         salePrice: Number(p.salePrice ?? 0),
         brand,
@@ -276,7 +277,7 @@ async function loadProducts() {
         color: safeText(p.color || ""),
         condition: safeText(p.condition || ""),
         t: safeText(p.description || ""),
-        i: safeText(p.imageUrl || ""),
+        i: safeText(p.imageUrl || (/iPhone\\s*15/i.test(productName) ? "assets/iphone-15-blue-catalog.jpg" : "")),
         createdAt
       };
     });
