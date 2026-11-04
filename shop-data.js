@@ -21,9 +21,20 @@ function addCatalogStyles() {
     .catalog-layout #catalogTools select,.catalog-layout #catalogTools input{width:100%!important}
     .catalog-layout #grid{grid-template-columns:repeat(auto-fill,minmax(190px,1fr))}
 
-    .catalog-tools{display:grid;grid-template-columns:1fr;gap:12px;margin:0;padding:16px;background:var(--card,#fff);border:1px solid var(--line,#d9e0ea);border-radius:14px;align-self:start}
-    .catalog-tools label{display:grid;gap:6px;color:var(--muted,#64748b);font-size:.84rem;font-weight:600}
-    .catalog-tools input,.catalog-tools select{width:100%;min-width:0;box-sizing:border-box;padding:10px 12px;border:1px solid var(--line,#d9e0ea);border-radius:10px;background:var(--card,#fff);color:var(--text,#172033);font:inherit}
+    .catalog-tools{display:flex!important;flex-direction:column!important;gap:0!important;margin:0;padding:16px;background:var(--card,#fff);border:1px solid var(--line,#d9e0ea);border-radius:14px;align-self:start}
+    .catalog-filter-title{font-size:1.05rem;margin:0 0 12px}
+    .catalog-filter-group{padding:12px 0;border-bottom:1px solid var(--line,#d9e0ea)}
+    .catalog-filter-group h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;margin:0 0 10px;color:var(--muted,#64748b)}
+    .catalog-filter-group label{display:grid;gap:6px;color:var(--muted,#64748b);font-size:.84rem;font-weight:500;margin:8px 0}
+    .catalog-filter-group .catalog-check{display:flex;align-items:center;gap:8px;color:var(--text,#172033);cursor:pointer}
+    .catalog-filter-group input[type=checkbox],.catalog-filter-group input[type=radio]{accent-color:var(--accent,#2563eb);width:16px;height:16px}
+    .catalog-filter-group input[type=number]{width:100%;min-width:0;box-sizing:border-box;padding:9px 10px;border:1px solid var(--line,#d9e0ea);border-radius:9px;background:var(--card,#fff);color:var(--text,#172033);font:inherit}
+    .catalog-option{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:7px 0;font-size:.86rem}
+    .catalog-option label{display:flex;align-items:center;gap:8px;margin:0;cursor:pointer;color:var(--text,#172033)}
+    .catalog-option small{color:var(--muted,#64748b)}
+    .catalog-reset{margin-top:14px;padding:9px;border:1px solid var(--line,#d9e0ea);border-radius:9px;background:transparent;color:var(--text,#172033);cursor:pointer}
+    .catalog-sortbar{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-bottom:12px}
+    .catalog-sortbar select{padding:9px 12px;border:1px solid var(--line,#d9e0ea);border-radius:9px;background:var(--card,#fff);color:var(--text,#172033)}
     .catalog-results{min-width:0}
     .catalog-summary{color:var(--muted,#64748b);margin:0 0 14px}
     .product-stock{display:inline-flex;align-items:center;gap:6px;margin:8px 0;color:var(--muted,#64748b);font-size:.84rem}
@@ -48,33 +59,19 @@ function ensureCatalogTools() {
   tools.id = "catalogTools";
   tools.className = "catalog-tools";
   tools.innerHTML = `
-    <label>Brand
-      <select id="catalogBrand"><option value="">All brands</option></select>
-    </label>
-    <label>Category
-      <select id="catalogCategory"><option value="">All categories</option></select>
-    </label>
-    <label>Minimum price (Ks)
-      <input id="catalogMinPrice" type="number" min="0" step="1" inputmode="numeric" placeholder="No minimum">
-    </label>
-    <label>Maximum price (Ks)
-      <input id="catalogMaxPrice" type="number" min="0" step="1" inputmode="numeric" placeholder="No maximum">
-    </label>
-    <label>Sort by
-      <select id="catalogSort">
-        <option value="newest">Newest first</option>
-        <option value="price-asc">Price: low to high</option>
-        <option value="price-desc">Price: high to low</option>
-        <option value="name-asc">Name: A to Z</option>
-      </select>
-    </label>
-    <label>Stock status
-      <select id="catalogStock">
-        <option value="all">All products</option>
-        <option value="in">In stock</option>
-        <option value="out">Out of stock</option>
-      </select>
-    </label>`;
+    <h3 class="catalog-filter-title">Filter products</h3>
+    <section class="catalog-filter-group"><h4>Stock status</h4>
+      <label class="catalog-check"><input type="radio" name="catalogStock" value="all" checked> View all</label>
+      <label class="catalog-check"><input type="radio" name="catalogStock" value="in"> In stock only</label>
+      <label class="catalog-check"><input type="radio" name="catalogStock" value="out"> Out of stock</label>
+    </section>
+    <section class="catalog-filter-group"><h4>Brand</h4><div id="catalogBrandOptions"></div></section>
+    <section class="catalog-filter-group"><h4>Category</h4><div id="catalogCategoryOptions"></div></section>
+    <section class="catalog-filter-group"><h4>Price range (Ks)</h4>
+      <label>Minimum<input id="catalogMinPrice" type="number" min="0" step="1" inputmode="numeric" placeholder="No minimum"></label>
+      <label>Maximum<input id="catalogMaxPrice" type="number" min="0" step="1" inputmode="numeric" placeholder="No maximum"></label>
+    </section>
+    <button type="button" class="catalog-reset" id="catalogReset">Reset filters</button>`;
   const summary = document.createElement("p");
   summary.id = "catalogSummary";
   summary.className = "catalog-summary";
@@ -84,13 +81,24 @@ function ensureCatalogTools() {
   layout.className = "catalog-layout";
   const results = document.createElement("div");
   results.className = "catalog-results";
+  const sortbar = document.createElement("div");
+  sortbar.className = "catalog-sortbar";
+  sortbar.innerHTML = '<label for="catalogSort">Sort by</label><select id="catalogSort"><option value="newest">Newest first</option><option value="price-asc">Price: low to high</option><option value="price-desc">Price: high to low</option><option value="name-asc">Name: A to Z</option></select>';
   if (chips) chips.insertAdjacentElement("afterend", layout);
   else grid.before(layout);
   layout.append(tools, results);
-  results.append(summary, grid);
+  results.append(sortbar, summary, grid);
 
   tools.addEventListener("input", renderCatalog);
   tools.addEventListener("change", renderCatalog);
+  document.getElementById("catalogSort").addEventListener("change", renderCatalog);
+  document.getElementById("catalogReset").addEventListener("click", () => {
+    tools.querySelectorAll('input[type="checkbox"]').forEach(input => input.checked = false);
+    tools.querySelector('input[name="catalogStock"][value="all"]').checked = true;
+    tools.querySelectorAll('input[type="number"]').forEach(input => input.value = "");
+    document.getElementById("catalogSort").value = "newest";
+    renderCatalog();
+  });
 }
 
 function setOptions(id, values, allLabel) {
@@ -119,14 +127,16 @@ function renderCatalog() {
   const maxValue = document.getElementById("catalogMaxPrice")?.value;
   const min = minValue === "" || minValue == null ? null : Number(minValue);
   const max = maxValue === "" || maxValue == null ? null : Number(maxValue);
-  const stock = document.getElementById("catalogStock")?.value || "all";
+  const stock = document.querySelector('input[name="catalogStock"]:checked')?.value || "all";
   const sort = document.getElementById("catalogSort")?.value || "newest";
+  const selectedBrands = [...document.querySelectorAll('input[name="catalogBrand"]:checked')].map(input => input.value);
+  const selectedCategories = [...document.querySelectorAll('input[name="catalogCategory"]:checked')].map(input => input.value);
   const term = String(window.searchQuery || "").trim().toLocaleLowerCase();
 
   let products = productState.all.filter(product => {
     const searchable = [product.n, product.brand, product.category, product.t, product.storageGb, product.ramGb, product.color, product.condition].join(" ").toLocaleLowerCase();
-    return (!brand || product.brand === brand)
-      && (!category || product.category === category)
+    return (!selectedBrands.length || selectedBrands.includes(product.brand))
+      && (!selectedCategories.length || selectedCategories.includes(product.category))
       && (min === null || product.p >= min)
       && (max === null || product.p <= max)
       && (stock === "all" || (stock === "in" ? product.stock > 0 : product.stock <= 0))
@@ -250,8 +260,23 @@ async function loadProducts() {
     window.PHONES = productState.all;
     const brands = productState.all.map(product => product.brand);
     const categories = productState.all.map(product => product.category);
-    setOptions("catalogBrand", brands, "All brands");
-    setOptions("catalogCategory", categories, "All categories");
+    const buildFilterOptions = (containerId, name, values) => {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      const counts = values.reduce((map, value) => (map[value] = (map[value] || 0) + 1, map), {});
+      container.replaceChildren();
+      [...new Set(values.filter(Boolean))].sort((a,b)=>a.localeCompare(b)).forEach(value => {
+        const row = document.createElement("div"); row.className = "catalog-option";
+        const label = document.createElement("label");
+        const input = document.createElement("input"); input.type = "checkbox"; input.name = name; input.value = value;
+        const text = document.createElement("span"); text.textContent = value;
+        label.append(input,text);
+        const count = document.createElement("small"); count.textContent = counts[value];
+        row.append(label,count); container.append(row);
+      });
+    };
+    buildFilterOptions("catalogBrandOptions","catalogBrand",brands);
+    buildFilterOptions("catalogCategoryOptions","catalogCategory",categories);
     // Retain the existing category chips as quick shortcuts.
     window.cats = ["All"].concat([...new Set(categories)]);
     window.cur = "All";
