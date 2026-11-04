@@ -127,6 +127,32 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:30px 20px 40p
 :root[data-theme="dark"] .main-head{background:#0f1318!important}
 :root[data-theme="dark"] .search-wrap{background:#171d24;border-color:#2a323d}
 :root[data-theme="dark"] .icon-tool{background:#171d24;border-color:#2a323d}
+ 
+/* WH Mobile homepage hero */
+#home.home-hero{max-width:1440px;margin:0 auto 28px;padding:clamp(28px,5vw,68px) clamp(20px,4vw,54px);display:grid;grid-template-columns:minmax(0,1.05fr) minmax(300px,.95fr);align-items:center;gap:34px;overflow:hidden;position:relative;border:1px solid var(--line);border-radius:28px;background:radial-gradient(ellipse at 78% 42%,rgba(37,99,235,.13),transparent 42%),linear-gradient(135deg,var(--card),var(--bg))}
+.hero-copy{position:relative;z-index:2;max-width:650px}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:9px;font-size:11px;font-weight:800;letter-spacing:.13em;color:var(--accent);margin-bottom:18px}
+.hero-dot{width:8px;height:8px;border-radius:50%;background:#16a34a;box-shadow:0 0 0 4px #16a34a22}
+#home.home-hero h1{font-size:clamp(38px,5.4vw,72px);line-height:1.02;letter-spacing:-.045em;margin:0 0 20px;font-weight:850}
+#home.home-hero h1 span{color:var(--accent)}
+.hero-description{max-width:540px;color:var(--muted);font-size:clamp(15px,1.4vw,18px);line-height:1.7;margin:0 0 26px}
+.hero-actions{gap:12px}.hero-primary{padding:14px 21px;border-radius:12px;box-shadow:0 8px 22px #1f6feb30}.hero-primary span{margin-left:8px;font-size:20px}.hero-secondary{padding:13px 20px;border-radius:12px}
+.hero-highlights{display:flex;flex-wrap:wrap;gap:16px;margin-top:24px;color:var(--muted);font-size:12px;font-weight:600}.hero-highlights b{color:#16a34a;margin-right:5px}
+.hero-visual{position:relative;min-height:390px;display:grid;place-items:center;isolation:isolate}
+.hero-glow{position:absolute;width:72%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#2563eb38 0%,#2563eb0a 55%,transparent 70%);filter:blur(8px)}
+.hero-orbit{position:absolute;border:1px solid #2563eb2b;border-radius:50%;transform:rotate(-22deg)}.orbit-one{width:85%;height:65%}.orbit-two{width:68%;height:95%;transform:rotate(28deg)}
+.hero-phone{position:absolute;width:170px;height:330px;border-radius:31px;padding:8px;box-shadow:0 28px 60px #0003;border:2px solid #687386;background:linear-gradient(145deg,#aeb8c9,#242a36)}
+.phone-back{transform:translate(-58px,-5px) rotate(-13deg);background:linear-gradient(145deg,#d9e2f1,#53627b)}
+.phone-camera{position:absolute;width:42px;height:42px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#7186a8,#111827 60%);border:4px solid #9aa7b8;left:17px;top:17px}.camera-two{top:66px}.camera-three{top:115px}
+.phone-front{transform:translate(50px,12px) rotate(10deg);background:#10151e;border-color:#6b7280}
+.phone-screen{height:100%;border-radius:24px;overflow:hidden;position:relative;background:linear-gradient(150deg,#081c43,#2563eb 52%,#62d5ff);display:flex;align-items:center;justify-content:center;color:white;text-align:center}
+.screen-island{position:absolute;top:12px;width:62px;height:16px;border-radius:20px;background:#05070b}.screen-time{font-size:34px;font-weight:300;letter-spacing:-.03em;line-height:1.05;z-index:1;text-shadow:0 2px 12px #0003}.screen-time b{font-size:24px;font-weight:800}.screen-gradient{position:absolute;bottom:-40px;left:-30px;width:220px;height:160px;border-radius:50%;background:#7dd3fc55;filter:blur(20px)}
+.hero-float{position:absolute;z-index:3;display:flex;align-items:center;gap:10px;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:14px;padding:11px 15px;box-shadow:0 12px 35px #00000012;font-size:12px;font-weight:700}
+.float-top{top:28px;right:4px}.float-top span{color:#f59e0b;font-size:18px}.float-bottom{bottom:18px;left:0}.float-check{width:27px;height:27px;border-radius:50%;display:grid;place-items:center;background:#dcfce7;color:#15803d;font-size:14px}.float-bottom div{display:grid;gap:3px}.float-bottom small{font-size:10px;color:var(--muted);font-weight:500}
+.home-benefits{max-width:1440px;margin:0 auto 46px;padding:20px 24px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;border:1px solid var(--line);border-radius:18px;background:var(--card)}
+.home-benefits>div{display:flex;align-items:center;gap:13px;justify-content:center;padding:4px}.benefit-icon{width:42px;height:42px;display:grid;place-items:center;border-radius:12px;background:var(--bg);font-size:20px}.home-benefits span:last-child{display:grid;gap:4px}.home-benefits b{font-size:13px}.home-benefits small{font-size:11px;color:var(--muted)}
+@media(max-width:800px){#home.home-hero{grid-template-columns:1fr;padding:34px 24px;gap:12px}.hero-visual{min-height:330px}.phone-back{transform:translate(-42px,0) rotate(-12deg)}.phone-front{transform:translate(40px,5px) rotate(8deg)}.float-top{right:5%}.float-bottom{left:4%}.home-benefits{grid-template-columns:1fr;gap:12px}.home-benefits>div{justify-content:flex-start}}
+@media(max-width:480px){#home.home-hero{border-radius:18px;padding:28px 18px}.hero-visual{min-height:285px}.hero-phone{width:135px;height:265px;border-radius:25px}.phone-screen{border-radius:18px}.phone-camera{width:34px;height:34px}.camera-two{top:58px}.camera-three{top:99px}.hero-float{padding:8px 10px}.float-top{top:10px}.float-bottom{bottom:4px}.hero-highlights{gap:8px;flex-direction:column}}
 </style>
 </head>
 <body>
@@ -164,11 +190,26 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:30px 20px 40p
  </nav>
 </header>
 
-<section id="home">
-
-<h1>Phones, accessories &amp; fast repairs.</h1>
-<p class="sub">Discover phones and accessories, order online, and track your delivery.</p>
-<div class="hero-actions"><a class="btn" href="login.html">Log in</a><a class="btn" href="#phones">See phones</a><a class="btn alt" href="#order">Book a repair</a></div>
+<section id="home" class="home-hero">
+  <div class="hero-copy">
+    <span class="hero-eyebrow"><span class="hero-dot"></span> YOUR TRUSTED MOBILE STORE IN YANGON</span>
+    <h1>Find your next<br><span>favorite phone.</span></h1>
+    <p class="hero-description">Smartphones, accessories and friendly service—all in one place. Explore our collection and order with WH Mobile.</p>
+    <div class="hero-actions"><a class="btn hero-primary" href="#phones">Explore products <span aria-hidden="true">→</span></a><a class="btn alt hero-secondary" href="#visit">Visit our store</a></div>
+    <div class="hero-highlights"><span><b>✓</b> Carefully selected products</span><span><b>✓</b> Local customer support</span></div>
+  </div>
+  <div class="hero-visual" aria-label="Decorative smartphone showcase">
+    <div class="hero-glow"></div><div class="hero-orbit orbit-one"></div><div class="hero-orbit orbit-two"></div>
+    <div class="hero-phone phone-back"><div class="phone-camera camera-one"></div><div class="phone-camera camera-two"></div><div class="phone-camera camera-three"></div></div>
+    <div class="hero-phone phone-front"><div class="phone-screen"><div class="screen-island"></div><span class="screen-time">WH<br><b>Mobile</b></span><div class="screen-gradient"></div></div></div>
+    <div class="hero-float float-top"><span>✦</span> New arrivals</div>
+    <div class="hero-float float-bottom"><span class="float-check">✓</span><div><b>Shop with confidence</b><small>Order online · Visit in-store</small></div></div>
+  </div>
+</section>
+<section class="home-benefits" aria-label="Store benefits">
+  <div><span class="benefit-icon">📱</span><span><b>Phones & accessories</b><small>Explore our collection</small></span></div>
+  <div><span class="benefit-icon">🛍️</span><span><b>Easy online ordering</b><small>Simple shopping experience</small></span></div>
+  <div><span class="benefit-icon">📍</span><span><b>Visit us in Yangon</b><small>Yuzana Plaza</small></span></div>
 </section>
 
 <section id="phones">
@@ -329,7 +370,7 @@ onAuthStateChanged(auth, user => {
 })();
 </script>
 <script src="lang.js"></script>
-<script type="module" src="shop-data.js?v=normal-dropdowns"></script>
+<script type="module" src="shop-data.js?v=homepage-design1"></script>
  <script type="module" src="header-auth.js"></script>
 <script src="support-widget.js" defer></script>
 </body>
