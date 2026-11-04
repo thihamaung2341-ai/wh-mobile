@@ -29,8 +29,7 @@ html[data-theme="dark"] #grid .product-specs span,html[data-theme="dark"] .demo-
 #grid .price{margin-top:10px;color:var(--shop-ink);font-size:19px;font-weight:850}
 #grid .product-stock{min-height:25px;font-size:11px}
 #grid .product-card .btn{width:100%;margin-top:10px}
-.product-details-button{width:100%;margin-top:8px;padding:10px;border:1px solid var(--shop-line);border-radius:10px;background:transparent;color:var(--shop-ink);font:700 13px inherit;cursor:pointer}
-.product-details-button:hover,.catalog-reset:hover{border-color:var(--shop-blue);color:var(--shop-blue)}
+.catalog-reset:hover{border-color:var(--shop-blue);color:var(--shop-blue)}
 .demo-product-tag{display:inline-flex;align-self:flex-start;margin-top:3px;color:#75510b;background:#fff5d6!important;letter-spacing:.04em}
 .catalog-empty{grid-column:1/-1;padding:28px;border:1px dashed var(--shop-line);border-radius:14px;color:var(--shop-muted);text-align:center}
 .accessories-band{max-width:1440px;margin:0 auto 46px;padding:clamp(24px,4vw,42px);display:flex;align-items:center;justify-content:space-between;gap:24px;border:1px solid var(--shop-line);border-radius:22px;background:linear-gradient(115deg,#eff5ff,#fbfdff);color:#17243a}

@@ -34,13 +34,6 @@ function addCatalogStyles() {
     .product-specs span{padding:4px 8px;border-radius:999px;background:var(--surface,#f1f5fb);color:var(--muted,#64748b);font-size:.76rem}
     .product-card{display:flex;flex-direction:column}
     .product-card .btn{margin-top:auto}
-    .product-details-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:42px;margin-top:8px;padding:10px 14px;border:1px solid var(--line,#dbe3ee);border-radius:10px;background:var(--card,#fff);color:var(--text,#24334a);font:600 13px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:.01em;cursor:pointer;transition:background-color .16s ease,border-color .16s ease,color .16s ease,box-shadow .16s ease}
-    .product-details-button:after{content:"→";font-size:16px;line-height:1;transition:transform .16s ease}
-    .product-details-button:hover{border-color:var(--accent,#2868e8);background:color-mix(in srgb,var(--accent,#2868e8) 7%,var(--card,#fff));color:var(--accent,#2868e8);box-shadow:0 4px 12px rgba(40,104,232,.1)}
-    .product-details-button:hover:after{transform:translateX(3px)}
-    .product-details-button:focus-visible{outline:3px solid color-mix(in srgb,var(--accent,#2868e8) 28%,transparent);outline-offset:2px}
-    .product-details-button:active{transform:translateY(1px)}
-    @media(prefers-reduced-motion:reduce){.product-details-button,.product-details-button:after{transition:none}}
     .catalog-empty{grid-column:1/-1;padding:24px;text-align:center;color:var(--muted,#64748b);background:var(--card,#fff);border:1px solid var(--border,#d9e0ea);border-radius:14px}
     @media(max-width:850px){.catalog-tools{grid-template-columns:repeat(3,minmax(0,1fr))}}
     @media(max-width:560px){.catalog-tools{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}}
@@ -238,12 +231,6 @@ function renderCatalog() {
     add.dataset.add = product.id;
     add.textContent = product.stock > 0 || product.isDemo ? "Add to cart" : "Out of stock";
     add.disabled = product.stock <= 0 && !product.isDemo;
-    const details = document.createElement("button");
-    details.className = "product-details-button";
-    details.type = "button";
-    details.dataset.productDetails = product.id;
-    details.textContent = "Details";
-
     card.append(photo, title);
     if (meta.textContent) card.append(meta);
     if (product.t) card.append(description);
@@ -254,7 +241,7 @@ function renderCatalog() {
       demoTag.textContent = "SAMPLE PRODUCT";
       card.append(demoTag);
     }
-    card.append(price, stockLabel, add, details);
+    card.append(price, stockLabel, add);
     return card;
   }));
 }
