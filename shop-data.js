@@ -1,4 +1,5 @@
 import { auth, db } from "./firebase-config.js";
+import { INVENTORY } from "./inventory.js";
 import {
   collection, getDocs, query, where, addDoc, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
@@ -6,7 +7,7 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/f
 
 const form = document.getElementById("f");
 const grid = document.getElementById("grid");
-const productState = { all: [], loaded: false, error: false };
+const productState = { all: [], loaded: false, error: false, usingInventory: false };
 
 
 function addCatalogStyles() {
@@ -117,16 +118,24 @@ function conditionGroup(value) {
   return value ? String(value) : "";
 }
 
-function demoProducts() {
-  const now = Date.now();
-  return [
-    {id:"demo-iphone-15",n:"iPhone 15",p:1599000,brand:"Apple",category:"Phones",stock:3,storageGb:128,condition:"New",t:"Sample listing · replace with your live inventory",i:"assets/iphone-15-blue-catalog.jpg",createdAt:now,isDemo:true},
-    {id:"demo-iphone-13-a",n:"iPhone 13 · Grade A",p:1199000,brand:"Apple",category:"Phones",stock:2,storageGb:256,condition:"Refurbished - Grade A",t:"Sample listing · replace with your live inventory",i:"assets/iphone-13-grade-a-catalog.jpg",createdAt:now-1,isDemo:true},
-    {id:"demo-galaxy-s24",n:"Galaxy S24",p:1899000,brand:"Samsung",category:"Phones",stock:2,storageGb:256,condition:"New",t:"Sample listing · replace with your live inventory",i:"assets/samsung-galaxy-s24-catalog.jpg",createdAt:now-2,isDemo:true},
-    {id:"demo-galaxy-s23-a",n:"Galaxy S23 · Grade A",p:1399000,brand:"Samsung",category:"Phones",stock:1,storageGb:128,condition:"Refurbished - Grade A",t:"Sample listing · replace with your live inventory",i:"assets/samsung-galaxy-s23-grade-a-catalog.jpg",createdAt:now-3,isDemo:true},
-    {id:"demo-xiaomi-14",n:"Xiaomi 14",p:1699000,brand:"Xiaomi",category:"Phones",stock:2,storageGb:512,condition:"New",t:"Sample listing · replace with your live inventory",i:"assets/xiaomi-14-catalog.jpg",createdAt:now-4,isDemo:true},
-    {id:"demo-redmi-note-13",n:"Redmi Note 13",p:699000,brand:"Xiaomi",category:"Phones",stock:4,storageGb:128,condition:"New",t:"Sample listing · replace with your live inventory",i:"assets/redmi-note-13-catalog.jpg",createdAt:now-5,isDemo:true}
-  ];
+function inventoryProducts() {
+  const listedAt = Date.now();
+  return INVENTORY.map((product, index) => ({
+    id: product.id,
+    n: product.name,
+    p: null,
+    brand: product.brand,
+    category: product.category,
+    stock: product.stock,
+    storageGb: product.storageGb,
+    ramGb: product.ramGb,
+    color: "",
+    condition: "",
+    t: "",
+    i: product.imageUrl,
+    createdAt: listedAt - index,
+    isInventory: true
+  }));
 }
 
 function fallbackProductImage(name) {
@@ -210,22 +219,22 @@ function renderCatalog() {
       && (!category || category === product.category)
       && (!storage || storageLabel(product.storageGb) === storage)
       && (!condition || conditionGroup(product.condition) === condition)
-      && (min === null || product.p >= min)
-      && (max === null || product.p <= max)
+      && (min === null || (Number.isFinite(product.p) && product.p >= min))
+      && (max === null || (Number.isFinite(product.p) && product.p <= max))
       && (stock === "all" || (stock === "in" ? product.stock > 0 : product.stock <= 0))
       && (!term || searchable.includes(term));
   });
 
-  if (sort === "price-asc") products.sort((a, b) => a.p - b.p);
-  else if (sort === "price-desc") products.sort((a, b) => b.p - a.p);
+  if (sort === "price-asc") products.sort((a, b) => (a.p == null) - (b.p == null) || ((a.p || 0) - (b.p || 0)));
+  else if (sort === "price-desc") products.sort((a, b) => (a.p == null) - (b.p == null) || ((b.p || 0) - (a.p || 0)));
   else if (sort === "name-asc") products.sort((a, b) => a.n.localeCompare(b.n));
   else products.sort((a, b) => b.createdAt - a.createdAt);
 
   const summary = document.getElementById("catalogSummary");
-  if (summary) summary.textContent = productState.usingDemo
-    ? "Sample listings are shown for setup. Replace them with your live inventory in Firestore."
-    : productState.error
-      ? "Live catalog could not be refreshed. Sample listings are shown."
+  if (summary) summary.textContent = productState.error
+    ? "Live inventory could not be reached. Showing the supplied WH Mobile stock list."
+    : productState.usingInventory
+      ? productState.all.length + " listed variants · prices change daily. Ask WH Mobile for today's price."
       : products.length + (products.length === 1 ? " product" : " products");
 
   if (!productState.all.length) {
@@ -281,30 +290,38 @@ function renderCatalog() {
       chip.textContent = value;
       specs.append(chip);
     });
+    const hasPrice = Number.isFinite(product.p) && product.p > 0;
     const price = document.createElement("div");
     price.className = "price";
-    price.textContent = "Ks" + product.p.toLocaleString("en-US");
+    price.textContent = hasPrice ? "Ks" + product.p.toLocaleString("en-US") : "Price updated daily";
     const stockLabel = document.createElement("div");
-    stockLabel.className = "product-stock" + (!product.isDemo && product.stock > 0 ? " available" : "");
-    stockLabel.textContent = product.isDemo ? "Sample listing · edit before launch" : product.stock > 0 ? "In stock · " + product.stock : "Out of stock";
+    stockLabel.className = "product-stock" + (product.stock > 0 ? " available" : "");
+    stockLabel.textContent = product.stock > 0 ? "In stock · " + product.stock : "Out of stock";
 
-    const add = document.createElement("button");
-    add.className = "btn";
-    add.type = "button";
-    add.dataset.add = product.id;
-    add.textContent = product.stock > 0 || product.isDemo ? "Add to cart" : "Out of stock";
-    add.disabled = product.stock <= 0 && !product.isDemo;
+    let action;
+    if (hasPrice) {
+      const add = document.createElement("button");
+      add.className = "btn";
+      add.type = "button";
+      add.dataset.add = product.id;
+      add.textContent = product.stock > 0 ? "Add to cart" : "Out of stock";
+      add.disabled = product.stock <= 0;
+      action = add;
+    } else {
+      const ask = document.createElement("a");
+      ask.className = "btn";
+      ask.href = "https://wa.me/959793777772?text=" + encodeURIComponent("Hi WH Mobile, what is today's price for " + product.n + "?");
+      ask.target = "_blank";
+      ask.rel = "noopener noreferrer";
+      ask.textContent = product.stock > 0 ? "Ask for today's price" : "Check availability";
+      action = ask;
+    }
+
     card.append(photo, title);
     if (meta.textContent) card.append(meta);
     if (product.t) card.append(description);
     if (specs.childElementCount) card.append(specs);
-    if (product.isDemo) {
-      const demoTag = document.createElement("span");
-      demoTag.className = "demo-product-tag";
-      demoTag.textContent = "SAMPLE PRODUCT";
-      card.append(demoTag);
-    }
-    card.append(price, stockLabel, add);
+    card.append(price, stockLabel, action);
     return card;
   }));
 }
@@ -330,7 +347,7 @@ async function loadProducts() {
       return {
         id: docSnap.id,
         n: productName,
-        p: Number(p.price ?? 0),
+        p: p.price == null || p.price === "" ? null : Number(p.price),
         salePrice: Number(p.salePrice ?? 0),
         brand,
         category,
@@ -345,8 +362,8 @@ async function loadProducts() {
       };
     });
     if (!productState.all.length) {
-      productState.all = demoProducts();
-      productState.usingDemo = true;
+      productState.all = inventoryProducts();
+      productState.usingInventory = true;
     }
     productState.loaded = true;
     window.PHONES = productState.all;
@@ -364,13 +381,15 @@ async function loadProducts() {
     console.error("Could not load Firestore products:", error);
     productState.loaded = true;
     productState.error = true;
-    productState.usingDemo = true;
-    productState.all = demoProducts();
+    productState.usingInventory = true;
+    productState.all = inventoryProducts();
     window.PHONES = productState.all;
-    setOptions("catalogBrand", ["Apple", "Samsung", "Xiaomi"], "All brands");
-    setOptions("catalogStorage", ["128 GB", "256 GB", "512 GB"], "All storage");
-    setOptions("catalogCondition", ["New", "Refurbished"], "All conditions");
-    setOptions("catalogCategory", ["Phones"], "All categories");
+    setOptions("catalogBrand", ["Apple", "Samsung", "Xiaomi", ...productState.all.map(product => product.brand)], "All brands");
+    setOptions("catalogStorage", ["64 GB", "128 GB", "256 GB", "512 GB", ...productState.all.map(product => storageLabel(product.storageGb))], "All storage");
+    setOptions("catalogCondition", ["New", "Refurbished", ...productState.all.map(product => conditionGroup(product.condition))], "All conditions");
+    setOptions("catalogCategory", [...new Set(productState.all.map(product => product.category))], "All categories");
+    window.cats = ["All", ...new Set(productState.all.map(product => product.category))];
+    window.cur = "All";
     renderCatalog();
   }
 }
