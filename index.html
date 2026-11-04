@@ -155,6 +155,20 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:30px 20px 40p
 @media(max-width:480px){#home.home-hero{border-radius:18px;padding:28px 18px}.hero-visual{min-height:285px}.hero-phone{width:135px;height:265px;border-radius:25px}.phone-screen{border-radius:18px}.phone-camera{width:34px;height:34px}.camera-two{top:58px}.camera-three{top:99px}.hero-float{padding:8px 10px}.float-top{top:10px}.float-bottom{bottom:4px}.hero-highlights{gap:8px;flex-direction:column}}
 /* Keep the homepage focused on the hero; catalogue and booking live on their own pages. */
 #phones,#order{display:none!important}
+
+/* Storefront photo gallery */
+.store-gallery{max-width:1200px;margin:0 auto;padding:72px 24px 84px}
+.store-gallery-heading{max-width:640px;margin:0 auto 30px;text-align:center}
+.store-gallery-heading .eyebrow{display:inline-block;margin-bottom:8px;color:var(--accent);font-size:.76rem;font-weight:750;letter-spacing:.13em;text-transform:uppercase}
+.store-gallery-heading h2{margin:0 0 9px;font-size:clamp(1.75rem,3.2vw,2.5rem);line-height:1.15;letter-spacing:-.035em}
+.store-gallery-heading p{margin:0;color:var(--muted)}
+.store-gallery-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+.store-photo-card{overflow:hidden;margin:0;border:1px solid var(--line);border-radius:20px;background:var(--card);box-shadow:0 14px 38px rgba(20,30,45,.09)}
+.store-photo-card img{display:block;width:100%;height:clamp(260px,34vw,420px);object-fit:cover;transition:transform .45s ease}
+.store-photo-card:hover img{transform:scale(1.025)}
+.store-photo-card figcaption{padding:15px 19px;color:var(--muted);font-size:.94rem;font-weight:600}
+@media(max-width:700px){.store-gallery{padding:54px 18px 64px}.store-gallery-grid{grid-template-columns:1fr;gap:16px}.store-photo-card img{height:clamp(230px,65vw,360px)}.store-photo-card{border-radius:16px}}
+@media(prefers-reduced-motion:reduce){.store-photo-card img{transition:none}}
 </style>
 </head>
 <body>
@@ -212,6 +226,24 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:30px 20px 40p
   <div><span class="benefit-icon">📱</span><span><b>Phones & accessories</b><small>Explore our collection</small></span></div>
   <div><span class="benefit-icon">🛍️</span><span><b>Easy online ordering</b><small>Simple shopping experience</small></span></div>
   <div><span class="benefit-icon">📍</span><span><b>Visit us in Yangon</b><small>Yuzana Plaza</small></span></div>
+</section>
+
+<section class="store-gallery" aria-labelledby="store-gallery-title">
+  <div class="store-gallery-heading">
+    <span class="eyebrow">Come visit us</span>
+    <h2 id="store-gallery-title">A closer look at WH Mobile</h2>
+    <p>Find the phones, accessories and friendly service you’re looking for at our Yangon store.</p>
+  </div>
+  <div class="store-gallery-grid">
+    <figure class="store-photo-card">
+      <img src="assets/wh-mobile-storefront-01.jpg" alt="WH Mobile storefront and display counters" loading="lazy" decoding="async" width="2000" height="1125">
+      <figcaption>Step inside and explore our store</figcaption>
+    </figure>
+    <figure class="store-photo-card">
+      <img src="assets/wh-mobile-storefront-02.jpg" alt="WH Mobile shop entrance and phone displays" loading="lazy" decoding="async" width="2000" height="1125">
+      <figcaption>Visit us at Yuzana Plaza in Yangon</figcaption>
+    </figure>
+  </div>
 </section>
 
 <section id="phones">
