@@ -11,7 +11,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/infinix-hot-60-pro-plus.jpg"
   },
   {
@@ -24,7 +24,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/itel-s25-ultra.jpg"
   },
   {
@@ -37,7 +37,7 @@ export const INVENTORY = [
     "stock": 2,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/huawei-nova-12s.jpg"
   },
   {
@@ -50,7 +50,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/tecno-spark-40-pro-plus.jpg"
   },
   {
@@ -63,7 +63,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-12.jpg"
   },
   {
@@ -76,7 +76,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-12.jpg"
   },
   {
@@ -89,7 +89,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/infinix-hot-40i.jpg"
   },
   {
@@ -102,7 +102,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/honor-x7a.jpg"
   },
   {
@@ -115,7 +115,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/tecno-spark-go-1.jpg"
   },
   {
@@ -128,7 +128,7 @@ export const INVENTORY = [
     "stock": 2,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/tecno-spark-go-2.jpg"
   },
   {
@@ -141,7 +141,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-14c.jpg"
   },
   {
@@ -154,7 +154,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-9.jpg"
   },
   {
@@ -167,7 +167,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-k40.jpg"
   },
   {
@@ -180,7 +180,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-k40.jpg"
   },
   {
@@ -193,7 +193,7 @@ export const INVENTORY = [
     "stock": 2,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-k40.jpg"
   },
   {
@@ -206,7 +206,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-note-14-5g.jpg"
   },
   {
@@ -219,7 +219,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-note-14-5g.jpg"
   },
   {
@@ -232,7 +232,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-note-14-5g.jpg"
   },
   {
@@ -245,7 +245,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/oppo-x7.jpg"
   },
   {
@@ -258,7 +258,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-note-12-pro.jpg"
   },
   {
@@ -271,7 +271,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-note-12-pro.jpg"
   },
   {
@@ -284,7 +284,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-note-12-pro.jpg"
   },
   {
@@ -297,7 +297,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-note-12-pro.jpg"
   },
   {
@@ -310,7 +310,7 @@ export const INVENTORY = [
     "stock": 3,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-15c.jpg"
   },
   {
@@ -323,7 +323,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-15c.jpg"
   },
   {
@@ -336,7 +336,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-15c.jpg"
   },
   {
@@ -349,7 +349,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-13c.jpg"
   },
   {
@@ -362,7 +362,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-note-13-pro.jpg"
   },
   {
@@ -375,7 +375,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-13r.jpg"
   },
   {
@@ -388,7 +388,7 @@ export const INVENTORY = [
     "stock": 4,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-note-13-5g.jpg"
   },
   {
@@ -401,7 +401,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-note-13-5g.jpg"
   },
   {
@@ -414,7 +414,7 @@ export const INVENTORY = [
     "stock": 4,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-note-13-5g.jpg"
   },
   {
@@ -427,7 +427,7 @@ export const INVENTORY = [
     "stock": 4,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-note-13-5g.jpg"
   },
   {
@@ -440,7 +440,7 @@ export const INVENTORY = [
     "stock": 11,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-note-11-5g.jpg"
   },
   {
@@ -453,7 +453,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-note-11-5g.jpg"
   },
   {
@@ -466,7 +466,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-note-11-pro.jpg"
   },
   {
@@ -479,7 +479,7 @@ export const INVENTORY = [
     "stock": 3,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-10x.jpg"
   },
   {
@@ -492,7 +492,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-10x.jpg"
   },
   {
@@ -505,7 +505,7 @@ export const INVENTORY = [
     "stock": 2,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-note-10-pro.jpg"
   },
   {
@@ -518,7 +518,7 @@ export const INVENTORY = [
     "stock": 5,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-note-10-pro.jpg"
   },
   {
@@ -531,7 +531,7 @@ export const INVENTORY = [
     "stock": 5,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-note-10-pro.jpg"
   },
   {
@@ -544,7 +544,7 @@ export const INVENTORY = [
     "stock": 2,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/huawei-nova-y61.jpg"
   },
   {
@@ -557,7 +557,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/oppo-a38.jpg"
   },
   {
@@ -570,7 +570,7 @@ export const INVENTORY = [
     "stock": 2,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-a5.jpg"
   },
   {
@@ -583,7 +583,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-15.jpg"
   },
   {
@@ -596,7 +596,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-note-9.jpg"
   },
   {
@@ -609,7 +609,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-note-9.jpg"
   },
   {
@@ -622,7 +622,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-note-9.jpg"
   },
   {
@@ -635,7 +635,7 @@ export const INVENTORY = [
     "stock": 3,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-10a.jpg"
   },
   {
@@ -648,7 +648,7 @@ export const INVENTORY = [
     "stock": 2,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/oppo-a56-5g.jpg"
   },
   {
@@ -661,7 +661,7 @@ export const INVENTORY = [
     "stock": 3,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-9a.jpg"
   },
   {
@@ -674,7 +674,7 @@ export const INVENTORY = [
     "stock": 5,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/redmi-8.jpg"
   },
   {
@@ -687,7 +687,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/oppo-f11.jpg"
   },
   {
@@ -700,7 +700,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/oppo-a15s.jpg"
   },
   {
@@ -713,7 +713,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/oppo-a31.jpg"
   },
   {
@@ -726,7 +726,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/oppo-a31.jpg"
   },
   {
@@ -739,7 +739,7 @@ export const INVENTORY = [
     "stock": 1,
     "price": null,
     "color": "",
-    "condition": "",
+    "condition": "Used",
     "imageUrl": "assets/oppo-a11.jpg"
   }
 ];
