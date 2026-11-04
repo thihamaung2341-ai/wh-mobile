@@ -114,7 +114,7 @@ $("importInventory")?.addEventListener("click",async()=>{
       batch.set(doc(db,"products",item.id),{
         name:item.name,brand:item.brand,category:item.category,
         price:null,stock:item.stock,storageGb:item.storageGb,ramGb:item.ramGb,
-        color:"",condition:"",description:"",imageUrl:item.imageUrl,
+        color:"",condition:item.condition,description:"",imageUrl:item.imageUrl,
         active:true,inventorySeed:true,createdAt:serverTimestamp()
       });
     });
