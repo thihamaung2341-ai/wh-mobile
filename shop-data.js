@@ -14,25 +14,15 @@ function addCatalogStyles() {
   const style = document.createElement("style");
   style.id = "catalogStyles";
   style.textContent = `
-    .catalog-layout{display:grid!important;grid-template-columns:250px minmax(0,1fr)!important;gap:22px!important;align-items:start!important;margin:18px 0!important;width:100%}
-    .catalog-layout > #catalogTools{display:flex!important;flex-direction:column!important;grid-column:1!important;grid-row:1!important;width:100%!important;min-width:0!important;box-sizing:border-box!important}
-    .catalog-layout > .catalog-results{display:block!important;grid-column:2!important;grid-row:1!important;width:100%!important;min-width:0!important}
-    .catalog-layout #catalogTools label{width:100%;box-sizing:border-box}
-    .catalog-layout #catalogTools select,.catalog-layout #catalogTools input{width:100%!important}
-    .catalog-layout #grid{grid-template-columns:repeat(auto-fill,minmax(190px,1fr))}
-
-    .catalog-tools{display:flex!important;flex-direction:column!important;gap:0!important;margin:0;padding:16px;background:var(--card,#fff);border:1px solid var(--line,#d9e0ea);border-radius:14px;align-self:start}
-    .catalog-filter-title{font-size:1.05rem;margin:0 0 12px}
-    .catalog-filter-group{padding:12px 0;border-bottom:1px solid var(--line,#d9e0ea)}
-    .catalog-filter-group h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;margin:0 0 10px;color:var(--muted,#64748b)}
-    .catalog-filter-group label{display:grid;gap:6px;color:var(--muted,#64748b);font-size:.84rem;font-weight:500;margin:8px 0}
-    .catalog-filter-group .catalog-check{display:flex;align-items:center;gap:8px;color:var(--text,#172033);cursor:pointer}
-    .catalog-filter-group input[type=checkbox],.catalog-filter-group input[type=radio]{accent-color:var(--accent,#2563eb);width:16px;height:16px}
-    .catalog-filter-group input[type=number]{width:100%;min-width:0;box-sizing:border-box;padding:9px 10px;border:1px solid var(--line,#d9e0ea);border-radius:9px;background:var(--card,#fff);color:var(--text,#172033);font:inherit}
-    .catalog-option{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:7px 0;font-size:.86rem}
-    .catalog-option label{display:flex;align-items:center;gap:8px;margin:0;cursor:pointer;color:var(--text,#172033)}
-    .catalog-option small{color:var(--muted,#64748b)}
-    .catalog-reset{margin-top:14px;padding:9px;border:1px solid var(--line,#d9e0ea);border-radius:9px;background:transparent;color:var(--text,#172033);cursor:pointer}
+    .catalog-layout{display:block!important;margin:18px 0!important;width:100%}
+    .catalog-tools{display:grid!important;grid-template-columns:repeat(5,minmax(130px,1fr));gap:12px;margin:14px 0 18px;padding:0;background:transparent;border:0;border-radius:0}
+    .catalog-filter-title{display:none}
+    .catalog-filter-group{display:contents}
+    .catalog-filter-group h4{display:none}
+    .catalog-filter-group label{display:grid;gap:6px;color:var(--muted,#64748b);font-size:.84rem;font-weight:600;margin:0}
+    .catalog-filter-group .catalog-check{display:none}
+    .catalog-filter-group input[type=number],.catalog-tools select{width:100%;min-width:0;box-sizing:border-box;padding:10px 12px;border:1px solid var(--line,#d9e0ea);border-radius:10px;background:var(--card,#fff);color:var(--text,#172033);font:inherit}
+    .catalog-reset{grid-column:1/-1;justify-self:start;padding:9px 13px;border:1px solid var(--line,#d9e0ea);border-radius:9px;background:transparent;color:var(--text,#172033);cursor:pointer}
     .catalog-sortbar{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-bottom:12px}
     .catalog-sortbar select{padding:9px 12px;border:1px solid var(--line,#d9e0ea);border-radius:9px;background:var(--card,#fff);color:var(--text,#172033)}
     .catalog-results{min-width:0}
@@ -45,8 +35,8 @@ function addCatalogStyles() {
     .product-card{display:flex;flex-direction:column}
     .product-card .btn{margin-top:auto}
     .catalog-empty{grid-column:1/-1;padding:24px;text-align:center;color:var(--muted,#64748b);background:var(--card,#fff);border:1px solid var(--border,#d9e0ea);border-radius:14px}
-    @media(max-width:850px){.catalog-layout{grid-template-columns:220px minmax(0,1fr)!important;gap:14px!important}}
-    @media(max-width:650px){.catalog-layout{grid-template-columns:1fr!important}.catalog-layout > #catalogTools,.catalog-layout > .catalog-results{grid-column:1!important;grid-row:auto!important}.catalog-layout #catalogTools{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px}.catalog-layout #catalogTools label:first-child,.catalog-layout #catalogTools label:last-child{grid-column:1/-1}}
+    @media(max-width:850px){.catalog-tools{grid-template-columns:repeat(3,minmax(0,1fr))}}
+    @media(max-width:560px){.catalog-tools{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}}
   `;
   document.head.append(style);
 }
@@ -59,19 +49,11 @@ function ensureCatalogTools() {
   tools.id = "catalogTools";
   tools.className = "catalog-tools";
   tools.innerHTML = `
-    <h3 class="catalog-filter-title">Filter products</h3>
-    <section class="catalog-filter-group"><h4>Stock status</h4>
-      <label class="catalog-check"><input type="radio" name="catalogStock" value="all" checked> View all</label>
-      <label class="catalog-check"><input type="radio" name="catalogStock" value="in"> In stock only</label>
-      <label class="catalog-check"><input type="radio" name="catalogStock" value="out"> Out of stock</label>
-    </section>
-    <section class="catalog-filter-group"><h4>Brand</h4><div id="catalogBrandOptions"></div></section>
-    <section class="catalog-filter-group"><h4>Category</h4><div id="catalogCategoryOptions"></div></section>
-    <section class="catalog-filter-group"><h4>Category</h4><div id="catalogCategoryOptions"></div></section>
-    <section class="catalog-filter-group"><h4>Price range (Ks)</h4>
-      <label>Minimum<input id="catalogMinPrice" type="number" min="0" step="1" inputmode="numeric" placeholder="No minimum"></label>
-      <label>Maximum<input id="catalogMaxPrice" type="number" min="0" step="1" inputmode="numeric" placeholder="No maximum"></label>
-    </section>
+    <label>Brand<select id="catalogBrand"><option value="">All brands</option></select></label>
+    <label>Category<select id="catalogCategory"><option value="">All categories</option></select></label>
+    <label>Minimum price (Ks)<input id="catalogMinPrice" type="number" min="0" step="1" inputmode="numeric" placeholder="No minimum"></label>
+    <label>Maximum price (Ks)<input id="catalogMaxPrice" type="number" min="0" step="1" inputmode="numeric" placeholder="No maximum"></label>
+    <label>Stock status<select id="catalogStock"><option value="all">All products</option><option value="in">In stock</option><option value="out">Out of stock</option></select></label>
     <button type="button" class="catalog-reset" id="catalogReset">Reset filters</button>`;
   const summary = document.createElement("p");
   summary.id = "catalogSummary";
@@ -94,8 +76,9 @@ function ensureCatalogTools() {
   tools.addEventListener("change", renderCatalog);
   document.getElementById("catalogSort").addEventListener("change", renderCatalog);
   document.getElementById("catalogReset").addEventListener("click", () => {
-    tools.querySelectorAll('input[type="checkbox"]').forEach(input => input.checked = false);
-    tools.querySelector('input[name="catalogStock"][value="all"]').checked = true;
+    document.getElementById("catalogBrand").value = "";
+    document.getElementById("catalogCategory").value = "";
+    document.getElementById("catalogStock").value = "all";
     tools.querySelectorAll('input[type="number"]').forEach(input => input.value = "");
     document.getElementById("catalogSort").value = "newest";
     renderCatalog();
@@ -129,16 +112,14 @@ function renderCatalog() {
   const maxValue = document.getElementById("catalogMaxPrice")?.value;
   const min = minValue === "" || minValue == null ? null : Number(minValue);
   const max = maxValue === "" || maxValue == null ? null : Number(maxValue);
-  const stock = document.querySelector('input[name="catalogStock"]:checked')?.value || "all";
+  const stock = document.getElementById("catalogStock")?.value || "all";
   const sort = document.getElementById("catalogSort")?.value || "newest";
-  const selectedBrands = [...document.querySelectorAll('input[name="catalogBrand"]:checked')].map(input => input.value);
-  const selectedCategories = [...document.querySelectorAll('input[name="catalogCategory"]:checked')].map(input => input.value);
   const term = String(window.searchQuery || "").trim().toLocaleLowerCase();
 
   let products = productState.all.filter(product => {
     const searchable = [product.n, product.brand, product.category, product.t, product.storageGb, product.ramGb, product.color, product.condition].join(" ").toLocaleLowerCase();
-    return (!selectedBrands.length || selectedBrands.includes(product.brand))
-      && (!selectedCategories.length || selectedCategories.includes(product.category))
+    return (!brand || brand === product.brand)
+      && (!category || category === product.category)
       && (min === null || product.p >= min)
       && (max === null || product.p <= max)
       && (stock === "all" || (stock === "in" ? product.stock > 0 : product.stock <= 0))
@@ -263,23 +244,8 @@ async function loadProducts() {
     window.PHONES = productState.all;
     const brands = productState.all.map(product => product.brand);
     const categories = productState.all.map(product => product.category);
-    const buildFilterOptions = (containerId, name, values) => {
-      const container = document.getElementById(containerId);
-      if (!container) return;
-      const counts = values.reduce((map, value) => (map[value] = (map[value] || 0) + 1, map), {});
-      container.replaceChildren();
-      [...new Set(values.filter(Boolean))].sort((a,b)=>a.localeCompare(b)).forEach(value => {
-        const row = document.createElement("div"); row.className = "catalog-option";
-        const label = document.createElement("label");
-        const input = document.createElement("input"); input.type = "checkbox"; input.name = name; input.value = value;
-        const text = document.createElement("span"); text.textContent = value;
-        label.append(input,text);
-        const count = document.createElement("small"); count.textContent = counts[value];
-        row.append(label,count); container.append(row);
-      });
-    };
-    buildFilterOptions("catalogBrandOptions","catalogBrand",brands);
-    buildFilterOptions("catalogCategoryOptions","catalogCategory",categories);
+    setOptions("catalogBrand", brands, "All brands");
+    setOptions("catalogCategory", categories, "All categories");
     // Retain the existing category chips as quick shortcuts.
     window.cats = ["All"].concat([...new Set(categories)]);
     window.cur = "All";
