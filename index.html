@@ -155,7 +155,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:30px 20px 40p
 @media(max-width:800px){#home.home-hero{grid-template-columns:1fr;padding:34px 24px;gap:24px}.hero-visual{aspect-ratio:1.48;min-height:300px}.home-benefits{grid-template-columns:1fr;gap:12px}.home-benefits>div{justify-content:flex-start}}
 @media(max-width:480px){#home.home-hero{border-radius:18px;padding:28px 18px}.hero-visual{aspect-ratio:1.05;min-height:290px;border-radius:18px}.hero-banner-overlay{padding:16px}.hero-brand-banner{gap:10px;padding:12px}.hero-brand-mark{width:52px;height:52px;flex-basis:52px}.hero-brand-copy strong{font-size:22px}.hero-brand-copy small{font-size:9px;letter-spacing:.07em}.hero-store-caption{margin:12px 2px 9px;font-size:13px}.hero-contact-list{gap:7px}.hero-contact-list a{min-height:37px;padding:0 10px;font-size:12px}.hero-highlights{gap:8px;flex-direction:column}}
 /* Keep the homepage focused on the hero; catalogue and booking live on their own pages. */
-#phones,#order{display:none!important}
+/* Catalogue and repair booking are available on the homepage. */
 
 /* Storefront photo gallery */
 .store-gallery{max-width:1200px;margin:0 auto;padding:72px 24px 84px}
@@ -171,6 +171,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:30px 20px 40p
 @media(max-width:700px){.store-gallery{padding:54px 18px 64px}.store-gallery-grid{grid-template-columns:1fr;gap:16px}.store-photo-card img{height:clamp(230px,65vw,360px)}.store-photo-card{border-radius:16px}}
 @media(prefers-reduced-motion:reduce){.store-photo-card img{transition:none}}
 </style>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <header class="site-header">
@@ -198,7 +199,9 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:30px 20px 40p
   <a href="index.html">Home</a>
   <a href="brands.html">Brands</a>
   <a href="categories.html">Categories</a>
-  <a href="shop.html">Shop</a>
+  <a href="#phones">Shop</a>
+  <a href="#accessories">Accessories</a>
+  <a href="#order">Repairs</a>
   <a href="special-offers.html">Special Offers</a>
   <a href="server-orders.html">Server Orders</a>
   <a href="track-orders.html">Order History</a>
@@ -210,9 +213,9 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:30px 20px 40p
 <section id="home" class="home-hero">
   <div class="hero-copy">
     <span class="hero-eyebrow"><span class="hero-dot"></span> YOUR TRUSTED MOBILE STORE IN YANGON</span>
-    <h1>Find your next<br><span>favorite phone.</span></h1>
-    <p class="hero-description">Smartphones, accessories and friendly service—all in one place. Explore our collection and order with WH Mobile.</p>
-    <div class="hero-actions"><a class="btn hero-primary" href="#phones">Explore products <span aria-hidden="true">→</span></a><a class="btn alt hero-secondary" href="#visit">Visit our store</a></div>
+    <h1>Latest smartphones<br><span>&amp; expert repairs.</span></h1>
+    <p class="hero-description">Shop carefully selected smartphones, everyday accessories and trusted repair service at WH Mobile in Yangon.</p>
+    <div class="hero-actions"><a class="btn hero-primary" href="#phones">Shop phones <span aria-hidden="true">→</span></a><a class="btn alt hero-secondary" href="#order">Book repair</a></div>
     <div class="hero-highlights"><span><b>✓</b> Carefully selected products</span><span><b>✓</b> Local customer support</span></div>
   </div>
   <div class="hero-visual" aria-label="WH Mobile storefront banner">
@@ -254,18 +257,22 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:30px 20px 40p
   </div>
 </section>
 
-<section id="phones">
-<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><h2>Shop products</h2><a class="btn" href="cart.html">View cart <span id="cartCountTop">0</span></a></div>
-<p class="sub">Sample items and prices; replace with your own.</p>
-<div class="chips" id="chips"></div>
-<div class="grid" id="grid"></div>
+<section id="accessories" class="accessories-band">
+  <div><span class="section-kicker">Accessories</span><h2>Everyday essentials, all in one place</h2><p>Find cases, chargers, screen protectors and more in our accessories collection.</p></div>
+  <a class="btn" href="shop.html">Browse accessories <span aria-hidden="true">→</span></a>
+</section>
+
+<section id="phones" class="catalog-section">
+  <div class="section-heading-row"><div><span class="section-kicker">Shop WH Mobile</span><h2>Find your next phone</h2><p class="sub">Filter by brand, storage and condition. Live inventory appears here when available.</p></div><a class="btn cart-link" href="cart.html">🛒 Cart <span class="cart-badge" id="catalogCartCount">0</span></a></div>
+  <div class="chips" id="chips"></div>
+  <div class="grid" id="grid" aria-live="polite"></div>
 </section>
 
 
 
 <section id="order">
-<h2>Order, reserve or book</h2>
-<p class="sub">Log in to reserve a phone or book a repair.</p>
+<span class="section-kicker">WH Mobile service</span><h2>Book a phone repair</h2>
+<p class="sub">Tell us what you need and choose a convenient drop-off time. Sign in to submit your request.</p>
 <div class="card" id="acct" style="margin-bottom:18px">
  <b>Have an account?</b>
  <p class="sub" style="margin:4px 0 12px">Log in to continue, or create an account if you are new.</p>
@@ -281,7 +288,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:30px 20px 40p
 <label>Your name<input id="n" required></label>
 <label>Phone number<input id="p" type="tel" required></label>
 <label id="l1"><span id="l1t">Phone model</span><select id="s"></select></label>
-<label>When? <input id="d" type="datetime-local"></label>
+<label>Preferred drop-off date and time<input id="d" type="datetime-local" required></label>
 <label>Notes<textarea id="m" rows="3"></textarea></label>
 <button class="btn" type="submit">Prepare request</button>
 </form>
@@ -299,7 +306,12 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:30px 20px 40p
 </div>
 </section>
 
-<footer>© WH Mobile · <a href="cart.html">Shopping cart</a> · <a href="track-orders.html">Track orders</a></footer>
+<section class="trust-strip" aria-label="WH Mobile service promises">
+  <article><span aria-hidden="true">🔓</span><div><b>Unlocked phone options</b><small>Ask us to confirm network compatibility for your device.</small></div></article>
+  <article><span aria-hidden="true">🛡️</span><div><b>Store warranty support</b><small>Coverage and terms are shown for eligible products.</small></div></article>
+  <article><span aria-hidden="true">🧰</span><div><b>Friendly repair service</b><small>Contact our team for service timing and estimates.</small></div></article>
+</section>
+<footer class="site-footer"><div><b>WH Mobile</b><p>Warranty coverage and terms vary by product. Please confirm details with our team before purchase.</p><p>1st Floor, Yuzana Plaza, Banyardala Road, Mingala Taungnyunt Township, Yangon, Myanmar 11221</p></div><div class="footer-links"><a href="cart.html">Shopping cart</a><a href="track-orders.html">Track orders</a><a href="visit-us.html">Visit us</a><a href="tel:+959793777772">+959 793 777 772</a></div><small>© WH Mobile</small></footer>
 
 <script>
 var PHONES=[
@@ -335,7 +347,7 @@ function setMode(t){
  mode=t;
  document.querySelectorAll(".tabs .chip").forEach(function(b){b.classList.toggle("on",b.getAttribute("data-t")===t)});
  document.getElementById("l1t").textContent=t==="reserve"?"Phone model":"Repair type";
- var opts=t==="reserve"?PHONES.map(function(x){return x.n+" ("+fmt(x.p)+")"}):["Screen replacement","Battery replacement","Charging port repair","Water damage check","Other"];
+ var opts=t==="reserve"?PHONES.map(function(x){return x.n+" ("+fmt(x.p)+")"}):["Screen Replacement","Battery Swap","Charging Port","Water Damage Check","Other"];
  document.getElementById("s").innerHTML=opts.map(function(o){return "<option>"+o+"</option>"}).join("");
 }
 document.getElementById("f").addEventListener("submit",function(e){
@@ -411,6 +423,8 @@ onAuthStateChanged(auth, user => {
  if(themeBtn){themeBtn.addEventListener("click",function(){const dark=document.documentElement.getAttribute("data-theme")!=="dark";document.documentElement.setAttribute("data-theme",dark?"dark":"light");themeBtn.textContent=dark?"☾":"☼";themeBtn.setAttribute("aria-label",dark?"Switch to light theme":"Switch to dark theme");try{localStorage.setItem("wh-mobile-theme",dark?"dark":"light")}catch(e){}});const saved=(()=>{try{return localStorage.getItem("wh-mobile-theme")}catch(e){return "light"}})();themeBtn.textContent=saved==="dark"?"☾":"☼";}
 })();
 </script>
+<script src="script.js" defer></script>
+<dialog class="product-dialog" id="productDetailsDialog" aria-labelledby="productDetailsTitle"><button type="button" class="dialog-close" data-close-details aria-label="Close details">×</button><div id="productDetailsContent"></div></dialog>
 <script src="lang.js"></script>
 <script type="module" src="shop-data.js?v=homepage-design1"></script>
  <script type="module" src="header-auth.js"></script>

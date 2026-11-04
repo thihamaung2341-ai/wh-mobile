@@ -50,6 +50,8 @@ function ensureCatalogTools() {
   tools.className = "catalog-tools";
   tools.innerHTML = `
     <label>Brand<select id="catalogBrand"><option value="">All brands</option></select></label>
+    <label>Storage<select id="catalogStorage"><option value="">All storage</option></select></label>
+    <label>Condition<select id="catalogCondition"><option value="">All conditions</option></select></label>
     <label>Category<select id="catalogCategory"><option value="">All categories</option></select></label>
     <label>Minimum price (Ks)<input id="catalogMinPrice" type="number" min="0" step="1" inputmode="numeric" placeholder="No minimum"></label>
     <label>Maximum price (Ks)<input id="catalogMaxPrice" type="number" min="0" step="1" inputmode="numeric" placeholder="No maximum"></label>
@@ -78,6 +80,8 @@ function ensureCatalogTools() {
   document.getElementById("catalogReset").addEventListener("click", () => {
     document.getElementById("catalogBrand").value = "";
     document.getElementById("catalogCategory").value = "";
+    document.getElementById("catalogStorage").value = "";
+    document.getElementById("catalogCondition").value = "";
     document.getElementById("catalogStock").value = "all";
     tools.querySelectorAll('input[type="number"]').forEach(input => input.value = "");
     document.getElementById("catalogSort").value = "newest";
@@ -100,6 +104,31 @@ function safeText(value) {
   return String(value ?? "");
 }
 
+function storageLabel(value) {
+  if (value === "" || value == null) return "";
+  const match = String(value).match(/[0-9]+(?:\\.[0-9]+)?/);
+  return match ? Number(match[0]) + " GB" : String(value);
+}
+
+function conditionGroup(value) {
+  const text = String(value || "").trim().toLocaleLowerCase();
+  if (text.includes("refurb")) return "Refurbished";
+  if (text.includes("new")) return "New";
+  return value ? String(value) : "";
+}
+
+function demoProducts() {
+  const now = Date.now();
+  return [
+    {id:"demo-iphone-15",n:"iPhone 15",p:1599000,brand:"Apple",category:"Phones",stock:3,storageGb:128,condition:"New",t:"Sample listing · replace with your live inventory",i:"",createdAt:now,isDemo:true},
+    {id:"demo-iphone-13-a",n:"iPhone 13 · Grade A",p:1199000,brand:"Apple",category:"Phones",stock:2,storageGb:256,condition:"Refurbished - Grade A",t:"Sample listing · replace with your live inventory",i:"",createdAt:now-1,isDemo:true},
+    {id:"demo-galaxy-s24",n:"Galaxy S24",p:1899000,brand:"Samsung",category:"Phones",stock:2,storageGb:256,condition:"New",t:"Sample listing · replace with your live inventory",i:"",createdAt:now-2,isDemo:true},
+    {id:"demo-galaxy-s23-a",n:"Galaxy S23 · Grade A",p:1399000,brand:"Samsung",category:"Phones",stock:1,storageGb:128,condition:"Refurbished - Grade A",t:"Sample listing · replace with your live inventory",i:"",createdAt:now-3,isDemo:true},
+    {id:"demo-xiaomi-14",n:"Xiaomi 14",p:1699000,brand:"Xiaomi",category:"Phones",stock:2,storageGb:512,condition:"New",t:"Sample listing · replace with your live inventory",i:"",createdAt:now-4,isDemo:true},
+    {id:"demo-redmi-note-13",n:"Redmi Note 13",p:699000,brand:"Xiaomi",category:"Phones",stock:4,storageGb:128,condition:"New",t:"Sample listing · replace with your live inventory",i:"",createdAt:now-5,isDemo:true}
+  ];
+}
+
 function renderCatalog() {
   if (!grid || !productState.loaded) return;
   ensureCatalogTools();
@@ -108,6 +137,8 @@ function renderCatalog() {
   const categorySelect = document.getElementById("catalogCategory");
   const brand = brandSelect?.value || "";
   const category = categorySelect?.value || "";
+  const storage = document.getElementById("catalogStorage")?.value || "";
+  const condition = document.getElementById("catalogCondition")?.value || "";
   const minValue = document.getElementById("catalogMinPrice")?.value;
   const maxValue = document.getElementById("catalogMaxPrice")?.value;
   const min = minValue === "" || minValue == null ? null : Number(minValue);
@@ -120,6 +151,8 @@ function renderCatalog() {
     const searchable = [product.n, product.brand, product.category, product.t, product.storageGb, product.ramGb, product.color, product.condition].join(" ").toLocaleLowerCase();
     return (!brand || brand === product.brand)
       && (!category || category === product.category)
+      && (!storage || storageLabel(product.storageGb) === storage)
+      && (!condition || conditionGroup(product.condition) === condition)
       && (min === null || product.p >= min)
       && (max === null || product.p <= max)
       && (stock === "all" || (stock === "in" ? product.stock > 0 : product.stock <= 0))
@@ -132,9 +165,11 @@ function renderCatalog() {
   else products.sort((a, b) => b.createdAt - a.createdAt);
 
   const summary = document.getElementById("catalogSummary");
-  if (summary) summary.textContent = productState.error
-    ? "Showing available products. Firestore could not be refreshed."
-    : products.length + (products.length === 1 ? " product" : " products");
+  if (summary) summary.textContent = productState.usingDemo
+    ? "Sample listings are shown for setup. Replace them with your live inventory in Firestore."
+    : productState.error
+      ? "Live catalog could not be refreshed. Sample listings are shown."
+      : products.length + (products.length === 1 ? " product" : " products");
 
   if (!productState.all.length) {
     grid.innerHTML = productState.error
@@ -187,21 +222,32 @@ function renderCatalog() {
     price.className = "price";
     price.textContent = "Ks" + product.p.toLocaleString("en-US");
     const stockLabel = document.createElement("div");
-    stockLabel.className = "product-stock" + (product.stock > 0 ? " available" : "");
-    stockLabel.textContent = product.stock > 0 ? "In stock · " + product.stock : "Out of stock";
+    stockLabel.className = "product-stock" + (!product.isDemo && product.stock > 0 ? " available" : "");
+    stockLabel.textContent = product.isDemo ? "Sample listing · edit before launch" : product.stock > 0 ? "In stock · " + product.stock : "Out of stock";
 
     const add = document.createElement("button");
     add.className = "btn";
     add.type = "button";
     add.dataset.add = product.id;
-    add.textContent = product.stock > 0 ? "Add to cart" : "Out of stock";
-    add.disabled = product.stock <= 0;
+    add.textContent = product.stock > 0 || product.isDemo ? "Add to cart" : "Out of stock";
+    add.disabled = product.stock <= 0 && !product.isDemo;
+    const details = document.createElement("button");
+    details.className = "product-details-button";
+    details.type = "button";
+    details.dataset.productDetails = product.id;
+    details.textContent = "Details";
 
     card.append(photo, title);
     if (meta.textContent) card.append(meta);
     if (product.t) card.append(description);
     if (specs.childElementCount) card.append(specs);
-    card.append(price, stockLabel, add);
+    if (product.isDemo) {
+      const demoTag = document.createElement("span");
+      demoTag.className = "demo-product-tag";
+      demoTag.textContent = "SAMPLE PRODUCT";
+      card.append(demoTag);
+    }
+    card.append(price, stockLabel, add, details);
     return card;
   }));
 }
@@ -231,7 +277,7 @@ async function loadProducts() {
         brand,
         category,
         stock: Number.isFinite(stock) ? stock : 0,
-        storageGb: p.storageGb == null ? "" : Number(p.storageGb),
+        storageGb: p.storageGb == null ? "" : Number(String(p.storageGb).match(/[0-9]+(?:\\.[0-9]+)?/)?.[0] || NaN),
         ramGb: p.ramGb == null ? "" : Number(p.ramGb),
         color: safeText(p.color || ""),
         condition: safeText(p.condition || ""),
@@ -240,11 +286,17 @@ async function loadProducts() {
         createdAt
       };
     });
+    if (!productState.all.length) {
+      productState.all = demoProducts();
+      productState.usingDemo = true;
+    }
     productState.loaded = true;
     window.PHONES = productState.all;
-    const brands = productState.all.map(product => product.brand);
+    const brands = ["Apple", "Samsung", "Xiaomi", ...productState.all.map(product => product.brand)];
     const categories = productState.all.map(product => product.category);
     setOptions("catalogBrand", brands, "All brands");
+    setOptions("catalogStorage", ["128 GB", "256 GB", "512 GB", ...productState.all.map(product => storageLabel(product.storageGb))], "All storage");
+    setOptions("catalogCondition", ["New", "Refurbished", ...productState.all.map(product => conditionGroup(product.condition))], "All conditions");
     setOptions("catalogCategory", categories, "All categories");
     // Retain the existing category chips as quick shortcuts.
     window.cats = ["All"].concat([...new Set(categories)]);
@@ -254,8 +306,13 @@ async function loadProducts() {
     console.error("Could not load Firestore products:", error);
     productState.loaded = true;
     productState.error = true;
-    productState.all = [];
-    window.PHONES = [];
+    productState.usingDemo = true;
+    productState.all = demoProducts();
+    window.PHONES = productState.all;
+    setOptions("catalogBrand", ["Apple", "Samsung", "Xiaomi"], "All brands");
+    setOptions("catalogStorage", ["128 GB", "256 GB", "512 GB"], "All storage");
+    setOptions("catalogCondition", ["New", "Refurbished"], "All conditions");
+    setOptions("catalogCategory", ["Phones"], "All categories");
     renderCatalog();
   }
 }
