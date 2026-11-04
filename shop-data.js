@@ -121,12 +121,23 @@ function demoProducts() {
   const now = Date.now();
   return [
     {id:"demo-iphone-15",n:"iPhone 15",p:1599000,brand:"Apple",category:"Phones",stock:3,storageGb:128,condition:"New",t:"Sample listing · replace with your live inventory",i:"assets/iphone-15-blue-catalog.jpg",createdAt:now,isDemo:true},
-    {id:"demo-iphone-13-a",n:"iPhone 13 · Grade A",p:1199000,brand:"Apple",category:"Phones",stock:2,storageGb:256,condition:"Refurbished - Grade A",t:"Sample listing · replace with your live inventory",i:"",createdAt:now-1,isDemo:true},
-    {id:"demo-galaxy-s24",n:"Galaxy S24",p:1899000,brand:"Samsung",category:"Phones",stock:2,storageGb:256,condition:"New",t:"Sample listing · replace with your live inventory",i:"",createdAt:now-2,isDemo:true},
-    {id:"demo-galaxy-s23-a",n:"Galaxy S23 · Grade A",p:1399000,brand:"Samsung",category:"Phones",stock:1,storageGb:128,condition:"Refurbished - Grade A",t:"Sample listing · replace with your live inventory",i:"",createdAt:now-3,isDemo:true},
-    {id:"demo-xiaomi-14",n:"Xiaomi 14",p:1699000,brand:"Xiaomi",category:"Phones",stock:2,storageGb:512,condition:"New",t:"Sample listing · replace with your live inventory",i:"",createdAt:now-4,isDemo:true},
-    {id:"demo-redmi-note-13",n:"Redmi Note 13",p:699000,brand:"Xiaomi",category:"Phones",stock:4,storageGb:128,condition:"New",t:"Sample listing · replace with your live inventory",i:"",createdAt:now-5,isDemo:true}
+    {id:"demo-iphone-13-a",n:"iPhone 13 · Grade A",p:1199000,brand:"Apple",category:"Phones",stock:2,storageGb:256,condition:"Refurbished - Grade A",t:"Sample listing · replace with your live inventory",i:"assets/iphone-13-grade-a-catalog.jpg",createdAt:now-1,isDemo:true},
+    {id:"demo-galaxy-s24",n:"Galaxy S24",p:1899000,brand:"Samsung",category:"Phones",stock:2,storageGb:256,condition:"New",t:"Sample listing · replace with your live inventory",i:"assets/samsung-galaxy-s24-catalog.jpg",createdAt:now-2,isDemo:true},
+    {id:"demo-galaxy-s23-a",n:"Galaxy S23 · Grade A",p:1399000,brand:"Samsung",category:"Phones",stock:1,storageGb:128,condition:"Refurbished - Grade A",t:"Sample listing · replace with your live inventory",i:"assets/samsung-galaxy-s23-grade-a-catalog.jpg",createdAt:now-3,isDemo:true},
+    {id:"demo-xiaomi-14",n:"Xiaomi 14",p:1699000,brand:"Xiaomi",category:"Phones",stock:2,storageGb:512,condition:"New",t:"Sample listing · replace with your live inventory",i:"assets/xiaomi-14-catalog.jpg",createdAt:now-4,isDemo:true},
+    {id:"demo-redmi-note-13",n:"Redmi Note 13",p:699000,brand:"Xiaomi",category:"Phones",stock:4,storageGb:128,condition:"New",t:"Sample listing · replace with your live inventory",i:"assets/redmi-note-13-catalog.jpg",createdAt:now-5,isDemo:true}
   ];
+}
+
+function fallbackProductImage(name) {
+  const productName = String(name || "").trim().toLocaleLowerCase();
+  if (productName.includes("iphone 15")) return "assets/iphone-15-blue-catalog.jpg";
+  if (productName.includes("iphone 13")) return "assets/iphone-13-grade-a-catalog.jpg";
+  if (productName.includes("galaxy s24")) return "assets/samsung-galaxy-s24-catalog.jpg";
+  if (productName.includes("galaxy s23")) return "assets/samsung-galaxy-s23-grade-a-catalog.jpg";
+  if (productName.includes("xiaomi 14")) return "assets/xiaomi-14-catalog.jpg";
+  if (productName.includes("redmi note 13")) return "assets/redmi-note-13-catalog.jpg";
+  return "";
 }
 
 function renderCatalog() {
@@ -283,7 +294,7 @@ async function loadProducts() {
         color: safeText(p.color || ""),
         condition: safeText(p.condition || ""),
         t: safeText(p.description || ""),
-        i: safeText(p.imageUrl || (productName.toLowerCase().includes("iphone 15") ? "assets/iphone-15-blue-catalog.jpg" : "")),
+        i: safeText(p.imageUrl || fallbackProductImage(productName)),
         createdAt
       };
     });
