@@ -130,7 +130,7 @@ function inventoryProducts() {
     storageGb: product.storageGb,
     ramGb: product.ramGb,
     color: "",
-    condition: "",
+    condition: product.condition,
     t: "",
     i: product.imageUrl,
     createdAt: listedAt - index,
