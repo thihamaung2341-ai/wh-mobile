@@ -23,6 +23,13 @@ function addCatalogStyles() {
 
     .catalog-tools{display:flex!important;flex-direction:column!important;gap:0!important;margin:0;padding:16px;background:var(--card,#fff);border:1px solid var(--line,#d9e0ea);border-radius:14px;align-self:start}
     .catalog-filter-title{font-size:1.05rem;margin:0 0 12px}
+    .catalog-price-panel{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 0;border-bottom:1px solid var(--line,#d9e0ea);margin-bottom:12px}
+    .catalog-price-panel .catalog-price-inputs{display:flex;align-items:center;gap:8px;flex:1;min-width:220px}
+    .catalog-price-panel input{width:100%;min-width:0;box-sizing:border-box;padding:9px 10px;border:1px solid var(--line,#d9e0ea);border-radius:9px;background:var(--card,#fff);color:var(--text,#172033)}
+    .catalog-price-panel button{padding:9px 13px;border:1px solid var(--line,#d9e0ea);border-radius:9px;background:var(--surface,#f3f5f9);color:var(--text,#172033);cursor:pointer}
+    .catalog-active-filters{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0 16px;font-size:.8rem}
+    .catalog-active-filters .active-chip{border:1px solid #fca5a5;background:#fff1f2;color:#b91c1c;border-radius:999px;padding:5px 10px}
+    .catalog-active-filters button{border:0;background:transparent;color:#dc2626;text-decoration:underline;cursor:pointer}
     .catalog-filter-group{padding:12px 0;border-bottom:1px solid var(--line,#d9e0ea)}
     .catalog-filter-group h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;margin:0 0 10px;color:var(--muted,#64748b)}
     .catalog-filter-group label{display:grid;gap:6px;color:var(--muted,#64748b);font-size:.84rem;font-weight:500;margin:8px 0}
@@ -67,11 +74,10 @@ function ensureCatalogTools() {
     </section>
     <section class="catalog-filter-group"><h4>Brand</h4><div id="catalogBrandOptions"></div></section>
     <section class="catalog-filter-group"><h4>Category</h4><div id="catalogCategoryOptions"></div></section>
-    <section class="catalog-filter-group"><h4>Price range (Ks)</h4>
-      <label>Minimum<input id="catalogMinPrice" type="number" min="0" step="1" inputmode="numeric" placeholder="No minimum"></label>
-      <label>Maximum<input id="catalogMaxPrice" type="number" min="0" step="1" inputmode="numeric" placeholder="No maximum"></label>
+    <section class="catalog-filter-group"><h4>Promotions</h4>
+      <label class="catalog-check"><input id="catalogSaleOnly" type="checkbox"> On sale only</label>
     </section>
-    <button type="button" class="catalog-reset" id="catalogReset">Reset filters</button>`;
+    <section class="catalog-filter-group"><h4>Category</h4><div id="catalogCategoryOptions"></div></section>`;
   const summary = document.createElement("p");
   summary.id = "catalogSummary";
   summary.className = "catalog-summary";
@@ -84,21 +90,38 @@ function ensureCatalogTools() {
   const sortbar = document.createElement("div");
   sortbar.className = "catalog-sortbar";
   sortbar.innerHTML = '<label for="catalogSort">Sort by</label><select id="catalogSort"><option value="newest">Newest first</option><option value="price-asc">Price: low to high</option><option value="price-desc">Price: high to low</option><option value="name-asc">Name: A to Z</option></select>';
-  if (chips) chips.insertAdjacentElement("afterend", layout);
-  else grid.before(layout);
+  const pricePanel = document.createElement("div");
+  pricePanel.className = "catalog-price-panel";
+  pricePanel.innerHTML = '<div class="catalog-price-inputs"><input id="catalogMinPrice" type="number" min="0" placeholder="Min price (Ks)"><span>–</span><input id="catalogMaxPrice" type="number" min="0" placeholder="Max price (Ks)"></div><button type="button" id="catalogReset">✕ Reset</button>';
+  const activeFilters = document.createElement("div");
+  activeFilters.className = "catalog-active-filters";
+  activeFilters.id = "catalogActiveFilters";
+  activeFilters.innerHTML = '<strong>ACTIVE</strong>';
+  if (chips) {
+    chips.insertAdjacentElement("afterend", activeFilters);
+    activeFilters.insertAdjacentElement("afterend", layout);
+  } else grid.before(layout);
   layout.append(tools, results);
   results.append(sortbar, summary, grid);
 
-  tools.addEventListener("input", renderCatalog);
-  tools.addEventListener("change", renderCatalog);
-  document.getElementById("catalogSort").addEventListener("change", renderCatalog);
-  document.getElementById("catalogReset").addEventListener("click", () => {
+  const section = document.getElementById("phones");
+  if (section) {
+    const heading = section.querySelector("h2");
+    if (heading) heading.parentElement.insertAdjacentElement("afterend", pricePanel);
+  }
+  pricePanel.addEventListener("input", renderCatalog);
+  pricePanel.addEventListener("click", event => {
+    if (event.target.id !== "catalogReset") return;
     tools.querySelectorAll('input[type="checkbox"]').forEach(input => input.checked = false);
     tools.querySelector('input[name="catalogStock"][value="all"]').checked = true;
-    tools.querySelectorAll('input[type="number"]').forEach(input => input.value = "");
+    pricePanel.querySelectorAll('input[type="number"]').forEach(input => input.value = "");
     document.getElementById("catalogSort").value = "newest";
     renderCatalog();
   });
+  tools.addEventListener("input", renderCatalog);
+  tools.addEventListener("change", renderCatalog);
+  document.getElementById("catalogSort").addEventListener("change", renderCatalog);
+
 }
 
 function setOptions(id, values, allLabel) {
@@ -131,6 +154,7 @@ function renderCatalog() {
   const sort = document.getElementById("catalogSort")?.value || "newest";
   const selectedBrands = [...document.querySelectorAll('input[name="catalogBrand"]:checked')].map(input => input.value);
   const selectedCategories = [...document.querySelectorAll('input[name="catalogCategory"]:checked')].map(input => input.value);
+  const saleOnly = document.getElementById("catalogSaleOnly")?.checked || false;
   const term = String(window.searchQuery || "").trim().toLocaleLowerCase();
 
   let products = productState.all.filter(product => {
@@ -140,6 +164,7 @@ function renderCatalog() {
       && (min === null || product.p >= min)
       && (max === null || product.p <= max)
       && (stock === "all" || (stock === "in" ? product.stock > 0 : product.stock <= 0))
+      && (!saleOnly || product.salePrice > 0 && product.salePrice < product.p)
       && (!term || searchable.includes(term));
   });
 
@@ -149,6 +174,31 @@ function renderCatalog() {
   else products.sort((a, b) => b.createdAt - a.createdAt);
 
   const summary = document.getElementById("catalogSummary");
+  const active = document.getElementById("catalogActiveFilters");
+  if (active) {
+    active.replaceChildren(Object.assign(document.createElement("strong"),{textContent:"ACTIVE"}));
+    const activeItems = [
+      ...selectedBrands.map(v=>["brand",v]),
+      ...selectedCategories.map(v=>["category",v]),
+      ...(stock!=="all"?[["stock",stock==="in"?"In stock":"Out of stock"]]:[]),
+      ...(saleOnly?[["sale","On sale"]]:[]),
+      ...(min!==null?[["min","Min Ks "+min.toLocaleString()]]:[]),
+      ...(max!==null?[["max","Max Ks "+max.toLocaleString()]]:[])
+    ];
+    activeItems.forEach(([key,value])=>{
+      const chip=document.createElement("button");chip.className="active-chip";chip.type="button";chip.textContent=value+" ×";
+      chip.addEventListener("click",()=>{
+        if(key==="brand") document.querySelectorAll('input[name="catalogBrand"]').forEach(i=>{if(i.value===value)i.checked=false});
+        if(key==="category") document.querySelectorAll('input[name="catalogCategory"]').forEach(i=>{if(i.value===value)i.checked=false});
+        if(key==="stock") document.querySelector('input[name="catalogStock"][value="all"]').checked=true;
+        if(key==="sale") document.getElementById("catalogSaleOnly").checked=false;
+        if(key==="min") document.getElementById("catalogMinPrice").value="";
+        if(key==="max") document.getElementById("catalogMaxPrice").value="";
+        renderCatalog();
+      });active.append(chip);
+    });
+    if(activeItems.length){const clear=document.createElement("button");clear.type="button";clear.textContent="Clear all";clear.addEventListener("click",()=>document.getElementById("catalogReset").click());active.append(clear);}
+  }
   if (summary) summary.textContent = productState.error
     ? "Showing available products. Firestore could not be refreshed."
     : products.length + (products.length === 1 ? " product" : " products");
@@ -244,6 +294,7 @@ async function loadProducts() {
         id: docSnap.id,
         n: safeText(p.name || "Unnamed product"),
         p: Number(p.price ?? 0),
+        salePrice: Number(p.salePrice ?? 0),
         brand,
         category,
         stock: Number.isFinite(stock) ? stock : 0,
