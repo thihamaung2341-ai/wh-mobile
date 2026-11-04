@@ -64,6 +64,8 @@ button:disabled{opacity:.55;cursor:not-allowed;transform:none}
 .completed-archive[open] summary:after{transform:rotate(180deg)}
 .archive-count{display:inline-grid;min-width:26px;height:26px;place-items:center;padding:0 7px;border-radius:9px;background:#eaf1ff;color:#2767e8;font-size:11px}
 #bookingsArchive{padding:0 10px 7px}
+.inventory-import{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 0 15px;margin:0 0 15px;border-bottom:1px solid #e8edf5;flex-wrap:wrap}
+.inventory-import p{margin:4px 0 0}
 .item{border:1px solid #e8edf5;border-radius:13px;padding:15px;margin:10px 0;display:flex;gap:16px;justify-content:space-between;align-items:center;flex-wrap:wrap;background:linear-gradient(120deg,#fff,#fcfdff)}
 .item>div:last-child{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
 .item input,.item select{width:auto;min-width:90px;margin:0;padding:9px 10px}
@@ -101,14 +103,14 @@ button:disabled{opacity:.55;cursor:not-allowed;transform:none}
   <div class="toolbar-copy"><span class="live-dot" aria-hidden="true"></span><p id="status" class="status" role="status">Loading your store…</p></div>
   <button id="logout" class="secondary" type="button">Sign out</button>
 </div>
-<div class="section-heading"><div><h2>Add a product</h2><p class="section-copy">Create a catalogue listing with price, availability, and a product photo.</p></div><span class="section-index">01</span></div>
+<div class="section-heading"><div><h2>Add a product</h2><p class="section-copy">Create a listing now; add or update its price whenever it changes.</p></div><span class="section-index">01</span></div>
 <section class="panel">
 <form id="productForm">
 <div class="grid">
 <label>Product name<input id="productName" required maxlength="100" placeholder="e.g. iPhone 16 Pro"></label>
 <label>Brand<input id="brand" maxlength="50" placeholder="Apple, Samsung… (optional)"></label>
 <label>Category<input id="category" required maxlength="50" placeholder="Phones, accessories…"></label>
-<label>Price (MMK)<input id="price" type="number" min="0" step="1" required placeholder="0"></label>
+<label>Price (MMK) · optional<input id="price" type="number" min="1" step="1" placeholder="Leave blank until you set today&#39;s price"></label>
 <label>Stock quantity<input id="stock" type="number" min="0" step="1" value="1" required></label>
 <label>Storage
 <select id="storageGb">
@@ -141,12 +143,12 @@ button:disabled{opacity:.55;cursor:not-allowed;transform:none}
 <p id="productFormStatus" class="status" role="status" aria-live="polite"></p>
 </form></section>
 <div class="section-heading"><div><h2>Products & inventory</h2><p class="section-copy">Update stock, product photos, and storefront visibility.</p></div><span class="section-index">02</span></div>
-<section class="panel"><div id="products">Loading products…</div></section>
+<section class="panel"><div class="inventory-import"><div><strong>Supplied stock list</strong><p class="section-copy">Import the 57 listed variants with their stock counts and product photos. Prices and IMEIs are not included; existing products stay unchanged.</p></div><button id="importInventory" class="secondary" type="button">Import stock list</button></div><p id="inventoryImportStatus" class="status" role="status" aria-live="polite"></p><div id="products">Loading products…</div></section>
 <div class="section-heading"><div><h2>Customer orders</h2><p class="section-copy">Review orders and keep customers up to date on fulfilment.</p></div><span class="section-index">03</span></div>
 <section class="panel"><div id="orders">Loading orders…</div></section>
 <div class="section-heading"><div><h2>Reservations & repair bookings</h2><p class="section-copy">Track incoming requests. Completed requests move into the archive below.</p></div><span class="section-index">04</span></div>
 <section class="panel"><div id="bookings">Loading bookings…</div><details class="completed-archive"><summary>Completed requests <span id="bookingArchiveCount" class="archive-count">0</span></summary><div id="bookingsArchive">Loading completed requests…</div></details></section>
 </section>
 </main>
-<script type="module" src="admin.js"></script>
+<script type="module" src="admin.js?v=wh-mobile-stock-20261104-1"></script>
 </body></html>
