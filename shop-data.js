@@ -141,6 +141,7 @@ function fallbackProductImage(name) {
     ["itels25uitra", "assets/itel-s25-ultra.jpg"],
     ["itels25ultra", "assets/itel-s25-ultra.jpg"],
     ["itels25ultra", "assets/itel-s25-ultra.jpg"],
+    ["huawelnova12s", "assets/huawei-nova-12s.jpg"],
     ["huaweinova12s", "assets/huawei-nova-12s.jpg"],
     ["huaweinovay61", "assets/huawei-nova-y61.jpg"],
     ["tecnospark40pro", "assets/tecno-spark-40-pro-plus.jpg"],
