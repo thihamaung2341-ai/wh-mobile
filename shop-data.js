@@ -208,12 +208,18 @@ function renderCatalog() {
     description.textContent = product.t;
     const specs = document.createElement("div");
     specs.className = "product-specs";
-    [
-      product.storageGb ? (Number(product.storageGb) >= 1024 ? (Number(product.storageGb) / 1024) + " TB storage" : Number(product.storageGb) + " GB storage") : "",
-      product.ramGb ? Number(product.ramGb) + " GB RAM" : "",
-      product.color,
-      product.condition
-    ].filter(Boolean).forEach(value => {
+    const isApple = String(product.brand || "").trim().toLocaleLowerCase() === "apple";
+    const specsToShow = isApple
+      ? [
+          product.storageGb ? (Number(product.storageGb) >= 1024 ? (Number(product.storageGb) / 1024) + " TB storage" : Number(product.storageGb) + " GB storage") : "",
+          product.color,
+          product.condition
+        ]
+      : [
+          product.ramGb ? Number(product.ramGb) + " GB RAM" : "",
+          product.condition
+        ];
+    specsToShow.filter(Boolean).forEach(value => {
       const chip = document.createElement("span");
       chip.textContent = value;
       specs.append(chip);
