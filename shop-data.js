@@ -234,7 +234,7 @@ function renderCatalog() {
   if (summary) summary.textContent = productState.error
     ? "Live inventory could not be reached. Showing the supplied WH Mobile stock list."
     : productState.usingInventory
-      ? productState.all.length + " listed variants · prices change daily. Ask WH Mobile for today's price."
+      ? productState.all.filter(product => product.isInventory).length + " listed variants · prices change daily. Ask WH Mobile for today's price."
       : products.length + (products.length === 1 ? " product" : " products");
 
   if (!productState.all.length) {
@@ -358,12 +358,17 @@ async function loadProducts() {
         condition: safeText(p.condition || ""),
         t: safeText(p.description || ""),
         i: safeText(p.imageUrl || fallbackProductImage(productName)),
+        isInventory: p.inventorySeed === true,
+        inventorySeed: p.inventorySeed === true,
         createdAt
       };
     });
-    if (!productState.all.length) {
-      productState.all = inventoryProducts();
-      productState.usingInventory = true;
+    const hasSeededInventory = snap.docs.some(docSnap => docSnap.data().inventorySeed === true);
+    if (!hasSeededInventory) {
+      const existingIds = new Set(productState.all.map(product => product.id));
+      const supplied = inventoryProducts().filter(product => !existingIds.has(product.id));
+      productState.all.push(...supplied);
+      productState.usingInventory = supplied.length > 0;
     }
     productState.loaded = true;
     window.PHONES = productState.all;
