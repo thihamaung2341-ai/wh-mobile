@@ -277,7 +277,7 @@ async function loadProducts() {
         color: safeText(p.color || ""),
         condition: safeText(p.condition || ""),
         t: safeText(p.description || ""),
-        i: safeText(p.imageUrl || (/iPhone\\s*15/i.test(productName) ? "assets/iphone-15-blue-catalog.jpg" : "")),
+        i: safeText(p.imageUrl || (productName.toLowerCase().includes("iphone 15") ? "assets/iphone-15-blue-catalog.jpg" : "")),
         createdAt
       };
     });
