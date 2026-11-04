@@ -1,7 +1,8 @@
 import { auth, db, storage } from "./firebase-config.js";
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import { collection, addDoc, getDocs, query, orderBy, doc, updateDoc, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+import { collection, addDoc, getDocs, query, orderBy, doc, updateDoc, serverTimestamp, setDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 import { ref as storageRef, uploadBytesResumable, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js";
+import { INVENTORY } from "./inventory.js";
 
 const ADMIN_UID = "SpebSv19yPPE92rdn75zL4fG8sm2";
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
@@ -92,6 +93,44 @@ $("loginForm").addEventListener("submit",async e=>{
   catch(err){alert("Login failed: "+err.message);}
 });
 $("logout").addEventListener("click",()=>signOut(auth));
+$("importInventory")?.addEventListener("click",async()=>{
+  if(!requireAdmin(auth.currentUser)) return;
+  if(!window.confirm(`Import ${INVENTORY.length} listed phone variants with blank prices? Existing products will be left unchanged.`)) return;
+  const button=$("importInventory"),output=$("inventoryImportStatus");
+  button.disabled=true;
+  if(output) output.textContent="Checking existing products…";
+  try{
+    const existing=await getDocs(collection(db,"products"));
+    const existingIds=new Set(existing.docs.map(item=>item.id));
+    const missing=INVENTORY.filter(item=>!existingIds.has(item.id));
+    if(!missing.length){
+      const message="The supplied inventory is already in Firestore.";
+      if(output) output.textContent=message;
+      status(message);
+      return;
+    }
+    const batch=writeBatch(db);
+    missing.forEach(item=>{
+      batch.set(doc(db,"products",item.id),{
+        name:item.name,brand:item.brand,category:item.category,
+        price:null,stock:item.stock,storageGb:item.storageGb,ramGb:item.ramGb,
+        color:"",condition:"",description:"",imageUrl:item.imageUrl,
+        active:true,inventorySeed:true,createdAt:serverTimestamp()
+      });
+    });
+    await batch.commit();
+    await loadProducts();
+    const message=`Added ${missing.length} listed products. Add or update prices below when ready.`;
+    if(output) output.textContent=message;
+    status(message);
+  }catch(err){
+    const message="Inventory import failed: "+err.message;
+    if(output) output.textContent=message;
+    status(message);
+  }finally{
+    button.disabled=false;
+  }
+});
 $("productForm").addEventListener("submit",async e=>{
   e.preventDefault();
   if(!requireAdmin(auth.currentUser)) return;
@@ -102,6 +141,9 @@ $("productForm").addEventListener("submit",async e=>{
   let uploaded=null, productRef=null;
   submit.disabled=true;submit.textContent="Saving product…";
   try{
+    const priceValue=$("price").value.trim();
+    const price=priceValue===""?null:Number(priceValue);
+    if(price!==null&&(!Number.isFinite(price)||price<=0)) throw new Error("Enter a price above zero or leave it blank.");
     validateImage(file);
     productRef=doc(collection(db,"products"));
     if(file){
@@ -111,7 +153,7 @@ $("productForm").addEventListener("submit",async e=>{
     announce("Saving product details to Firestore…");
     await setDoc(productRef,{
       name:$("productName").value.trim(),brand:$("brand").value.trim(),category:$("category").value.trim(),
-      price:Number($("price").value),stock:Number($("stock").value),
+      price,stock:Number($("stock").value),
       storageGb:$("storageGb").value ? Number($("storageGb").value) : null,
       ramGb:$("ramGb").value ? Number($("ramGb").value) : null,
       color:$("color").value.trim(),condition:$("condition").value,
@@ -141,11 +183,21 @@ async function loadProducts(){
       if(p.imageUrl){const image=document.createElement("img");image.className="product-thumb";image.src=p.imageUrl;image.alt=p.name||"Product";info.append(image);}
       const textWrap=document.createElement("div");
       const strong=document.createElement("strong");strong.textContent=p.name||"Unnamed";
-      const detail=document.createElement("div");detail.className="muted";detail.textContent=[p.brand,p.category||"Other",p.storageGb?(Number(p.storageGb)>=1024?(Number(p.storageGb)/1024)+" TB storage":Number(p.storageGb)+" GB storage"):"",p.ramGb?Number(p.ramGb)+" GB RAM":"",p.color||"",p.condition||"","Price (MMK): "+Number(p.price||0).toLocaleString(),"Stock: "+Number(p.stock||0),p.active===false?"Hidden":"Active"].filter(Boolean).join(" · ");
+      const priceLabel=p.price==null||p.price===""||Number(p.price)<=0?"Price not set":"Price (MMK): "+Number(p.price).toLocaleString("en-US");
+      const detail=document.createElement("div");detail.className="muted";detail.textContent=[p.brand,p.category||"Other",p.storageGb?(Number(p.storageGb)>=1024?(Number(p.storageGb)/1024)+" TB storage":Number(p.storageGb)+" GB storage"):"",p.ramGb?Number(p.ramGb)+" GB RAM":"",p.color||"",p.condition||"",priceLabel,"Stock: "+Number(p.stock||0),p.active===false?"Hidden":"Active"].filter(Boolean).join(" · ");
       textWrap.append(strong,detail);info.append(textWrap);
       const actions=document.createElement("div");
-      const stock=document.createElement("input");stock.type="number";stock.min="0";stock.value=Number(p.stock||0);stock.setAttribute("aria-label","Stock quantity for "+(p.name||"product"));stock.style.width="95px";
-      const save=document.createElement("button");save.textContent="Update stock";save.addEventListener("click",async()=>{try{await updateDoc(doc(db,"products",s.id),{stock:Number(stock.value)});status("Stock updated.");}catch(err){status(err.message);}});
+      const priceInput=document.createElement("input");priceInput.type="number";priceInput.min="1";priceInput.step="1";priceInput.value=p.price==null||Number(p.price)<=0?"":String(Number(p.price));priceInput.placeholder="Price (MMK)";priceInput.setAttribute("aria-label","Price in MMK for "+(p.name||"product"));priceInput.style.width="135px";
+      const stock=document.createElement("input");stock.type="number";stock.min="0";stock.step="1";stock.value=Number(p.stock||0);stock.setAttribute("aria-label","Stock quantity for "+(p.name||"product"));stock.style.width="95px";
+      const save=document.createElement("button");save.textContent="Save price & stock";save.addEventListener("click",async()=>{
+        const nextPrice=priceInput.value.trim()===""?null:Number(priceInput.value),nextStock=Number(stock.value);
+        if(nextPrice!==null&&(!Number.isInteger(nextPrice)||nextPrice<=0)){status("Enter a price above zero or leave it blank.");return;}
+        if(!Number.isInteger(nextStock)||nextStock<0){status("Enter a valid stock quantity.");return;}
+        save.disabled=true;save.textContent="Saving…";
+        try{await updateDoc(doc(db,"products",s.id),{price:nextPrice,stock:nextStock});status("Price and stock updated.");await loadProducts();}
+        catch(err){status(err.message);}
+        finally{save.disabled=false;save.textContent="Save price & stock";}
+      });
       const photo=document.createElement("input");photo.type="file";photo.accept="image/jpeg,image/png,image/webp";photo.className="file-input";photo.setAttribute("aria-label","Choose replacement photo for "+(p.name||"product"));photo.style.maxWidth="190px";
       const upload=document.createElement("button");upload.textContent="Upload / replace photo";upload.addEventListener("click",async()=>{
         const file=photo.files?.[0];if(!file){status("Choose a photo first.");return;}
@@ -159,7 +211,7 @@ async function loadProducts(){
         finally{upload.disabled=false;upload.textContent="Upload / replace photo";}
       });
       const toggle=document.createElement("button");toggle.className="secondary";toggle.textContent=p.active===false?"Make active":"Hide";toggle.addEventListener("click",async()=>{try{await updateDoc(doc(db,"products",s.id),{active:p.active===false});await loadProducts();status("Product visibility updated.");}catch(err){status(err.message);}});
-      actions.append(stock,save,photo,upload,toggle);row.append(info,actions);$("products").append(row);
+      actions.append(priceInput,stock,save,photo,upload,toggle);row.append(info,actions);$("products").append(row);
     });
   }catch(err){$("products").textContent="Could not load products: "+err.message;}
 }
