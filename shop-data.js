@@ -130,14 +130,58 @@ function demoProducts() {
 }
 
 function fallbackProductImage(name) {
-  const productName = String(name || "").trim().toLocaleLowerCase();
-  if (productName.includes("iphone 15")) return "assets/iphone-15-blue-catalog.jpg";
-  if (productName.includes("iphone 13")) return "assets/iphone-13-grade-a-catalog.jpg";
-  if (productName.includes("galaxy s24")) return "assets/samsung-galaxy-s24-catalog.jpg";
-  if (productName.includes("galaxy s23")) return "assets/samsung-galaxy-s23-grade-a-catalog.jpg";
-  if (productName.includes("xiaomi 14")) return "assets/xiaomi-14-catalog.jpg";
-  if (productName.includes("redmi note 13")) return "assets/redmi-note-13-catalog.jpg";
-  return "";
+  const productName = String(name || "").trim().toLocaleLowerCase().replace(/[^a-z0-9]/g, "");
+  const catalogImages = [
+    ["iphone15", "assets/iphone-15-blue-catalog.jpg"],
+    ["iphone13", "assets/iphone-13-grade-a-catalog.jpg"],
+    ["galaxys24", "assets/samsung-galaxy-s24-catalog.jpg"],
+    ["galaxys23", "assets/samsung-galaxy-s23-grade-a-catalog.jpg"],
+    ["xiaomi14", "assets/xiaomi-14-catalog.jpg"],
+    ["infinixhot60pro", "assets/infinix-hot-60-pro-plus.jpg"],
+    ["itels25uitra", "assets/itel-s25-ultra.jpg"],
+    ["itels25ultra", "assets/itel-s25-ultra.jpg"],
+    ["itels25ultra", "assets/itel-s25-ultra.jpg"],
+    ["huaweinova12s", "assets/huawei-nova-12s.jpg"],
+    ["huaweinovay61", "assets/huawei-nova-y61.jpg"],
+    ["tecnospark40pro", "assets/tecno-spark-40-pro-plus.jpg"],
+    ["tecnosparkgo1", "assets/tecno-spark-go-1.jpg"],
+    ["tecnosparkgo2", "assets/tecno-spark-go-2.jpg"],
+    ["honorx7a", "assets/honor-x7a.jpg"],
+    ["oppox7", "assets/oppo-x7.jpg"],
+    ["oppoa565g", "assets/oppo-a56-5g.jpg"],
+    ["oppoa565g", "assets/oppo-a56-5g.jpg"],
+    ["oppoa38", "assets/oppo-a38.jpg"],
+    ["oppof11", "assets/oppo-f11.jpg"],
+    ["oppoa15s", "assets/oppo-a15s.jpg"],
+    ["oppoa31", "assets/oppo-a31.jpg"],
+    ["oppoa11", "assets/oppo-a11.jpg"],
+    ["redminote145g", "assets/redmi-note-14-5g.jpg"],
+    ["redminote145g", "assets/redmi-note-14-5g.jpg"],
+    ["redminote13pro", "assets/redmi-note-13-pro.jpg"],
+    ["redminote135g", "assets/redmi-note-13-5g.jpg"],
+    ["redminote13", "assets/redmi-note-13-catalog.jpg"],
+    ["redminote12pro", "assets/redmi-note-12-pro.jpg"],
+    ["redminote11pro", "assets/redmi-note-11-pro.jpg"],
+    ["redminote115g", "assets/redmi-note-11-5g.jpg"],
+    ["redminote10pro", "assets/redmi-note-10-pro.jpg"],
+    ["redminote9", "assets/redmi-note-9.jpg"],
+    ["redmik40", "assets/redmi-k40.jpg"],
+    ["k40", "assets/redmi-k40.jpg"],
+    ["redmi15c", "assets/redmi-15c.jpg"],
+    ["redmi15", "assets/redmi-15.jpg"],
+    ["redmi14c", "assets/redmi-14c.jpg"],
+    ["redmi13c", "assets/redmi-13c.jpg"],
+    ["redmi13r", "assets/redmi-13r.jpg"],
+    ["redmi12", "assets/redmi-12.jpg"],
+    ["redmi10x", "assets/redmi-10x.jpg"],
+    ["redmi10a", "assets/redmi-10a.jpg"],
+    ["redmi9a", "assets/redmi-9a.jpg"],
+    ["redmi9", "assets/redmi-9.jpg"],
+    ["redmia5", "assets/redmi-a5.jpg"],
+    ["redmi8", "assets/redmi-8.jpg"]
+  ];
+  const match = catalogImages.find(([model]) => productName.includes(model));
+  return match ? match[1] : "";
 }
 
 function renderCatalog() {
