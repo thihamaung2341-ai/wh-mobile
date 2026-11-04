@@ -138,6 +138,7 @@ function fallbackProductImage(name) {
     ["galaxys23", "assets/samsung-galaxy-s23-grade-a-catalog.jpg"],
     ["xiaomi14", "assets/xiaomi-14-catalog.jpg"],
     ["infinixhot60pro", "assets/infinix-hot-60-pro-plus.jpg"],
+    ["infinixhot40i", "assets/infinix-hot-40i.jpg"],
     ["itels25uitra", "assets/itel-s25-ultra.jpg"],
     ["itels25ultra", "assets/itel-s25-ultra.jpg"],
     ["itels25ultra", "assets/itel-s25-ultra.jpg"],
