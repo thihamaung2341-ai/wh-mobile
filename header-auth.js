@@ -225,7 +225,41 @@ function initCategoryDropdown() {
     return getInventoryCategories();
   }
 
-  button.addEventListener("click", () => setOpen(!open));
+  const canHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  let closeTimer;
+  const clearCloseTimer = () => window.clearTimeout(closeTimer);
+  const scheduleClose = () => {
+    clearCloseTimer();
+    closeTimer = window.setTimeout(() => {
+      const pointerInside = wrapper.matches(":hover") || dropdown.matches(":hover");
+      const focusInside = wrapper.contains(document.activeElement) || dropdown.contains(document.activeElement);
+      if (!pointerInside && !focusInside) setOpen(false);
+    }, 140);
+  };
+
+  if (canHover) {
+    wrapper.addEventListener("pointerenter", event => {
+      if (event.pointerType !== "touch") {
+        clearCloseTimer();
+        setOpen(true);
+      }
+    });
+    wrapper.addEventListener("pointerleave", event => {
+      if (event.pointerType !== "touch") scheduleClose();
+    });
+    dropdown.addEventListener("pointerenter", event => {
+      if (event.pointerType !== "touch") clearCloseTimer();
+    });
+    dropdown.addEventListener("pointerleave", event => {
+      if (event.pointerType !== "touch") scheduleClose();
+    });
+  }
+
+  button.addEventListener("click", event => {
+    if (canHover && event.detail > 0) return;
+    clearCloseTimer();
+    setOpen(!open);
+  });
   document.addEventListener("click", event => {
     if (open && !wrapper.contains(event.target) && !dropdown.contains(event.target)) setOpen(false);
   });
