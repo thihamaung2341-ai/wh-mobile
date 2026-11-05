@@ -140,8 +140,7 @@ function initCategoryDropdown() {
     .nav-category-dropdown{display:flex;align-items:center;flex:0 0 auto}
     .nav-category-trigger{display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:0 12px;border:0;border-radius:0;background:transparent;color:inherit;font:inherit;font-weight:750;white-space:nowrap;cursor:pointer}
     .nav-category-trigger:hover,.nav-category-trigger:focus-visible,.nav-category-trigger[aria-expanded="true"]{background:#e90012;color:#fff;outline:none}
-    .nav-category-chevron{font-size:16px;line-height:1;transition:transform .16s ease}
-    .nav-category-trigger[aria-expanded="true"] .nav-category-chevron{transform:rotate(180deg)}
+    .nav-category-chevron{font-size:16px;line-height:1}
     .nav-category-menu{position:fixed;z-index:3000;display:flex;flex-direction:column;width:360px;max-width:calc(100vw - 24px);max-height:min(72vh,560px);padding:10px 10px 0;border:1px solid #e5e7eb;border-top:0;border-radius:0 0 18px 18px;background:#fff;color:#334155;box-shadow:0 14px 32px rgba(15,23,42,.18)}
     .nav-category-menu[hidden]{display:none!important}
     .nav-category-list{min-height:0;overflow-y:auto;padding:2px 0 10px;overscroll-behavior:contain}
