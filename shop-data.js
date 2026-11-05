@@ -101,6 +101,14 @@ function setOptions(id, values, allLabel) {
   if (options.includes(current)) select.value = current;
 }
 
+function applyCategoryFromUrl() {
+  const requested = new URLSearchParams(window.location.search).get("category");
+  const select = document.getElementById("catalogCategory");
+  if (requested && select && [...select.options].some(option => option.value === requested)) {
+    select.value = requested;
+  }
+}
+
 function safeText(value) {
   return String(value ?? "");
 }
@@ -378,6 +386,7 @@ async function loadProducts() {
     setOptions("catalogStorage", ["128 GB", "256 GB", "512 GB", ...productState.all.map(product => storageLabel(product.storageGb))], "All storage");
     setOptions("catalogCondition", ["New", "Refurbished", ...productState.all.map(product => conditionGroup(product.condition))], "All conditions");
     setOptions("catalogCategory", categories, "All categories");
+    applyCategoryFromUrl();
     // Retain the existing category chips as quick shortcuts.
     window.cats = ["All"].concat([...new Set(categories)]);
     window.cur = "All";
@@ -393,6 +402,7 @@ async function loadProducts() {
     setOptions("catalogStorage", ["64 GB", "128 GB", "256 GB", "512 GB", ...productState.all.map(product => storageLabel(product.storageGb))], "All storage");
     setOptions("catalogCondition", ["New", "Refurbished", ...productState.all.map(product => conditionGroup(product.condition))], "All conditions");
     setOptions("catalogCategory", [...new Set(productState.all.map(product => product.category))], "All categories");
+    applyCategoryFromUrl();
     window.cats = ["All", ...new Set(productState.all.map(product => product.category))];
     window.cur = "All";
     renderCatalog();
