@@ -325,7 +325,7 @@ var cats=["All"].concat(PHONES.map(function(x){return x.c}).filter(function(v,i,
 var cur="All",mode="reserve";
 function cartRead(){try{return JSON.parse(localStorage.getItem("wh-cart")||"[]")}catch(e){return []}}
 function cartCount(){var n=cartRead().reduce(function(s,x){return s+(x.qty||0)},0);document.querySelectorAll("#cartCount,#cartCountTop").forEach(function(e){e.textContent=n;});}
-function addCart(x){var a=cartRead(),id=String(x.id||x.n),v=a.find(function(p){return String(p.id)===id});if(v)v.qty++;else a.push({id:id,name:x.n,price:Number(x.p),image:x.i||"",qty:1});localStorage.setItem("wh-cart",JSON.stringify(a));cartCount();alert(x.n+" added to your cart.");}
+function addCart(x){var a=cartRead(),id=String(x.id||x.n),v=a.find(function(p){return String(p.id)===id});if(v)v.qty++;else a.push({id:id,name:x.n,price:Number(x.p),image:x.i||"",qty:1});localStorage.setItem("wh-cart",JSON.stringify(a));cartCount();}
 function fmt(n){return "Ks"+n.toLocaleString("en-US")}
 var searchQuery="";
 function render(){
