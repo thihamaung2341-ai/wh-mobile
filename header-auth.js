@@ -139,7 +139,7 @@ function initCategoryDropdown() {
   style.textContent = `
     .nav-category-dropdown{display:flex;align-items:center;flex:0 0 auto}
     .nav-category-trigger{display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:0 12px;border:0;border-radius:0;background:transparent;color:inherit;font:inherit;font-weight:750;white-space:nowrap;cursor:pointer}
-    .nav-category-trigger:hover,.nav-category-trigger:focus-visible,.nav-category-trigger[aria-expanded="true"]{background:#e90012;color:#fff;outline:none}
+    .nav-category-trigger:hover,.nav-category-trigger:focus-visible,.nav-category-trigger[aria-expanded="true"]{background:var(--accent,#1f6feb);color:var(--accent-t,#fff);outline:none}
     .nav-category-chevron{position:relative;top:-2px;font-size:16px;line-height:1}
     .nav-category-menu{position:fixed;z-index:3000;display:flex;flex-direction:column;width:360px;max-width:calc(100vw - 24px);max-height:min(72vh,560px);padding:10px 10px 0;border:1px solid #e5e7eb;border-top:0;border-radius:0 0 18px 18px;background:#fff;color:#334155;box-shadow:0 14px 32px rgba(15,23,42,.18)}
     .nav-category-menu[hidden]{display:none!important}
@@ -148,8 +148,8 @@ function initCategoryDropdown() {
     .nav-category-item:hover,.nav-category-item:focus-visible{background:#f5f6f8;color:#111827;outline:none}
     .nav-category-count{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:23px;padding:0 8px;border-radius:999px;background:#f1f2f4;color:#586174;font-size:12px;font-weight:700}
     .nav-category-empty{margin:10px 14px;color:#6b7280;font-size:14px}
-    .nav-category-shop{display:flex;align-items:center;justify-content:space-between;min-height:47px;margin-top:auto;padding:0 14px;border-top:1px solid #eceef1;color:#d90012;text-decoration:none;font-size:13px;font-weight:800}
-    .nav-category-shop:hover,.nav-category-shop:focus-visible{color:#a9000e;outline:none}
+    .nav-category-shop{display:flex;align-items:center;justify-content:space-between;min-height:47px;margin-top:auto;padding:0 14px;border-top:1px solid #eceef1;color:var(--accent,#1f6feb);text-decoration:none;font-size:13px;font-weight:800}
+    .nav-category-shop:hover,.nav-category-shop:focus-visible{color:var(--accent,#1f6feb);outline:none}
     @media(max-width:680px){.nav-category-menu{max-height:min(68vh,520px);border-radius:0 0 16px 16px}.nav-category-trigger{padding:0 10px}}
   `;
   document.head.append(style);
