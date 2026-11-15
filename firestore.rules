@@ -1,34 +1,142 @@
 rules_version = '2';
+
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// products/{productId}: store catalogue data managed by the admin, including
+// name, brand, category, optional price, stock, phone specifications, optional
+// product image URLs and Storage paths, optional galleryImages, active, and
+// createdAt. Active listings are public; only the admin writes product docs.
+//
+// products/{productId}/reviews/{reviewId}: public product feedback containing
+// displayName (1–60 chars), rating (integer 1–5), optional title (0–100 chars),
+// body (10–1200 chars), and createdAt (server timestamp). No email or UID is
+// stored in a public review. The review ID is an auto-generated random ID.
+//
+// customers/{userId}/productReviewIndex/{productId}: private review lock with
+// reviewId and createdAt. The customer can read it; it is created atomically
+// with the public review so an account can review a product once.
+//
+// bookings/{bookingId}: signed-in customer's userId, customerName, phone, type,
+// item, preferredAt, notes, status, createdAt; admins read and update status.
+//
+// orders/{orderId}: signed-in customer's userId and contact/delivery fields,
+// items, total, currency, status, payment details/proof metadata, and timestamps.
+//
+// customers/{userId}: private customer profile with userId, name, phone, email,
+// deliveryAddress, and updatedAt. Only that customer and the admin may read it.
+//
+// ===============================================================
 service cloud.firestore {
   match /databases/{database}/documents {
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
     // Replace this UID with the store owner's Firebase Authentication UID.
     function isAdmin() {
-      return request.auth != null &&
+      return isAuthenticated() &&
         request.auth.uid == "SpebSv19yPPE92rdn75zL4fG8sm2";
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function uidUnchanged() {
+      return isAuthenticated() &&
+        request.resource.data.userId == request.auth.uid;
+    }
+
+    function uidNotModified() {
+      return request.resource.data.userId == resource.data.userId;
+    }
+
+    function hasRequiredFields(data, fields) {
+      return data.keys().hasAll(fields);
+    }
+
+    function hasOnlyAllowedFields(data, fields) {
+      return data.keys().hasOnly(fields);
+    }
+
+    function isRecent(time) {
+      return time is timestamp &&
+        time > request.time - duration.value(5, 'm') &&
+        time <= request.time;
+    }
+
+    function isValidProductReview(data) {
+      return hasRequiredFields(data, ['displayName', 'rating', 'title', 'body', 'createdAt']) &&
+        hasOnlyAllowedFields(data, ['displayName', 'rating', 'title', 'body', 'createdAt']) &&
+        data.displayName is string &&
+        data.displayName.size() >= 1 &&
+        data.displayName.size() <= 60 &&
+        data.rating is int &&
+        data.rating >= 1 &&
+        data.rating <= 5 &&
+        data.title is string &&
+        data.title.size() <= 100 &&
+        data.body is string &&
+        data.body.size() >= 10 &&
+        data.body.size() <= 1200 &&
+        data.createdAt is timestamp &&
+        data.createdAt <= request.time;
+    }
+
+    function isValidProductReviewIndex(data) {
+      return hasRequiredFields(data, ['reviewId', 'createdAt']) &&
+        hasOnlyAllowedFields(data, ['reviewId', 'createdAt']) &&
+        data.reviewId is string &&
+        data.reviewId.matches('^[A-Za-z0-9_-]{1,150}$') &&
+        data.createdAt is timestamp &&
+        data.createdAt <= request.time;
+    }
+
+    function isActiveProduct(productId) {
+      return exists(/databases/$(database)/documents/products/$(productId)) &&
+        get(/databases/$(database)/documents/products/$(productId)).data.active == true;
     }
 
     match /products/{productId} {
       allow read: if resource.data.active == true || isAdmin();
       allow create, update, delete: if isAdmin();
+
+      match /reviews/{reviewId} {
+        // Review text and optional display name are intentionally public on an active product.
+        allow get, list: if isAdmin() || isActiveProduct(productId);
+        allow create: if isAuthenticated() &&
+          isActiveProduct(productId) &&
+          isValidProductReview(request.resource.data) &&
+          isRecent(request.resource.data.createdAt) &&
+          request.resource.data.createdAt == request.time &&
+          getAfter(/databases/$(database)/documents/customers/$(request.auth.uid)/productReviewIndex/$(productId)).data.reviewId == reviewId &&
+          getAfter(/databases/$(database)/documents/customers/$(request.auth.uid)/productReviewIndex/$(productId)).data.createdAt == request.time;
+        allow update: if isAdmin() &&
+          isValidProductReview(request.resource.data) &&
+          request.resource.data.createdAt == resource.data.createdAt;
+        allow delete: if isAdmin();
+      }
     }
 
     match /bookings/{bookingId} {
       // Customers can create bookings only for their own signed-in account.
-      allow create: if request.auth != null
-        && request.resource.data.userId == request.auth.uid
+      allow create: if isAuthenticated()
+        && uidUnchanged()
         && request.resource.data.keys().hasOnly([
           'userId', 'customerName', 'phone', 'type', 'item',
           'preferredAt', 'notes', 'status', 'createdAt'
         ])
         && request.resource.data.type in ['reservation', 'repair']
         && request.resource.data.status == 'pending';
-      allow read: if isAdmin() ||
-        (request.auth != null && resource.data.userId == request.auth.uid);
-      allow update, delete: if isAdmin();
+      allow read: if isAdmin() || isOwner(resource.data.userId);
+      allow update: if isAdmin() && uidNotModified();
+      allow delete: if isAdmin();
     }
 
     match /orders/{orderId} {
-      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid
+      allow create: if isAuthenticated() && uidUnchanged()
         && request.resource.data.status == 'pending'
         && request.resource.data.currency == 'MMK'
         && request.resource.data.items is list
@@ -36,15 +144,31 @@ service cloud.firestore {
         && request.resource.data.items.size() <= 30
         && request.resource.data.total is number
         && request.resource.data.total >= 0;
-      allow read: if isAdmin() || (request.auth != null && resource.data.userId == request.auth.uid);
-      allow update, delete: if isAdmin();
+      allow read: if isAdmin() || isOwner(resource.data.userId);
+      allow update: if isAdmin() && uidNotModified();
+      allow delete: if isAdmin();
     }
 
     // Customer profile documents are private to their owner and store admin.
     match /customers/{userId} {
-      allow read, create, update: if isAdmin() ||
-        (request.auth != null && request.auth.uid == userId);
+      allow read, create, update: if isAdmin() || isOwner(userId);
       allow delete: if isAdmin();
+
+      match /productReviewIndex/{productId} {
+        // The UID and review relationship stay private to the signed-in customer.
+        allow get, list: if isAdmin() || isOwner(userId);
+        allow create: if isOwner(userId) &&
+          isActiveProduct(productId) &&
+          isValidProductReviewIndex(request.resource.data) &&
+          isRecent(request.resource.data.createdAt) &&
+          request.resource.data.createdAt == request.time &&
+          getAfter(/databases/$(database)/documents/products/$(productId)/reviews/$(request.resource.data.reviewId)).data.createdAt == request.time &&
+          isValidProductReview(getAfter(/databases/$(database)/documents/products/$(productId)/reviews/$(request.resource.data.reviewId)).data);
+        allow update: if isAdmin() &&
+          isValidProductReviewIndex(request.resource.data) &&
+          request.resource.data.createdAt == resource.data.createdAt;
+        allow delete: if isAdmin();
+      }
     }
   }
 }
