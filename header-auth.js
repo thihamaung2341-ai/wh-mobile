@@ -273,3 +273,4 @@ function initCategoryDropdown() {
 
   loadCategories().then(renderCategories);
 }
+
