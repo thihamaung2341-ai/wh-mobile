@@ -5,6 +5,7 @@ import { ref as storageRef, uploadBytes, uploadBytesResumable, getBytes, getDown
 
 const ADMIN_UID = "SpebSv19yPPE92rdn75zL4fG8sm2";
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+const MAX_GALLERY_IMAGES = 5;
 const PAYMENT_SETTINGS_PATH = "settings/payment-methods.json";
 let paymentMethods = [];
 const $ = id => document.getElementById(id);
@@ -218,17 +219,24 @@ $("productForm")?.addEventListener("submit",async e=>{
   const formStatus=$("productFormStatus");
   const announce=message=>{status(message);if(formStatus)formStatus.textContent=message;};
   const file=imageInput?.files?.[0] || null;
-  let uploaded=null, productRef=null;
+  const galleryFiles=Array.from($("productGalleryImages")?.files||[]);
+  let uploaded=null, productRef=null, uploadedGallery=[];
   submit.disabled=true;submit.textContent="Saving product…";
   try{
     const priceValue=$("price").value.trim();
     const price=priceValue===""?null:Number(priceValue);
     if(price!==null&&(!Number.isFinite(price)||price<=0)) throw new Error("Enter a price above zero or leave it blank.");
+    if(galleryFiles.length>MAX_GALLERY_IMAGES) throw new Error("Choose up to "+MAX_GALLERY_IMAGES+" additional photos.");
     validateImage(file);
+    galleryFiles.forEach(validateImage);
     productRef=doc(collection(db,"products"));
     if(file){
       announce("Uploading product photo… 0%");
       uploaded=await uploadProductImage(productRef.id,file,percent=>announce("Uploading product photo… "+percent+"%"));
+    }
+    for(let index=0;index<galleryFiles.length;index++){
+      announce("Uploading gallery photo "+(index+1)+" of "+galleryFiles.length+"…");
+      uploadedGallery.push(await uploadProductImage(productRef.id,galleryFiles[index]));
     }
     announce("Saving product details to Firestore…");
     await setDoc(productRef,{
@@ -238,16 +246,15 @@ $("productForm")?.addEventListener("submit",async e=>{
       ramGb:$("ramGb").value ? Number($("ramGb").value) : null,
       color:$("color").value.trim(),condition:$("condition").value,
       description:$("description").value.trim(),active:true,
-      ...(uploaded || {}),createdAt:serverTimestamp()
+      ...(uploaded || {}),galleryImages:uploadedGallery,createdAt:serverTimestamp()
     });
     e.target.reset();$("stock").value="1";updateRamField();$("imagePreview").hidden=true;$("previewWrap").hidden=true;$("removeImage").hidden=true;
     announce("Product saved successfully. Refreshing inventory…");
     await loadProducts();
     announce("Product saved successfully.");
   }catch(err){
-    if(uploaded?.imagePath){
-      try{await deleteObject(storageRef(storage,uploaded.imagePath));}catch(cleanupError){console.warn("Image cleanup failed",cleanupError);}
-    }
+    const uploadedPaths=[uploaded?.imagePath,...uploadedGallery.map(item=>item.imagePath)].filter(Boolean);
+    for(const path of uploadedPaths){try{await deleteObject(storageRef(storage,path));}catch(cleanupError){console.warn("Image cleanup failed",cleanupError);}}
     const reason=err?.code ? err.code+" — "+err.message : (err?.message || String(err));
     announce("Could not save product: "+reason);
   }finally{submit.disabled=false;submit.textContent="Add product";}
@@ -291,6 +298,22 @@ async function loadProducts(){
         }catch(err){status("Photo upload failed: "+err.message);}
         finally{upload.disabled=false;upload.textContent="Upload / replace photo";}
       });
+      const galleryPhoto=document.createElement("input");galleryPhoto.type="file";galleryPhoto.accept="image/jpeg,image/png,image/webp";galleryPhoto.multiple=true;galleryPhoto.className="file-input";galleryPhoto.setAttribute("aria-label","Choose additional gallery photos for "+(p.name||"product"));galleryPhoto.style.maxWidth="220px";
+      const uploadGallery=document.createElement("button");uploadGallery.className="secondary";uploadGallery.textContent="Add gallery photos";uploadGallery.addEventListener("click",async()=>{
+        const files=Array.from(galleryPhoto.files||[]),existing=Array.isArray(p.galleryImages)?p.galleryImages:[];
+        if(!files.length){status("Choose one or more gallery photos first.");return;}
+        if(existing.length+files.length>MAX_GALLERY_IMAGES){status("This product can have up to "+MAX_GALLERY_IMAGES+" additional gallery photos.");return;}
+        let galleryUploads=[];
+        try{
+          files.forEach(validateImage);uploadGallery.disabled=true;uploadGallery.textContent="Uploading…";
+          for(const file of files)galleryUploads.push(await uploadProductImage(s.id,file));
+          await updateDoc(doc(db,"products",s.id),{galleryImages:[...existing,...galleryUploads]});
+          status("Product gallery updated.");await loadProducts();
+        }catch(err){
+          for(const item of galleryUploads){try{await deleteObject(storageRef(storage,item.imagePath));}catch(cleanupError){console.warn("Gallery image cleanup failed",cleanupError);}}
+          status("Gallery upload failed: "+err.message);
+        }finally{uploadGallery.disabled=false;uploadGallery.textContent="Add gallery photos";}
+      });
       const toggle=document.createElement("button");toggle.className="secondary";toggle.textContent=p.active===false?"Make active":"Hide";toggle.addEventListener("click",async()=>{try{await updateDoc(doc(db,"products",s.id),{active:p.active===false});await loadProducts();status("Product visibility updated.");}catch(err){status(err.message);}});
       const detailEditor=document.createElement("details");detailEditor.className="product-detail-editor";
       const detailSummary=document.createElement("summary");detailSummary.textContent="Edit product details";
@@ -318,7 +341,7 @@ async function loadProducts(){
         finally{saveDetails.disabled=false;saveDetails.textContent="Save product details";}
       });
       detailEditor.append(detailSummary,detailGrid,saveDetails);
-      actions.append(priceInput,stock,save,photo,upload,toggle);row.append(info,actions,detailEditor);root.append(row);
+      actions.append(priceInput,stock,save,photo,upload,galleryPhoto,uploadGallery,toggle);row.append(info,actions,detailEditor);root.append(row);
     });
   }catch(err){root.textContent="Could not load products: "+err.message;}
 }
@@ -389,4 +412,3 @@ async function loadOrders(){
   });
  }catch(err){const root=$("orders");if(root)root.textContent="Could not load orders: "+err.message;}
 }
-
