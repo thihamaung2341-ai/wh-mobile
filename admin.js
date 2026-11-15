@@ -9,7 +9,7 @@ const PAYMENT_SETTINGS_PATH = "settings/payment-methods.json";
 let paymentMethods = [];
 const $ = id => document.getElementById(id);
 const loginBox = $("login"), app = $("app");
-function status(message){ $("status").textContent = message; }
+function status(message){ const node=$("status");if(node)node.textContent=message; }
 function requireAdmin(user){
   if(!user) return false;
   if(ADMIN_UID.startsWith("REPLACE_") || user.uid !== ADMIN_UID){
@@ -171,19 +171,24 @@ removeImageButton?.addEventListener("click",clearSelectedPhoto);
 onAuthStateChanged(auth, async user => {
   if(user && requireAdmin(user)){
     loginBox.hidden=true; app.hidden=false;
-    await Promise.all([loadProducts(),loadBookings(),loadOrders(),loadPaymentMethods()]);
+    const tasks=[];
+    if($("products"))tasks.push(loadProducts());
+    if($("bookings"))tasks.push(loadBookings());
+    if($("orders"))tasks.push(loadOrders());
+    if($("paymentMethods"))tasks.push(loadPaymentMethods());
+    await Promise.all(tasks);
     status("Signed in as "+(user.email || user.uid));
   } else {
     loginBox.hidden=false; app.hidden=true;
   }
 });
-$("loginForm").addEventListener("submit",async e=>{
+$("loginForm")?.addEventListener("submit",async e=>{
   e.preventDefault();
   try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);}
   catch(err){alert("Login failed: "+err.message);}
 });
-$("logout").addEventListener("click",()=>signOut(auth));
-$("productForm").addEventListener("submit",async e=>{
+$("logout")?.addEventListener("click",()=>signOut(auth));
+$("productForm")?.addEventListener("submit",async e=>{
   e.preventDefault();
   if(!requireAdmin(auth.currentUser)) return;
   const submit=e.target.querySelector('button[type="submit"]');
@@ -225,10 +230,11 @@ $("productForm").addEventListener("submit",async e=>{
   }finally{submit.disabled=false;submit.textContent="Add product";}
 });
 async function loadProducts(){
+  const root=$("products");if(!root)return;
   try{
     const snap=await getDocs(query(collection(db,"products"),orderBy("createdAt","desc")));
-    $("products").replaceChildren();
-    if(snap.empty){$("products").textContent="No products yet. Add your first product above.";return;}
+    root.replaceChildren();
+    if(snap.empty){root.textContent="No products yet. Add your first product above.";return;}
     snap.forEach(s=>{
       const p=s.data(),row=document.createElement("div");row.className="item";
       const info=document.createElement("div");info.style.display="flex";info.style.gap="12px";info.style.alignItems="center";
@@ -289,12 +295,13 @@ async function loadProducts(){
         finally{saveDetails.disabled=false;saveDetails.textContent="Save product details";}
       });
       detailEditor.append(detailSummary,detailGrid,saveDetails);
-      actions.append(priceInput,stock,save,photo,upload,toggle);row.append(info,actions,detailEditor);$("products").append(row);
+      actions.append(priceInput,stock,save,photo,upload,toggle);row.append(info,actions,detailEditor);root.append(row);
     });
-  }catch(err){$("products").textContent="Could not load products: "+err.message;}
+  }catch(err){root.textContent="Could not load products: "+err.message;}
 }
 async function loadBookings(){
   const activeRoot=$("bookings"),archiveRoot=$("bookingsArchive"),archiveCount=$("bookingArchiveCount");
+  if(!activeRoot)return;
   try{
     const snap=await getDocs(query(collection(db,"bookings"),orderBy("createdAt","desc")));
     activeRoot.replaceChildren();
@@ -329,9 +336,10 @@ async function loadBookings(){
 }
 
 async function loadOrders(){
+ const root=$("orders");if(!root)return;
  try{
   const snap=await getDocs(query(collection(db,"orders"),orderBy("createdAt","desc")));
-  const root=$("orders");if(!root)return;root.replaceChildren();
+  root.replaceChildren();
   if(snap.empty){root.textContent="No customer orders yet.";return;}
   snap.forEach(s=>{
    const o=s.data(),row=document.createElement("div");row.className="item";
