@@ -75,7 +75,10 @@ async function loadPaymentMethods(){
     const config=JSON.parse(new TextDecoder().decode(bytes));
     paymentMethods=Array.isArray(config.methods)?config.methods.filter(method=>method&&method.active!==false&&typeof method.id==="string"):[];
   }catch(error){
-    if(error?.code==="storage/object-not-found")paymentMethods=[];
+    if(error?.code==="storage/object-not-found"){
+      try{const response=await fetch("payment-methods.json",{cache:"no-store"});if(!response.ok)throw new Error("Default payment details are unavailable.");const config=await response.json();paymentMethods=Array.isArray(config.methods)?config.methods.filter(method=>method&&method.active!==false&&typeof method.id==="string"):[];}
+      catch(fallbackError){console.warn("Could not load default checkout payment methods",fallbackError);paymentMethods=[];}
+    }
     else{console.warn("Could not load checkout payment methods",error);paymentConfigError=true;}
   }
   paymentConfigLoaded=true;
@@ -97,8 +100,8 @@ async function loadPaymentMethods(){
     if(method.accountName){const account=document.createElement("span");account.className="payment-account";account.textContent="Account name: "+method.accountName;details.append(account)}
     if(method.accountNumber){const number=document.createElement("span");number.className="payment-account";number.textContent="Account / phone: "+method.accountNumber;details.append(number)}
     if(method.instructions){const note=document.createElement("span");note.className="payment-proof-help";note.textContent=method.instructions;details.append(note)}
-    if(method.qrPath){
-      try{const image=document.createElement("img");image.alt=(method.name||"Payment")+" QR code";image.src=await getDownloadURL(storageRef(storage,method.qrPath));details.append(image)}
+    if(method.qrPath||method.qrUrl||method.qrDataUrl){
+      try{const image=document.createElement("img");image.alt=(method.name||"Payment")+" QR code";image.src=method.qrDataUrl||method.qrUrl||(await getDownloadURL(storageRef(storage,method.qrPath)));details.append(image)}
       catch{const unavailable=document.createElement("span");unavailable.className="payment-proof-help";unavailable.textContent="QR image unavailable.";details.append(unavailable)}
     }
     label.append(radio,details);options.append(label);
