@@ -51,6 +51,28 @@ async function savePaymentMethods(methods){
   await uploadBytes(storageRef(storage,PAYMENT_SETTINGS_PATH),new Blob([JSON.stringify(payload)],{type:"application/json"}),{contentType:"application/json"});
   paymentMethods=methods;
 }
+function paymentQrFromDataUrl(dataUrl){
+  const match=/^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/=]+)$/.exec(dataUrl||"");
+  if(!match)throw new Error("A default payment QR image has an unsupported format.");
+  const raw=atob(match[2]),bytes=new Uint8Array(raw.length);
+  for(let index=0;index<raw.length;index++)bytes[index]=raw.charCodeAt(index);
+  const extension=match[1]==="image/jpeg"?"jpg":match[1].slice(6);
+  return {blob:new Blob([bytes],{type:match[1]}),extension,contentType:match[1]};
+}
+async function uploadInlinePaymentQrs(methods){
+  const saved=[];
+  for(const method of methods){
+    if(!method.qrDataUrl){saved.push(method);continue;}
+    try{
+      const {blob,extension,contentType}=paymentQrFromDataUrl(method.qrDataUrl);
+      const path="payment-methods/"+method.id+"/qr."+extension;
+      await uploadBytes(storageRef(storage,path),blob,{contentType});
+      const {qrDataUrl,...details}=method;
+      saved.push({...details,qrPath:path,qrUrl:""});
+    }catch(error){console.warn("Could not copy payment QR into Firebase Storage",method.id,error);saved.push(method);}
+  }
+  return saved;
+}
 async function loadPaymentMethods(){
   const root=$("paymentMethods");
   if(!root)return;
@@ -61,7 +83,8 @@ async function loadPaymentMethods(){
     await renderPaymentMethods();
   }catch(error){
     if(error?.code==="storage/object-not-found"){
-      paymentMethods=[];
+      try{const response=await fetch("payment-methods.json",{cache:"no-store"});if(!response.ok)throw new Error("Default payment details are unavailable.");const parsed=await response.json();const defaults=Array.isArray(parsed.methods)?parsed.methods.filter(method=>method&&typeof method.id==="string"):[];paymentMethods=await uploadInlinePaymentQrs(defaults);await savePaymentMethods(paymentMethods);}
+      catch(fallbackError){console.warn("Could not load default payment methods",fallbackError);paymentMethods=[];}
       await renderPaymentMethods();
       return;
     }
@@ -84,15 +107,15 @@ async function renderPaymentMethods(){
       const item=document.createElement("div");item.className="muted";item.textContent=label+": "+(value||"—");grid.append(item);
     });
     card.append(header,grid);
-    if(method.qrPath){
-      try{const image=document.createElement("img");image.className="payment-method-qr";image.alt=(method.name||"Payment")+" QR code";image.src=await getDownloadURL(storageRef(storage,method.qrPath));card.append(image);}
+    if(method.qrPath||method.qrUrl||method.qrDataUrl){
+      try{const image=document.createElement("img");image.className="payment-method-qr";image.alt=(method.name||"Payment")+" QR code";image.src=method.qrDataUrl||method.qrUrl||(await getDownloadURL(storageRef(storage,method.qrPath)));card.append(image);}
       catch{const missing=document.createElement("p");missing.className="muted";missing.textContent="QR image could not be loaded.";card.append(missing);}
     }else{const missing=document.createElement("p");missing.className="muted";missing.textContent="No QR image added.";card.append(missing);}
     const actions=document.createElement("div");actions.className="payment-method-actions";
     const edit=document.createElement("button");edit.type="button";edit.className="secondary";edit.textContent="Edit";edit.addEventListener("click",()=>{
       const form=$("paymentMethodForm");form.dataset.editingId=method.id;
       $("paymentMethodName").value=method.name||"";$("paymentAccountName").value=method.accountName||"";$("paymentAccountNumber").value=method.accountNumber||"";$("paymentInstructions").value=method.instructions||"";$("paymentQrImage").value="";
-      $("paymentMethodSubmit").textContent="Save payment method";$("paymentMethodFormStatus").textContent=method.qrPath?"Choose a replacement QR image, or leave it blank to keep the current one.":"Add a QR image now or save the account details and add it later.";
+      $("paymentMethodSubmit").textContent="Save payment method";$("paymentMethodFormStatus").textContent=method.qrPath||method.qrUrl||method.qrDataUrl?"Choose a replacement QR image, or leave it blank to keep the current one.":"Add a QR image now or save the account details and add it later.";
       form.scrollIntoView({behavior:"smooth",block:"center"});
     });
     const toggle=document.createElement("button");toggle.type="button";toggle.className="secondary";toggle.textContent=method.active===false?"Show at checkout":"Hide from checkout";toggle.addEventListener("click",async()=>{
@@ -122,7 +145,7 @@ $("paymentMethodForm")?.addEventListener("submit",async event=>{
   let uploadedQrPath="";const submit=$("paymentMethodSubmit");submit.disabled=true;submit.textContent=old?"Saving…":"Adding…";
   try{
     if(file){validateImage(file);uploadedQrPath="payment-methods/"+id+"/"+Date.now()+"-"+safeFileName(file.name);await uploadBytes(storageRef(storage,uploadedQrPath),file,{contentType:file.type});}
-    const nextMethod={id,name:$("paymentMethodName").value.trim(),accountName:$("paymentAccountName").value.trim(),accountNumber:$("paymentAccountNumber").value.trim(),instructions:$("paymentInstructions").value.trim(),qrPath:uploadedQrPath||old?.qrPath||"",active:old?.active!==false,sortOrder:old?.sortOrder??paymentMethods.length};
+    const nextMethod={id,name:$("paymentMethodName").value.trim(),accountName:$("paymentAccountName").value.trim(),accountNumber:$("paymentAccountNumber").value.trim(),instructions:$("paymentInstructions").value.trim(),qrPath:uploadedQrPath||old?.qrPath||"",qrUrl:uploadedQrPath?"":old?.qrUrl||"",qrDataUrl:uploadedQrPath?"":old?.qrDataUrl||"",active:old?.active!==false,sortOrder:old?.sortOrder??paymentMethods.length};
     const next=old?paymentMethods.map(method=>method.id===id?nextMethod:method):[...paymentMethods,nextMethod];
     await savePaymentMethods(next);
     if(uploadedQrPath&&old?.qrPath){try{await deleteObject(storageRef(storage,old.qrPath));}catch(error){console.warn("Could not remove replaced payment QR",error);}}
