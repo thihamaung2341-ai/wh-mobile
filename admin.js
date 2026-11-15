@@ -83,7 +83,7 @@ async function loadPaymentMethods(){
     await renderPaymentMethods();
   }catch(error){
     if(error?.code==="storage/object-not-found"){
-      try{const response=await fetch("payment-methods.json",{cache:"no-store"});if(!response.ok)throw new Error("Default payment details are unavailable.");const parsed=await response.json();const defaults=Array.isArray(parsed.methods)?parsed.methods.filter(method=>method&&typeof method.id==="string"):[];paymentMethods=await uploadInlinePaymentQrs(defaults);await savePaymentMethods(paymentMethods);}
+      try{const response=await fetch("payment-methods.json",{cache:"no-store"});if(!response.ok)throw new Error("Default payment details are unavailable.");const parsed=await response.json();const defaults=Array.isArray(parsed.methods)?parsed.methods.filter(method=>method&&typeof method.id==="string"):[];paymentMethods=await uploadInlinePaymentQrs(defaults);try{await savePaymentMethods(paymentMethods)}catch(syncError){console.warn("Could not copy default payment methods to Firebase Storage",syncError)}}
       catch(fallbackError){console.warn("Could not load default payment methods",fallbackError);paymentMethods=[];}
       await renderPaymentMethods();
       return;
