@@ -6,7 +6,20 @@ import {ref as storageRef,getBytes,getDownloadURL,uploadBytes} from "https://www
 const $=id=>document.getElementById(id);
 const MAX_PROOF_BYTES=5*1024*1024;
 const PAYMENT_SETTINGS_PATH="settings/payment-methods.json";
+const PAYMENT_LOGOS=[
+  {match:/\bkbzpay\b|kbz\s*pay/i,url:"https://www.kbzpay.com/_next/static/media/blue-L.c7123311.webp",alt:"KBZPay"},
+  {match:/\bwave\s*pay\b|\bwavepay\b/i,url:"https://www.wavemoney.com.mm/wp-content/uploads/2024/11/wave-logo-small.svg",alt:"Wave Money"},
+  {match:/\bkbz\s*bank\b/i,url:"https://www.kbzbank.com/wp-content/uploads/2018/11/logo_retina2.png",alt:"KBZ Bank"},
+  {match:/\bcb\s*bank\b/i,url:"https://www.cbbank.com.mm/sites/cbbank.com.mm/files/logo.png",alt:"CB Bank"},
+  {match:/\byoma\b/i,url:"https://www.yomabank.com/wp-content/uploads/2023/03/logo.png",alt:"Yoma Bank"},
+  {match:/\baya\b/i,url:"https://www.ayabank.com/images/aya-bank-PCL-logo.png",alt:"AYA Bank"}
+];
 let user=null,cart=[],paymentMethods=[],paymentConfigLoaded=false,paymentConfigError=false;
+
+function paymentLogoFor(method){
+  const label=(method.name||"")+" "+(method.id||"");
+  return PAYMENT_LOGOS.find(item=>item.match.test(label))||null;
+}
 
 function syncDeliveryAddress(){
   const pickup=$("delivery").value==="pickup";
@@ -77,7 +90,10 @@ async function loadPaymentMethods(){
     const label=document.createElement("label");label.className="payment-option";
     const radio=document.createElement("input");radio.type="radio";radio.name="paymentMethod";radio.value=method.id;radio.required=true;
     const details=document.createElement("span");details.className="payment-option-body";
-    const title=document.createElement("strong");title.textContent=method.name||"Payment method";details.append(title);
+    const heading=document.createElement("span");heading.className="payment-option-heading";
+    const logo=paymentLogoFor(method);
+    if(logo){const image=document.createElement("img");image.className="payment-option-logo";image.alt=logo.alt+" logo";image.src=logo.url;image.referrerPolicy="no-referrer";image.loading="lazy";heading.append(image)}
+    const title=document.createElement("strong");title.textContent=method.name||"Payment method";heading.append(title);details.append(heading);
     if(method.accountName){const account=document.createElement("span");account.className="payment-account";account.textContent="Account name: "+method.accountName;details.append(account)}
     if(method.accountNumber){const number=document.createElement("span");number.className="payment-account";number.textContent="Account / phone: "+method.accountNumber;details.append(number)}
     if(method.instructions){const note=document.createElement("span");note.className="payment-proof-help";note.textContent=method.instructions;details.append(note)}
