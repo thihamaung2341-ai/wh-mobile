@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Product specifications, availability, and current price from WH Mobile in Yangon.">
+  <title>Phone details | WH Mobile</title>
+  <link rel="stylesheet" href="styles.css?v=wh-mobile-product-details-20261115-1">
+  <style>
+    .product-page{min-height:100vh;background:#f5f7fb;color:#17243a}
+    .product-page-header{background:#050505;color:#fff}
+    .product-page-header>div{max-width:1180px;margin:auto;padding:17px 24px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+    .product-page-brand{color:#fff;font-weight:850;letter-spacing:.08em;text-decoration:none}
+    .product-page-nav{display:flex;flex-wrap:wrap;gap:18px}
+    .product-page-nav a{color:#fff;font-size:13px;font-weight:650;text-decoration:none}
+    .product-page-main{max-width:1100px;margin:auto;padding:34px 24px 60px}
+    .product-state{padding:22px;border:1px solid #e0e6ef;border-radius:14px;background:#fff;color:#65738a}
+    .product-detail-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,5vw,58px);align-items:start;padding:clamp(20px,4vw,42px);border:1px solid #e0e6ef;border-radius:22px;background:#fff;box-shadow:0 15px 38px #1a2c460c}
+    .product-detail-photo{position:sticky;top:24px;display:grid;place-items:center;min-height:350px;border-radius:16px;background:#f4f7fc;overflow:hidden}
+    .product-detail-photo img{width:100%;height:420px;object-fit:contain}
+    .product-detail-copy{min-width:0}
+    .product-back{display:inline-block;margin-bottom:20px;color:#2868e8;font-size:13px;font-weight:700;text-decoration:none}
+    .product-back:hover{text-decoration:underline}
+    .product-meta{margin:0 0 8px;color:#64738a;font-size:13px}
+    .product-detail-copy h1{margin:0 0 18px;font-size:clamp(28px,4vw,42px);line-height:1.1;letter-spacing:-.035em;overflow-wrap:anywhere}
+    .product-spec-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:18px 0}
+    .product-spec-list>div{padding:11px 13px;border:1px solid #e1e7f0;border-radius:12px}
+    .product-spec-list dt{color:#65738a;font-size:11px}
+    .product-spec-list dd{margin:4px 0 0;color:#17243a;font-size:14px;font-weight:750;overflow-wrap:anywhere}
+    .product-description{margin:18px 0;color:#58687e;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}
+    .product-contact-note{margin:18px 0;padding:13px 15px;border-radius:12px;background:#f4f7fc;color:#596a81;font-size:13px;line-height:1.65}
+    .product-price{margin:22px 0 5px;font-size:24px;font-weight:850}
+    .product-actions .btn{display:flex;justify-content:center;width:100%;margin-top:14px;text-align:center}
+    .product-action-status{min-height:1.5em;color:#24734f;font-size:13px}
+    .product-page-foot{max-width:1100px;margin:16px auto 0;padding:20px 24px;color:#65738a;font-size:12px;line-height:1.7}
+    @media(max-width:720px){.product-page-header>div{align-items:flex-start;flex-direction:column;padding:15px 18px}.product-page-nav{gap:14px}.product-page-main{padding:22px 14px 44px}.product-detail-layout{grid-template-columns:1fr;gap:22px;padding:18px;border-radius:17px}.product-detail-photo{position:static;min-height:240px}.product-detail-photo img{height:270px}.product-back{margin-bottom:15px}.product-spec-list{gap:7px}.product-page-foot{padding:18px}}
+  </style>
+</head>
+<body class="product-page">
+  <header class="product-page-header">
+    <div>
+      <a class="product-page-brand" href="index.html">WH MOBILE</a>
+      <nav class="product-page-nav" aria-label="Main navigation">
+        <a href="index.html#phones">Shop phones</a>
+        <a href="shopping-info.html">Shopping information</a>
+        <a href="cart.html">Shopping cart</a>
+        <a href="visit-us.html">Visit us</a>
+      </nav>
+    </div>
+  </header>
+  <main class="product-page-main">
+    <p class="product-state" id="productState" role="status" aria-live="polite">Loading product details…</p>
+    <article class="product-detail-layout" id="productDetail" hidden>
+      <div class="product-detail-photo" id="productPhoto" hidden></div>
+      <section class="product-detail-copy" aria-labelledby="productName">
+        <a class="product-back" href="index.html#phones">← Back to phones</a>
+        <p class="product-meta" id="productMeta"></p>
+        <h1 id="productName"></h1>
+        <dl class="product-spec-list" id="productSpecs"></dl>
+        <p class="product-description" id="productDescription" hidden></p>
+        <p class="product-contact-note" id="productContactNote" hidden></p>
+        <p class="product-price" id="productPrice"></p>
+        <div class="product-actions" id="productActions"></div>
+        <p class="product-action-status" id="productActionStatus" role="status" aria-live="polite"></p>
+      </section>
+    </article>
+    <p class="product-contact-note">Prices, availability, delivery fees, accepted payment methods, and item-specific after-sales terms should be confirmed with WH Mobile.</p>
+  </main>
+  <footer class="product-page-foot">WH Mobile · 1st Floor, Yuzana Plaza, Banyardala Road, Mingala Taungnyunt Township, Yangon, Myanmar 11221 · <a href="tel:+959793777772">+959 793 777 772</a> · <a href="https://t.me/OuOulover" target="_blank" rel="noopener noreferrer">Telegram @OuOulover</a></footer>
+  <script type="module" src="product.js?v=wh-mobile-product-details-20261115-1"></script>
+  <script src="support-widget.js" defer></script>
+</body>
+</html>
+
