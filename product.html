@@ -3,37 +3,126 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Product specifications, availability, and current price from WH Mobile in Yangon.">
-  <title>Phone details | WH Mobile</title>
-  <link rel="stylesheet" href="styles.css?v=wh-mobile-product-details-20261115-1">
+  <meta name="description" content="Product photos, specifications, customer reviews, and current price from WH Mobile in Yangon.">
+  <title>Product details | WH Mobile</title>
+  <link rel="stylesheet" href="styles.css?v=wh-mobile-product-details-20261115-2">
   <style>
+    [hidden]{display:none!important}
     .product-page{min-height:100vh;background:#f5f7fb;color:#17243a}
     .product-page-header{background:#050505;color:#fff}
     .product-page-header>div{max-width:1180px;margin:auto;padding:17px 24px;display:flex;align-items:center;justify-content:space-between;gap:18px}
     .product-page-brand{color:#fff;font-weight:850;letter-spacing:.08em;text-decoration:none}
     .product-page-nav{display:flex;flex-wrap:wrap;gap:18px}
     .product-page-nav a{color:#fff;font-size:13px;font-weight:650;text-decoration:none}
-    .product-page-main{max-width:1100px;margin:auto;padding:34px 24px 60px}
+    .product-page-main{max-width:1120px;margin:auto;padding:34px 24px 60px}
     .product-state{padding:22px;border:1px solid #e0e6ef;border-radius:14px;background:#fff;color:#65738a}
-    .product-detail-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,5vw,58px);align-items:start;padding:clamp(20px,4vw,42px);border:1px solid #e0e6ef;border-radius:22px;background:#fff;box-shadow:0 15px 38px #1a2c460c}
+    .product-detail-layout{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(24px,5vw,58px);align-items:start;padding:clamp(20px,4vw,42px);border:1px solid #e0e6ef;border-radius:22px;background:#fff;box-shadow:0 15px 38px #1a2c460c}
+    .product-detail-gallery{min-width:0}
     .product-detail-photo{position:sticky;top:24px;display:grid;place-items:center;min-height:350px;border-radius:16px;background:#f4f7fc;overflow:hidden}
-    .product-detail-photo img{width:100%;height:420px;object-fit:contain}
+    .product-detail-photo img{display:block;width:100%;height:420px;object-fit:contain}
+    .product-photo-placeholder{color:#9aa7ba;font-size:14px;font-weight:700}
+    .product-thumbnails{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+    .product-thumbnail{display:grid;place-items:center;width:68px;height:68px;padding:4px;border:1px solid #e0e6ef;border-radius:11px;background:#fff;cursor:pointer}
+    .product-thumbnail[aria-pressed=true]{border:2px solid #2868e8;box-shadow:0 0 0 3px #2868e81a}
+    .product-thumbnail img{width:100%;height:100%;object-fit:contain}
     .product-detail-copy{min-width:0}
-    .product-back{display:inline-block;margin-bottom:20px;color:#2868e8;font-size:13px;font-weight:700;text-decoration:none}
+    .product-copy-top{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px}
+    .product-back{color:#2868e8;font-size:13px;font-weight:700;text-decoration:none}
     .product-back:hover{text-decoration:underline}
     .product-meta{margin:0 0 8px;color:#64738a;font-size:13px}
-    .product-detail-copy h1{margin:0 0 18px;font-size:clamp(28px,4vw,42px);line-height:1.1;letter-spacing:-.035em;overflow-wrap:anywhere}
+    .product-heading-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+    .product-detail-copy h1{margin:0 0 8px;font-size:clamp(28px,4vw,42px);line-height:1.1;letter-spacing:-.035em;overflow-wrap:anywhere}
+    .product-reviews-jump{display:inline-flex;align-items:center;gap:6px;color:#65738a;font-size:13px;text-decoration:none}
+    .product-reviews-jump:hover{color:#2868e8}
+    .product-rating-stars,.review-stars{color:#f2a900;letter-spacing:.08em;white-space:nowrap}
+    .product-share-wrap{position:relative;flex:none}
+    .product-share-toggle{display:inline-flex;align-items:center;gap:7px;padding:10px 13px;border:1px solid #dce4ef;border-radius:11px;background:#fff;color:#27364c;font:inherit;font-size:12px;font-weight:750;cursor:pointer}
+    .product-share-toggle:hover{border-color:#9cb9f4;color:#1f62e8}
+    .product-share-menu{position:absolute;z-index:5;top:calc(100% + 8px);right:0;min-width:205px;padding:7px;border:1px solid #e0e6ef;border-radius:12px;background:#fff;box-shadow:0 14px 30px #1a2c4620}
+    .product-share-menu a,.product-share-menu button{display:block;width:100%;padding:10px 11px;border:0;border-radius:8px;background:transparent;color:#34435a;text-align:left;text-decoration:none;font:inherit;font-size:13px;cursor:pointer}
+    .product-share-menu a:hover,.product-share-menu button:hover{background:#f2f6fd;color:#1f62e8}
+    .product-share-status{min-height:1.4em;margin:6px 0;color:#24734f;font-size:12px}
+    .product-stock{display:inline-flex;align-items:center;gap:7px;margin:14px 0 2px;padding:6px 10px;border-radius:999px;background:#e9f8f0;color:#24734f;font-size:12px;font-weight:750}
+    .product-stock.out-of-stock{background:#fff0f0;color:#b4444c}
     .product-spec-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:18px 0}
     .product-spec-list>div{padding:11px 13px;border:1px solid #e1e7f0;border-radius:12px}
     .product-spec-list dt{color:#65738a;font-size:11px}
     .product-spec-list dd{margin:4px 0 0;color:#17243a;font-size:14px;font-weight:750;overflow-wrap:anywhere}
     .product-description{margin:18px 0;color:#58687e;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}
     .product-contact-note{margin:18px 0;padding:13px 15px;border-radius:12px;background:#f4f7fc;color:#596a81;font-size:13px;line-height:1.65}
-    .product-price{margin:22px 0 5px;font-size:24px;font-weight:850}
-    .product-actions .btn{display:flex;justify-content:center;width:100%;margin-top:14px;text-align:center}
+    .product-price{margin:22px 0 5px;font-size:25px;font-weight:850}
+    .product-actions{display:flex;gap:10px;flex-wrap:wrap}
+    .product-actions .btn{display:flex;flex:1 1 180px;justify-content:center;margin-top:10px;text-align:center}
     .product-action-status{min-height:1.5em;color:#24734f;font-size:13px}
-    .product-page-foot{max-width:1100px;margin:16px auto 0;padding:20px 24px;color:#65738a;font-size:12px;line-height:1.7}
-    @media(max-width:720px){.product-page-header>div{align-items:flex-start;flex-direction:column;padding:15px 18px}.product-page-nav{gap:14px}.product-page-main{padding:22px 14px 44px}.product-detail-layout{grid-template-columns:1fr;gap:22px;padding:18px;border-radius:17px}.product-detail-photo{position:static;min-height:240px}.product-detail-photo img{height:270px}.product-back{margin-bottom:15px}.product-spec-list{gap:7px}.product-page-foot{padding:18px}}
+    .product-secondary-action{display:flex;align-items:center;justify-content:center;flex:0 0 auto;margin-top:10px;padding:12px 15px;border:1px solid #dce4ef;border-radius:10px;color:#33445d;font-size:13px;font-weight:750;text-decoration:none}
+    .review-section,.related-section{margin-top:24px;padding:clamp(20px,3vw,32px);border:1px solid #e0e6ef;border-radius:20px;background:#fff;box-shadow:0 12px 32px #1a2c4609}
+    .review-heading-row{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding-bottom:18px;border-bottom:1px solid #e7ebf2}
+    .section-eyebrow{margin:0 0 5px;color:#2868e8;font-size:10px;font-weight:850;letter-spacing:.13em;text-transform:uppercase}
+    .review-heading-row h2,.related-heading h2{margin:0;color:#17243a;font-size:24px;letter-spacing:-.035em}
+    .review-total{display:grid;justify-items:end;gap:4px}
+    .review-total strong{font-size:25px}
+    .review-total span:last-child{color:#78869a;font-size:12px}
+    .review-content{display:grid;grid-template-columns:minmax(0,.72fr) minmax(0,1.28fr);gap:20px;margin-top:20px}
+    .review-composer,.review-list{min-width:0}
+    .review-composer{padding:20px;border:1px solid #e6ebf3;border-radius:15px;background:#fbfcff}
+    .review-composer h3{margin:0 0 10px;font-size:16px}
+    .review-auth-gate{margin:0;color:#68778d;font-size:13px;line-height:1.7}
+    .review-auth-gate a{color:#2868e8;font-weight:750}
+    .review-stars-label{display:block;margin:6px 0 7px;color:#52627a;font-size:12px;font-weight:750}
+    .review-star-picker{display:flex;gap:5px;margin-bottom:12px}
+    .review-star-picker button{width:37px;height:37px;padding:0;border:1px solid #dfe6ef;border-radius:9px;background:#fff;color:#a9b4c4;font-size:20px;cursor:pointer}
+    .review-star-picker button[aria-pressed=true]{border-color:#f2c45d;background:#fff8e3;color:#d99a00}
+    .review-form label{display:block;margin:11px 0 0;color:#52627a;font-size:12px;font-weight:700}
+    .review-form input,.review-form textarea{display:block;width:100%;margin-top:6px;padding:10px 11px;border:1px solid #dbe3ef;border-radius:9px;background:#fff;color:#17243a;font:inherit;font-size:13px}
+    .review-form textarea{min-height:110px;resize:vertical}
+    .review-submit{width:100%;margin-top:14px}
+    .review-status{min-height:1.5em;margin:10px 0 0;color:#65738a;font-size:12px}
+    .review-list{display:grid;align-content:start;gap:11px}
+    .review-empty,.review-loading{margin:0;padding:16px;border:1px solid #e6ebf3;border-radius:13px;color:#68778d;font-size:13px;line-height:1.6}
+    .review-card{padding:16px;border:1px solid #e6ebf3;border-radius:13px;background:#fff}
+    .review-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+    .review-card-name{margin:0;color:#26364c;font-size:13px;font-weight:800}
+    .review-card-date{flex:none;color:#8591a2;font-size:11px}
+    .review-card-title{margin:9px 0 4px;font-size:14px;font-weight:800}
+    .review-card-body{margin:0;color:#5d6d83;font-size:13px;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere}
+    .related-heading{margin-bottom:16px}
+    .related-heading p{margin:6px 0 0;color:#718098;font-size:13px}
+    .related-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+    .related-card{overflow:hidden;border:1px solid #e5eaf2;border-radius:13px;background:#fff;color:inherit;text-decoration:none;transition:transform .16s,box-shadow .16s}
+    .related-card:hover{transform:translateY(-2px);box-shadow:0 10px 20px #1a2c4612}
+    .related-card-image{display:grid;place-items:center;height:150px;padding:10px;background:#f4f7fc}
+    .related-card-image img{width:100%;height:100%;object-fit:contain}
+    .related-card-copy{padding:12px}
+    .related-card-brand{margin:0 0 5px;color:#738198;font-size:10px}
+    .related-card-name{min-height:2.5em;margin:0;color:#24344b;font-size:13px;font-weight:800;line-height:1.35}
+    .related-card-price{margin:9px 0 0;color:#1f62e8;font-size:13px;font-weight:850}
+    .product-page-foot{max-width:1120px;margin:16px auto 0;padding:20px 24px;color:#65738a;font-size:12px;line-height:1.7}
+    @media(max-width:850px){.related-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.related-card-image{height:180px}}
+    @media(max-width:720px){
+      .product-page-header>div{align-items:flex-start;flex-direction:column;padding:15px 18px}
+      .product-page-nav{gap:14px}
+      .product-page-main{padding:22px 14px 44px}
+      .product-detail-layout{grid-template-columns:1fr;gap:22px;padding:18px;border-radius:17px}
+      .product-detail-photo{position:static;min-height:240px}
+      .product-detail-photo img{height:300px}
+      .product-copy-top{margin-bottom:14px}
+      .product-spec-list{gap:7px}
+      .review-content{grid-template-columns:1fr}
+      .product-page-foot{padding:18px}
+    }
+    @media(max-width:480px){
+      .product-heading-row{align-items:flex-start}
+      .product-share-toggle{padding:9px 10px}
+      .product-spec-list{grid-template-columns:1fr 1fr}
+      .review-heading-row{align-items:flex-start}
+      .review-heading-row h2,.related-heading h2{font-size:21px}
+      .review-content{gap:13px}
+      .review-composer{padding:15px}
+      .related-grid{gap:8px}
+      .related-card-image{height:130px;padding:7px}
+      .related-card-copy{padding:9px}
+    }
+    @media(prefers-reduced-motion:reduce){.related-card{transition:none}}
   </style>
 </head>
 <body class="product-page">
@@ -51,24 +140,92 @@
   <main class="product-page-main">
     <p class="product-state" id="productState" role="status" aria-live="polite">Loading product details…</p>
     <article class="product-detail-layout" id="productDetail" hidden>
-      <div class="product-detail-photo" id="productPhoto" hidden></div>
+      <section class="product-detail-gallery" aria-label="Product photos">
+        <div class="product-detail-photo" id="productPhoto" hidden></div>
+        <div class="product-thumbnails" id="productGallery" role="group" aria-label="Choose a product photo" hidden></div>
+      </section>
       <section class="product-detail-copy" aria-labelledby="productName">
-        <a class="product-back" href="index.html#phones">← Back to phones</a>
+        <div class="product-copy-top">
+          <a class="product-back" href="index.html#phones">← Back to phones</a>
+          <div class="product-share-wrap" id="shareWrap">
+            <button class="product-share-toggle" id="shareToggle" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="shareMenu">↗ Share</button>
+            <div class="product-share-menu" id="shareMenu" role="menu" hidden>
+              <a id="telegramShare" role="menuitem" target="_blank" rel="noopener noreferrer">Share to Telegram</a>
+              <a id="viberShare" role="menuitem">Share to Viber</a>
+              <button id="nativeShare" type="button" role="menuitem">More sharing options</button>
+              <button id="copyProductLink" type="button" role="menuitem">Copy product link</button>
+            </div>
+          </div>
+        </div>
         <p class="product-meta" id="productMeta"></p>
-        <h1 id="productName"></h1>
+        <div class="product-heading-row">
+          <div>
+            <h1 id="productName"></h1>
+            <a class="product-reviews-jump" id="productReviewsJump" href="#reviews">
+              <span class="product-rating-stars" id="productRatingStars" aria-hidden="true">☆☆☆☆☆</span>
+              <span id="productRatingLabel">No reviews yet · Write the first review</span>
+            </a>
+          </div>
+        </div>
+        <p class="product-stock" id="productAvailability"></p>
         <dl class="product-spec-list" id="productSpecs"></dl>
         <p class="product-description" id="productDescription" hidden></p>
         <p class="product-contact-note" id="productContactNote" hidden></p>
         <p class="product-price" id="productPrice"></p>
         <div class="product-actions" id="productActions"></div>
         <p class="product-action-status" id="productActionStatus" role="status" aria-live="polite"></p>
+        <p class="product-share-status" id="shareStatus" role="status" aria-live="polite"></p>
       </section>
     </article>
+
+    <section class="review-section" id="reviews" aria-labelledby="reviewsTitle" hidden>
+      <div class="review-heading-row">
+        <div><p class="section-eyebrow">Customer feedback</p><h2 id="reviewsTitle">Reviews and ratings</h2></div>
+        <div class="review-total" aria-live="polite">
+          <strong id="reviewAverage">—</strong>
+          <span class="product-rating-stars" id="reviewSummaryStars" aria-label="No ratings yet">☆☆☆☆☆</span>
+          <span id="reviewCount">No reviews yet</span>
+        </div>
+      </div>
+      <div class="review-content">
+        <div class="review-composer">
+          <h3>Write a review</h3>
+          <p class="review-auth-gate" id="reviewAuthGate">Sign in to share your experience. <a id="reviewLoginLink" href="login.html">Log in</a> or <a id="reviewRegisterLink" href="register.html">create an account</a>.</p>
+          <form class="review-form" id="reviewForm" hidden>
+            <span class="review-stars-label" id="ratingLabel">Your rating</span>
+            <div class="review-star-picker" id="reviewStars" role="radiogroup" aria-labelledby="ratingLabel">
+              <button type="button" role="radio" data-rating="1" aria-label="1 star" aria-checked="false">★</button>
+              <button type="button" role="radio" data-rating="2" aria-label="2 stars" aria-checked="false">★</button>
+              <button type="button" role="radio" data-rating="3" aria-label="3 stars" aria-checked="false">★</button>
+              <button type="button" role="radio" data-rating="4" aria-label="4 stars" aria-checked="false">★</button>
+              <button type="button" role="radio" data-rating="5" aria-label="5 stars" aria-checked="true">★</button>
+            </div>
+            <input id="reviewRating" type="hidden" value="5">
+            <label for="reviewDisplayName">Name (optional)
+              <input id="reviewDisplayName" type="text" maxlength="60" autocomplete="name" placeholder="How should we show your name?">
+            </label>
+            <label for="reviewTitle">Review title (optional)
+              <input id="reviewTitle" type="text" maxlength="100" placeholder="Summarize your experience">
+            </label>
+            <label for="reviewBody">Your review
+              <textarea id="reviewBody" minlength="10" maxlength="1200" required placeholder="What should other customers know about this product?"></textarea>
+            </label>
+            <button class="btn review-submit" id="reviewSubmit" type="submit">Submit review</button>
+          </form>
+          <p class="review-status" id="reviewStatus" role="status" aria-live="polite"></p>
+        </div>
+        <div class="review-list" id="reviewList" aria-live="polite"><p class="review-loading">Loading reviews…</p></div>
+      </div>
+    </section>
+
+    <section class="related-section" id="relatedSection" aria-labelledby="relatedTitle" hidden>
+      <div class="related-heading"><p class="section-eyebrow">Keep browsing</p><h2 id="relatedTitle">Related products</h2><p>More from the WH Mobile catalogue.</p></div>
+      <div class="related-grid" id="relatedProducts"></div>
+    </section>
     <p class="product-contact-note">Prices, availability, delivery fees, accepted payment methods, and item-specific after-sales terms should be confirmed with WH Mobile.</p>
   </main>
   <footer class="product-page-foot">WH Mobile · 1st Floor, Yuzana Plaza, Banyardala Road, Mingala Taungnyunt Township, Yangon, Myanmar 11221 · <a href="tel:+959793777772">+959 793 777 772</a> · <a href="https://t.me/OuOulover" target="_blank" rel="noopener noreferrer">Telegram @OuOulover</a></footer>
-  <script type="module" src="product.js?v=wh-mobile-product-details-20261115-1"></script>
+  <script type="module" src="product.js?v=wh-mobile-product-details-20261115-2"></script>
   <script src="support-widget.js" defer></script>
 </body>
 </html>
-
