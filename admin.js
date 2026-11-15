@@ -1,11 +1,12 @@
 import { auth, db, storage } from "./firebase-config.js";
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import { collection, addDoc, getDocs, query, orderBy, doc, updateDoc, serverTimestamp, setDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
-import { ref as storageRef, uploadBytesResumable, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js";
-import { INVENTORY } from "./inventory.js";
+import { collection, addDoc, getDocs, query, orderBy, doc, updateDoc, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+import { ref as storageRef, uploadBytes, uploadBytesResumable, getBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js";
 
 const ADMIN_UID = "SpebSv19yPPE92rdn75zL4fG8sm2";
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+const PAYMENT_SETTINGS_PATH = "settings/payment-methods.json";
+let paymentMethods = [];
 const $ = id => document.getElementById(id);
 const loginBox = $("login"), app = $("app");
 function status(message){ $("status").textContent = message; }
@@ -42,6 +43,95 @@ async function uploadProductImage(productId,file,onProgress=()=>{}){
   });
   return {imageUrl:await getDownloadURL(task.snapshot.ref),imagePath:path};
 }
+function paymentMethodId(){
+  return globalThis.crypto?.randomUUID?.() || "pm-"+Date.now().toString(36)+Math.random().toString(36).slice(2,9);
+}
+async function savePaymentMethods(methods){
+  const payload={schemaVersion:1,methods};
+  await uploadBytes(storageRef(storage,PAYMENT_SETTINGS_PATH),new Blob([JSON.stringify(payload)],{type:"application/json"}),{contentType:"application/json"});
+  paymentMethods=methods;
+}
+async function loadPaymentMethods(){
+  const root=$("paymentMethods");
+  if(!root)return;
+  try{
+    const bytes=await getBytes(storageRef(storage,PAYMENT_SETTINGS_PATH),256*1024);
+    const parsed=JSON.parse(new TextDecoder().decode(bytes));
+    paymentMethods=Array.isArray(parsed.methods)?parsed.methods.filter(method=>method&&typeof method.id==="string"):[];
+    await renderPaymentMethods();
+  }catch(error){
+    if(error?.code==="storage/object-not-found"){
+      paymentMethods=[];
+      await renderPaymentMethods();
+      return;
+    }
+    root.textContent="Could not load payment methods: "+(error?.message||String(error));
+  }
+}
+async function renderPaymentMethods(){
+  const root=$("paymentMethods");
+  if(!root)return;
+  root.replaceChildren();
+  if(!paymentMethods.length){root.textContent="No payment methods yet. Add one when your account details and QR image are ready.";return;}
+  for(const method of paymentMethods){
+    const card=document.createElement("article");card.className="payment-method-card";
+    const header=document.createElement("div");header.className="payment-method-card-header";
+    const title=document.createElement("strong");title.textContent=method.name||"Payment method";
+    const state=document.createElement("span");state.className="muted";state.textContent=method.active===false?"Hidden from checkout":"Shown at checkout";
+    header.append(title,state);
+    const grid=document.createElement("div");grid.className="payment-method-card-grid";
+    [["Account name",method.accountName],["Account or phone number",method.accountNumber],["Checkout instructions",method.instructions||"None"]].forEach(([label,value])=>{
+      const item=document.createElement("div");item.className="muted";item.textContent=label+": "+(value||"—");grid.append(item);
+    });
+    card.append(header,grid);
+    if(method.qrPath){
+      try{const image=document.createElement("img");image.className="payment-method-qr";image.alt=(method.name||"Payment")+" QR code";image.src=await getDownloadURL(storageRef(storage,method.qrPath));card.append(image);}
+      catch{const missing=document.createElement("p");missing.className="muted";missing.textContent="QR image could not be loaded.";card.append(missing);}
+    }else{const missing=document.createElement("p");missing.className="muted";missing.textContent="No QR image added.";card.append(missing);}
+    const actions=document.createElement("div");actions.className="payment-method-actions";
+    const edit=document.createElement("button");edit.type="button";edit.className="secondary";edit.textContent="Edit";edit.addEventListener("click",()=>{
+      const form=$("paymentMethodForm");form.dataset.editingId=method.id;
+      $("paymentMethodName").value=method.name||"";$("paymentAccountName").value=method.accountName||"";$("paymentAccountNumber").value=method.accountNumber||"";$("paymentInstructions").value=method.instructions||"";$("paymentQrImage").value="";
+      $("paymentMethodSubmit").textContent="Save payment method";$("paymentMethodFormStatus").textContent=method.qrPath?"Choose a replacement QR image, or leave it blank to keep the current one.":"Add a QR image now or save the account details and add it later.";
+      form.scrollIntoView({behavior:"smooth",block:"center"});
+    });
+    const toggle=document.createElement("button");toggle.type="button";toggle.className="secondary";toggle.textContent=method.active===false?"Show at checkout":"Hide from checkout";toggle.addEventListener("click",async()=>{
+      toggle.disabled=true;
+      try{await savePaymentMethods(paymentMethods.map(item=>item.id===method.id?{...item,active:item.active===false}:item));await renderPaymentMethods();$("paymentMethodsStatus").textContent="Payment method visibility updated.";}
+      catch(error){$("paymentMethodsStatus").textContent="Could not update payment method: "+error.message;toggle.disabled=false;}
+    });
+    const remove=document.createElement("button");remove.type="button";remove.className="secondary";remove.textContent="Delete";remove.addEventListener("click",async()=>{
+      if(!window.confirm("Delete this payment method from checkout?"))return;
+      remove.disabled=true;
+      try{
+        await savePaymentMethods(paymentMethods.filter(item=>item.id!==method.id));
+        if(method.qrPath){try{await deleteObject(storageRef(storage,method.qrPath));}catch(error){console.warn("Could not remove old payment QR",error);}}
+        await renderPaymentMethods();$("paymentMethodsStatus").textContent="Payment method deleted.";
+      }catch(error){$("paymentMethodsStatus").textContent="Could not delete payment method: "+error.message;remove.disabled=false;}
+    });
+    actions.append(edit,toggle,remove);card.append(actions);root.append(card);
+  }
+}
+function resetPaymentMethodForm(){
+  const form=$("paymentMethodForm");form.reset();delete form.dataset.editingId;$("paymentMethodSubmit").textContent="Add payment method";
+}
+$("paymentMethodForm")?.addEventListener("submit",async event=>{
+  event.preventDefault();
+  if(!requireAdmin(auth.currentUser))return;
+  const form=event.currentTarget,editingId=form.dataset.editingId||"",old=paymentMethods.find(item=>item.id===editingId),id=old?.id||paymentMethodId(),file=$("paymentQrImage").files?.[0];
+  let uploadedQrPath="";const submit=$("paymentMethodSubmit");submit.disabled=true;submit.textContent=old?"Saving…":"Adding…";
+  try{
+    if(file){validateImage(file);uploadedQrPath="payment-methods/"+id+"/"+Date.now()+"-"+safeFileName(file.name);await uploadBytes(storageRef(storage,uploadedQrPath),file,{contentType:file.type});}
+    const nextMethod={id,name:$("paymentMethodName").value.trim(),accountName:$("paymentAccountName").value.trim(),accountNumber:$("paymentAccountNumber").value.trim(),instructions:$("paymentInstructions").value.trim(),qrPath:uploadedQrPath||old?.qrPath||"",active:old?.active!==false,sortOrder:old?.sortOrder??paymentMethods.length};
+    const next=old?paymentMethods.map(method=>method.id===id?nextMethod:method):[...paymentMethods,nextMethod];
+    await savePaymentMethods(next);
+    if(uploadedQrPath&&old?.qrPath){try{await deleteObject(storageRef(storage,old.qrPath));}catch(error){console.warn("Could not remove replaced payment QR",error);}}
+    resetPaymentMethodForm();$("paymentMethodFormStatus").textContent="Payment method saved.";$("paymentMethodsStatus").textContent="";await renderPaymentMethods();
+  }catch(error){
+    if(uploadedQrPath){try{await deleteObject(storageRef(storage,uploadedQrPath));}catch(cleanupError){console.warn("Could not remove unused payment QR",cleanupError);}}
+    $("paymentMethodFormStatus").textContent="Could not save payment method: "+(error?.message||String(error));
+  }finally{submit.disabled=false;submit.textContent=form.dataset.editingId?"Save payment method":"Add payment method";}
+});
 const imageInput = $("productImage");
 const ramField = $("ramField");
 function updateRamField(){
@@ -81,7 +171,7 @@ removeImageButton?.addEventListener("click",clearSelectedPhoto);
 onAuthStateChanged(auth, async user => {
   if(user && requireAdmin(user)){
     loginBox.hidden=true; app.hidden=false;
-    await Promise.all([loadProducts(),loadBookings(),loadOrders()]);
+    await Promise.all([loadProducts(),loadBookings(),loadOrders(),loadPaymentMethods()]);
     status("Signed in as "+(user.email || user.uid));
   } else {
     loginBox.hidden=false; app.hidden=true;
@@ -93,44 +183,6 @@ $("loginForm").addEventListener("submit",async e=>{
   catch(err){alert("Login failed: "+err.message);}
 });
 $("logout").addEventListener("click",()=>signOut(auth));
-$("importInventory")?.addEventListener("click",async()=>{
-  if(!requireAdmin(auth.currentUser)) return;
-  if(!window.confirm(`Import ${INVENTORY.length} listed phone variants with blank prices? Existing products will be left unchanged.`)) return;
-  const button=$("importInventory"),output=$("inventoryImportStatus");
-  button.disabled=true;
-  if(output) output.textContent="Checking existing products…";
-  try{
-    const existing=await getDocs(collection(db,"products"));
-    const existingIds=new Set(existing.docs.map(item=>item.id));
-    const missing=INVENTORY.filter(item=>!existingIds.has(item.id));
-    if(!missing.length){
-      const message="The supplied inventory is already in Firestore.";
-      if(output) output.textContent=message;
-      status(message);
-      return;
-    }
-    const batch=writeBatch(db);
-    missing.forEach(item=>{
-      batch.set(doc(db,"products",item.id),{
-        name:item.name,brand:item.brand,category:item.category,
-        price:null,stock:item.stock,storageGb:item.storageGb,ramGb:item.ramGb,
-        color:"",condition:item.condition,description:"",imageUrl:item.imageUrl,
-        active:true,inventorySeed:true,createdAt:serverTimestamp()
-      });
-    });
-    await batch.commit();
-    await loadProducts();
-    const message=`Added ${missing.length} listed products. Add or update prices below when ready.`;
-    if(output) output.textContent=message;
-    status(message);
-  }catch(err){
-    const message="Inventory import failed: "+err.message;
-    if(output) output.textContent=message;
-    status(message);
-  }finally{
-    button.disabled=false;
-  }
-});
 $("productForm").addEventListener("submit",async e=>{
   e.preventDefault();
   if(!requireAdmin(auth.currentUser)) return;
@@ -186,7 +238,7 @@ async function loadProducts(){
       const priceLabel=p.price==null||p.price===""||Number(p.price)<=0?"Price not set":"Price (MMK): "+Number(p.price).toLocaleString("en-US");
       const detail=document.createElement("div");detail.className="muted";detail.textContent=[p.brand,p.category||"Other",p.storageGb?(Number(p.storageGb)>=1024?(Number(p.storageGb)/1024)+" TB storage":Number(p.storageGb)+" GB storage"):"",p.ramGb?Number(p.ramGb)+" GB RAM":"",p.color||"",p.condition||"",priceLabel,"Stock: "+Number(p.stock||0),p.active===false?"Hidden":"Active"].filter(Boolean).join(" · ");
       textWrap.append(strong,detail);info.append(textWrap);
-      const actions=document.createElement("div");
+      const actions=document.createElement("div");actions.className="product-row-actions";
       const priceInput=document.createElement("input");priceInput.type="number";priceInput.min="1";priceInput.step="1";priceInput.value=p.price==null||Number(p.price)<=0?"":String(Number(p.price));priceInput.placeholder="Price (MMK)";priceInput.setAttribute("aria-label","Price in MMK for "+(p.name||"product"));priceInput.style.width="135px";
       const stock=document.createElement("input");stock.type="number";stock.min="0";stock.step="1";stock.value=Number(p.stock||0);stock.setAttribute("aria-label","Stock quantity for "+(p.name||"product"));stock.style.width="95px";
       const save=document.createElement("button");save.textContent="Save price & stock";save.addEventListener("click",async()=>{
@@ -211,7 +263,33 @@ async function loadProducts(){
         finally{upload.disabled=false;upload.textContent="Upload / replace photo";}
       });
       const toggle=document.createElement("button");toggle.className="secondary";toggle.textContent=p.active===false?"Make active":"Hide";toggle.addEventListener("click",async()=>{try{await updateDoc(doc(db,"products",s.id),{active:p.active===false});await loadProducts();status("Product visibility updated.");}catch(err){status(err.message);}});
-      actions.append(priceInput,stock,save,photo,upload,toggle);row.append(info,actions);$("products").append(row);
+      const detailEditor=document.createElement("details");detailEditor.className="product-detail-editor";
+      const detailSummary=document.createElement("summary");detailSummary.textContent="Edit product details";
+      const detailGrid=document.createElement("div");detailGrid.className="product-detail-grid";
+      const detailField=(name,input)=>{const label=document.createElement("label");label.textContent=name;label.append(input);detailGrid.append(label);};
+      const storage=document.createElement("input");storage.type="number";storage.min="1";storage.step="1";storage.value=p.storageGb==null?"":String(Number(p.storageGb));storage.placeholder="GB";
+      const ram=document.createElement("input");ram.type="number";ram.min="1";ram.step="1";ram.value=p.ramGb==null?"":String(Number(p.ramGb));ram.placeholder="GB";
+      const color=document.createElement("input");color.type="text";color.maxLength=40;color.value=p.color||"";color.placeholder="Color, if confirmed";
+      const condition=document.createElement("select");
+      ["","New","Used","Refurbished"].forEach(value=>{const option=document.createElement("option");option.value=value;option.textContent=value||"Not specified";condition.append(option);});
+      if(p.condition&&!Array.from(condition.options).some(option=>option.value===p.condition)){const option=document.createElement("option");option.value=p.condition;option.textContent=p.condition;condition.append(option);}
+      condition.value=p.condition||"";
+      const description=document.createElement("textarea");description.maxLength=800;description.rows=3;description.value=p.description||"";description.placeholder="Confirmed condition notes, battery health, defects, or included accessories";
+      detailField("Storage (GB)",storage);detailField("RAM (GB)",ram);detailField("Color",color);detailField("Condition",condition);detailField("Product details",description);
+      const saveDetails=document.createElement("button");saveDetails.className="secondary product-detail-save";saveDetails.type="button";saveDetails.textContent="Save product details";
+      saveDetails.addEventListener("click",async()=>{
+        const nextStorage=storage.value.trim()===""?null:Number(storage.value),nextRam=ram.value.trim()===""?null:Number(ram.value);
+        if(nextStorage!==null&&(!Number.isInteger(nextStorage)||nextStorage<=0)){status("Enter storage as a whole number of GB, or leave it blank.");return;}
+        if(nextRam!==null&&(!Number.isInteger(nextRam)||nextRam<=0)){status("Enter RAM as a whole number of GB, or leave it blank.");return;}
+        saveDetails.disabled=true;saveDetails.textContent="Saving…";
+        try{
+          await updateDoc(doc(db,"products",s.id),{storageGb:nextStorage,ramGb:nextRam,color:color.value.trim(),condition:condition.value,description:description.value.trim()});
+          status("Product details updated.");await loadProducts();
+        }catch(err){status("Could not save product details: "+err.message);}
+        finally{saveDetails.disabled=false;saveDetails.textContent="Save product details";}
+      });
+      detailEditor.append(detailSummary,detailGrid,saveDetails);
+      actions.append(priceInput,stock,save,photo,upload,toggle);row.append(info,actions,detailEditor);$("products").append(row);
     });
   }catch(err){$("products").textContent="Could not load products: "+err.message;}
 }
@@ -258,12 +336,26 @@ async function loadOrders(){
   snap.forEach(s=>{
    const o=s.data(),row=document.createElement("div");row.className="item";
    const info=document.createElement("div");const title=document.createElement("strong");title.textContent="Order "+s.id.slice(0,8).toUpperCase()+" · "+(o.customerName||"Customer");
-   const detail=document.createElement("div");detail.className="muted";detail.textContent=(o.phone||"No phone")+" · Ks"+Number(o.total||0).toLocaleString()+" · "+(o.deliveryAddress||"No address")+" · "+(o.notes||"");
+   const detail=document.createElement("div");detail.className="muted";detail.textContent=(o.phone||"No phone")+" · Contact: "+(o.contactChannel==="telegram"?"Telegram"+(o.telegramUsername?" "+o.telegramUsername:""):(o.contactChannel==="phone"?"Phone":o.contactChannel==="whatsapp"?"WhatsApp":"Not specified"))+" · Ks"+Number(o.total||0).toLocaleString()+" · "+(o.deliveryAddress||"No address")+" · "+(o.notes||"");
    const products=document.createElement("div");products.className="muted";products.textContent=(o.items||[]).map(p=>p.name+" × "+p.quantity).join(", ");
-   info.append(title,detail,products);
+   const payment=document.createElement("div");payment.className="muted";payment.textContent="Payment: "+(o.paymentMethodName||"Arrange with WH Mobile")+" · "+(o.paymentStatus||"awaiting_confirmation").replaceAll("_"," ");
+   info.append(title,detail,products,payment);
+   if(o.paymentProofPath){
+     const proof=document.createElement("a");proof.href="#";proof.textContent="Load payment proof";proof.setAttribute("aria-label","View payment proof for order "+s.id.slice(0,8));proof.addEventListener("click",async event=>{
+       event.preventDefault();
+       if(proof.href.startsWith("blob:")){window.open(proof.href,"_blank","noopener,noreferrer");return;}
+       if(proof.dataset.loading)return;
+       proof.dataset.loading="true";proof.textContent="Loading payment proof…";
+       try{const bytes=await getBytes(storageRef(storage,o.paymentProofPath),MAX_IMAGE_BYTES);proof.href=URL.createObjectURL(new Blob([bytes],{type:o.paymentProofContentType||"image/jpeg"}));proof.textContent="Open payment proof";}
+       catch(error){proof.textContent="Payment proof unavailable";console.warn("Could not load payment proof",error);}
+       finally{delete proof.dataset.loading;}
+     });
+     info.append(proof);
+   }
    const select=document.createElement("select");select.setAttribute("aria-label","Order status");["pending","confirmed","processing","ready_to_ship","shipped","delivered","cancelled"].forEach(v=>{const op=document.createElement("option");op.value=v;op.textContent=v.replaceAll("_"," ");op.selected=(o.status||"pending")===v;select.append(op)});
    select.addEventListener("change",async()=>{try{await updateDoc(doc(db,"orders",s.id),{status:select.value,updatedAt:serverTimestamp()});status("Order status updated.");}catch(err){status("Could not update order: "+err.message)}});
    row.append(info,select);root.append(row);
   });
  }catch(err){const root=$("orders");if(root)root.textContent="Could not load orders: "+err.message;}
 }
+
