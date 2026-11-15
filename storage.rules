@@ -16,5 +16,41 @@ service firebase.storage {
          request.resource.contentType.matches('image/(jpeg|png|webp)'))
       );
     }
+
+    // Payment methods and QR paths are public because checkout displays them.
+    // Only the store administrator can manage these files.
+    match /settings/payment-methods.json {
+      allow read: if true;
+      allow write: if isAdmin() && (
+        request.resource == null ||
+        (request.resource.size <= 256 * 1024 &&
+         request.resource.contentType == 'application/json')
+      );
+    }
+
+    match /payment-methods/{methodId}/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin() && (
+        request.resource == null ||
+        (request.resource.size <= 5 * 1024 * 1024 &&
+         request.resource.contentType.matches('image/(jpeg|png|webp)'))
+      );
+    }
+
+    // Customers can create a single image proof at their own UID/order-scoped path.
+    // Reads are restricted to that customer and the WH Mobile administrator.
+    match /payment-proofs/{userId}/{orderId}/proof {
+      allow read: if isAdmin() ||
+        (request.auth != null && request.auth.uid == userId);
+      allow write: if isAdmin() || (
+        request.auth != null &&
+        request.auth.uid == userId &&
+        resource == null &&
+        request.resource != null &&
+        request.resource.size <= 5 * 1024 * 1024 &&
+        request.resource.contentType.matches('image/(jpeg|png|webp)')
+      );
+    }
   }
 }
+
