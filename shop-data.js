@@ -33,6 +33,9 @@ function addCatalogStyles() {
     .product-stock.available:before{background:#16845b}
     .product-specs{display:flex;flex-wrap:wrap;gap:6px;margin:5px 0 10px}
     .product-specs span{padding:4px 8px;border-radius:999px;background:var(--surface,#f1f5fb);color:var(--muted,#64748b);font-size:.76rem}
+    .product-description{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;margin:7px 0;color:var(--muted,#64748b);font-size:.82rem;line-height:1.5}
+    .product-detail-trigger{display:inline-block;align-self:flex-start;margin:0 0 5px;padding:4px 0;border:0;background:transparent;color:var(--accent,#2868e8);font:650 12px system-ui,-apple-system,"Segoe UI",sans-serif;text-align:left;text-decoration:none;cursor:pointer}
+    .product-detail-trigger:hover{text-decoration:underline}
     .product-card{display:flex;flex-direction:column}
     .product-card .btn{margin-top:auto}
     .catalog-empty{grid-column:1/-1;padding:24px;text-align:center;color:var(--muted,#64748b);background:var(--card,#fff);border:1px solid var(--border,#d9e0ea);border-radius:14px}
@@ -116,7 +119,9 @@ function safeText(value) {
 function storageLabel(value) {
   if (value === "" || value == null) return "";
   const match = String(value).match(/[0-9]+(?:\\.[0-9]+)?/);
-  return match ? Number(match[0]) + " GB" : String(value);
+  if (!match) return String(value);
+  const gigabytes = Number(match[0]);
+  return gigabytes >= 1024 ? (gigabytes / 1024) + " TB" : gigabytes + " GB";
 }
 
 function conditionGroup(value) {
@@ -278,21 +283,16 @@ function renderCatalog() {
     meta.className = "tag";
     meta.textContent = [product.brand, product.category].filter(Boolean).join(" · ");
     const description = document.createElement("p");
-    description.className = "sub";
+    description.className = "sub product-description";
     description.textContent = product.t;
     const specs = document.createElement("div");
     specs.className = "product-specs";
-    const isApple = String(product.brand || "").trim().toLocaleLowerCase() === "apple";
-    const specsToShow = isApple
-      ? [
-          product.storageGb ? (Number(product.storageGb) >= 1024 ? (Number(product.storageGb) / 1024) + " TB storage" : Number(product.storageGb) + " GB storage") : "",
-          product.color,
-          product.condition
-        ]
-      : [
-          product.ramGb ? Number(product.ramGb) + " GB RAM" : "",
-          product.condition
-        ];
+    const specsToShow = [
+      product.storageGb ? storageLabel(product.storageGb) + " storage" : "",
+      product.ramGb ? Number(product.ramGb) + " GB RAM" : "",
+      product.color,
+      product.condition
+    ];
     specsToShow.filter(Boolean).forEach(value => {
       const chip = document.createElement("span");
       chip.textContent = value;
@@ -305,6 +305,10 @@ function renderCatalog() {
     const stockLabel = document.createElement("div");
     stockLabel.className = "product-stock" + (product.stock > 0 ? " available" : "");
     stockLabel.textContent = product.stock > 0 ? "In stock · " + product.stock : "Out of stock";
+    const detailsButton = document.createElement("a");
+    detailsButton.className = "product-detail-trigger";
+    detailsButton.href = "product.html?id=" + encodeURIComponent(product.id);
+    detailsButton.textContent = "View product details";
 
     let action;
     if (hasPrice) {
@@ -329,7 +333,7 @@ function renderCatalog() {
     if (meta.textContent) card.append(meta);
     if (product.t) card.append(description);
     if (specs.childElementCount) card.append(specs);
-    card.append(price, stockLabel, action);
+    card.append(detailsButton, price, stockLabel, action);
     return card;
   }));
 }
@@ -467,3 +471,4 @@ onAuthStateChanged(auth, user => {
 });
 
 loadProducts();
+
