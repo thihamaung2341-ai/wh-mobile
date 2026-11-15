@@ -20,6 +20,29 @@ function paymentLogoFor(method){
   const label=(method.name||"")+" "+(method.id||"");
   return PAYMENT_LOGOS.find(item=>item.match.test(label))||null;
 }
+let paymentQrReturnFocus=null;
+function openPaymentQr(method,source,trigger){
+  const dialog=$("paymentQrDialog"),logo=paymentLogoFor(method),total=cart.reduce((sum,item)=>sum+Number(item.price||0)*Number(item.qty||0),0);
+  $("paymentQrMethod").textContent=method.name||"Payment method";
+  $("paymentQrAmount").textContent=money(total);
+  $("paymentQrAmount").hidden=total<=0;
+  $("paymentQrPayee").textContent=[method.accountName,method.accountNumber].filter(Boolean).join(" · ");
+  $("paymentQrPayee").hidden=!method.accountName&&!method.accountNumber;
+  $("paymentQrInstructions").textContent=method.instructions||"Scan this QR code with the selected payment app.";
+  const brand=$("paymentQrBrandLogo");
+  if(logo){brand.src=logo.url;brand.alt=logo.alt+" logo";brand.hidden=false}else brand.hidden=true;
+  const qr=$("paymentQrImage");qr.src=source;qr.alt=(method.name||"Payment")+" QR code for scanning";
+  paymentQrReturnFocus=trigger;dialog.hidden=false;document.body.classList.add("payment-qr-open");$("paymentQrClose").focus();
+}
+function closePaymentQr(){
+  const dialog=$("paymentQrDialog");if(dialog.hidden)return;
+  dialog.hidden=true;document.body.classList.remove("payment-qr-open");$("paymentQrImage").removeAttribute("src");
+  if(paymentQrReturnFocus?.isConnected)paymentQrReturnFocus.focus();
+  paymentQrReturnFocus=null;
+}
+$("paymentQrClose")?.addEventListener("click",closePaymentQr);
+$("paymentQrDialog")?.addEventListener("click",event=>{if(event.target===event.currentTarget)closePaymentQr()});
+document.addEventListener("keydown",event=>{if(event.key==="Escape")closePaymentQr()});
 
 function syncDeliveryAddress(){
   const pickup=$("delivery").value==="pickup";
@@ -101,7 +124,12 @@ async function loadPaymentMethods(){
     if(method.accountNumber){const number=document.createElement("span");number.className="payment-account";number.textContent="Account / phone: "+method.accountNumber;details.append(number)}
     if(method.instructions){const note=document.createElement("span");note.className="payment-proof-help";note.textContent=method.instructions;details.append(note)}
     if(method.qrPath||method.qrUrl||method.qrDataUrl){
-      try{const image=document.createElement("img");image.alt=(method.name||"Payment")+" QR code";image.src=method.qrDataUrl||method.qrUrl||(await getDownloadURL(storageRef(storage,method.qrPath)));details.append(image)}
+      try{
+        const image=document.createElement("img");image.alt=(method.name||"Payment")+" QR code — click to enlarge";image.className="payment-option-qr";image.tabIndex=0;image.setAttribute("role","button");image.setAttribute("aria-haspopup","dialog");
+        const source=method.qrDataUrl||method.qrUrl||(await getDownloadURL(storageRef(storage,method.qrPath)));image.src=source;
+        const showQr=event=>{event.preventDefault();event.stopPropagation();radio.checked=true;radio.dispatchEvent(new Event("change",{bubbles:true}));openPaymentQr(method,source,image)};
+        image.addEventListener("click",showQr);image.addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" ")showQr(event)});details.append(image);
+      }
       catch{const unavailable=document.createElement("span");unavailable.className="payment-proof-help";unavailable.textContent="QR image unavailable.";details.append(unavailable)}
     }
     label.append(radio,details);options.append(label);
