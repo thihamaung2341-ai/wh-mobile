@@ -52,6 +52,7 @@ button:disabled{opacity:.55;cursor:not-allowed;transform:none}
 .status{margin:0;padding:0;color:#64738a;font-size:12px;white-space:pre-wrap}
 .status:empty{display:none}
 .toolbar #logout{flex:none}
+.inventory-workspace-link{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}.inventory-workspace-link p{margin:5px 0 0}.inventory-link-button{display:inline-flex;align-items:center;gap:9px;padding:11px 15px;border-radius:11px;background:linear-gradient(135deg,#3079ff,#1f62e8);color:#fff;text-decoration:none;font-size:12px;font-weight:800}.inventory-link-button:hover{box-shadow:0 8px 17px #2166ff30}
 #productForm .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 18px}
 #productForm>label{margin-top:14px}
 #productForm button[type=submit]{margin-top:9px}
@@ -104,7 +105,7 @@ button:disabled{opacity:.55;cursor:not-allowed;transform:none}
   <span class="workspace-pill">ADMIN WORKSPACE</span>
 </header>
 <section class="page-intro">
-  <div><p class="eyebrow">STORE OVERVIEW</p><h1>Your store, at a glance.</h1><p>Manage the catalogue, inventory, customer orders, and repair bookings.</p></div>
+  <div><p class="eyebrow">STORE OVERVIEW</p><h1>Your store, at a glance.</h1><p>Manage customer orders, payment methods, and repair bookings. Products and inventory have their own workspace.</p></div>
   <a class="store-link" href="index.html">View storefront <span aria-hidden="true">↗</span></a>
 </section>
 <section id="login" class="panel login-card">
@@ -120,48 +121,8 @@ button:disabled{opacity:.55;cursor:not-allowed;transform:none}
   <div class="toolbar-copy"><span class="live-dot" aria-hidden="true"></span><p id="status" class="status" role="status">Loading your store…</p></div>
   <button id="logout" class="secondary" type="button">Sign out</button>
 </div>
-<div class="section-heading"><div><h2>Add a product</h2><p class="section-copy">Create a listing now; add or update its price whenever it changes.</p></div><span class="section-index">01</span></div>
-<section class="panel">
-<form id="productForm">
-<div class="grid">
-<label>Product name<input id="productName" required maxlength="100" placeholder="e.g. iPhone 16 Pro"></label>
-<label>Brand<input id="brand" maxlength="50" placeholder="Apple, Samsung… (optional)"></label>
-<label>Category<input id="category" required maxlength="50" placeholder="Phones, accessories…"></label>
-<label>Price (MMK) · optional<input id="price" type="number" min="1" step="1" placeholder="Leave blank until you set today&#39;s price"></label>
-<label>Stock quantity<input id="stock" type="number" min="0" step="1" value="1" required></label>
-<label>Storage
-<select id="storageGb">
-<option value="">Choose storage (optional)</option>
-<option value="128">128 GB</option>
-<option value="256">256 GB</option>
-<option value="512">512 GB</option>
-<option value="1024">1 TB</option>
-<option value="2048">2 TB</option>
-</select>
-</label>
-<label id="ramField">RAM (GB)
-<select id="ramGb">
-<option value="">Choose RAM (optional)</option>
-<option value="4">4 GB</option>
-<option value="6">6 GB</option>
-<option value="8">8 GB</option>
-<option value="12">12 GB</option>
-<option value="24">24 GB</option>
-<option value="32">32 GB</option>
-</select>
-</label>
-<label>Color<input id="color" maxlength="40" placeholder="e.g. Black"></label>
-<label>Condition<select id="condition"><option value="">Choose condition (optional)</option><option>New</option><option>Used</option><option>Refurbished</option></select></label>
-</div>
-<label>Description <span class="muted">Optional. For used phones, add only confirmed condition, battery, defect, and included accessory details.</span><textarea id="description" rows="3" maxlength="800" placeholder="e.g. Condition notes, battery health, known defects, or included accessories"></textarea></label>
-<label>Product photo <span class="muted">(JPG, PNG or WebP; max 5 MB)</span><input class="file-input" id="productImage" type="file" accept="image/jpeg,image/png,image/webp"></label>
-<div class="photo-preview-wrap" id="previewWrap" hidden><img id="imagePreview" class="photo-preview" alt="Selected product photo preview" hidden><button id="removeImage" class="remove-photo" type="button" aria-label="Remove selected product photo" title="Remove selected photo" hidden>×</button></div>
-<button type="submit">Add product</button>
-<p id="productFormStatus" class="status" role="status" aria-live="polite"></p>
-</form></section>
-<div class="section-heading"><div><h2>Products & inventory</h2><p class="section-copy">Update prices, stock, product photos, phone specifications, and storefront details.</p></div><span class="section-index">02</span></div>
-<section class="panel"><div id="products">Loading products…</div></section>
-<div class="section-heading"><div><h2>Payment methods</h2><p class="section-copy">Add the account details and QR codes customers will see at checkout.</p></div><span class="section-index">03</span></div>
+<div class="section-heading"><div><h2>Products & inventory</h2><p class="section-copy">Add phones and update your catalogue, prices, photos, and stock on a separate page.</p></div><span class="section-index">01</span></div>
+<section class="panel inventory-workspace-link"><div><strong>Manage products and stock</strong><p class="section-copy">Open the dedicated catalogue workspace to add listings or update existing products.</p></div><a class="inventory-link-button" href="admin-products.html">Open products & inventory <span aria-hidden="true">↗</span></a></section><div class="section-heading"><div><h2>Payment methods</h2><p class="section-copy">Add the account details and QR codes customers will see at checkout.</p></div><span class="section-index">02</span></div>
 <section class="panel">
   <div class="payment-method-notice">Active payment method names, account names, account numbers, and QR codes are shown publicly at checkout. Checkout will ask customers to upload a payment screenshot while at least one method is active. Hide a method to remove it from checkout without deleting it.</div>
   <form id="paymentMethodForm">
@@ -178,12 +139,12 @@ button:disabled{opacity:.55;cursor:not-allowed;transform:none}
   <div id="paymentMethods" aria-live="polite">Loading payment methods…</div>
   <p id="paymentMethodsStatus" class="status" role="status" aria-live="polite"></p>
 </section>
-<div class="section-heading"><div><h2>Customer orders</h2><p class="section-copy">Review orders, payment proofs, and fulfilment status.</p></div><span class="section-index">04</span></div>
+<div class="section-heading"><div><h2>Customer orders</h2><p class="section-copy">Review orders, payment proofs, and fulfilment status.</p></div><span class="section-index">03</span></div>
 <section class="panel"><div id="orders">Loading orders…</div></section>
-<div class="section-heading"><div><h2>Reservations & repair bookings</h2><p class="section-copy">Track incoming requests. Completed requests move into the archive below.</p></div><span class="section-index">05</span></div>
+<div class="section-heading"><div><h2>Reservations & repair bookings</h2><p class="section-copy">Track incoming requests. Completed requests move into the archive below.</p></div><span class="section-index">04</span></div>
 <section class="panel"><div id="bookings">Loading bookings…</div><details class="completed-archive"><summary>Completed requests <span id="bookingArchiveCount" class="archive-count">0</span></summary><div id="bookingsArchive">Loading completed requests…</div></details></section>
 </section>
 </main>
-<script type="module" src="admin.js?v=wh-mobile-payments-20261115-1"></script>
+<script type="module" src="admin.js?v=wh-mobile-admin-products-20261115-1"></script>
 </body></html>
 
