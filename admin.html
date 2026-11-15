@@ -64,18 +64,35 @@ button:disabled{opacity:.55;cursor:not-allowed;transform:none}
 .completed-archive[open] summary:after{transform:rotate(180deg)}
 .archive-count{display:inline-grid;min-width:26px;height:26px;place-items:center;padding:0 7px;border-radius:9px;background:#eaf1ff;color:#2767e8;font-size:11px}
 #bookingsArchive{padding:0 10px 7px}
-.inventory-import{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 0 15px;margin:0 0 15px;border-bottom:1px solid #e8edf5;flex-wrap:wrap}
-.inventory-import p{margin:4px 0 0}
 .item{border:1px solid #e8edf5;border-radius:13px;padding:15px;margin:10px 0;display:flex;gap:16px;justify-content:space-between;align-items:center;flex-wrap:wrap;background:linear-gradient(120deg,#fff,#fcfdff)}
 .item>div:last-child{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.item>.product-row-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.product-detail-editor{flex:1 0 100%;padding-top:12px;border-top:1px solid #e8edf5}
+.product-detail-editor summary{color:#2868e8;font-size:12px;font-weight:800;cursor:pointer}
+.product-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 12px;margin-top:8px}
+.product-detail-grid label{margin:5px 0}
+.product-detail-grid textarea{min-height:82px;resize:vertical}
+.product-detail-save{justify-self:start;align-self:end;margin:10px 0}
+.payment-method-notice{padding:12px 14px;margin-bottom:16px;border:1px solid #dfe8fa;border-radius:11px;background:#f5f8ff;color:#586a84;font-size:12px;line-height:1.6}
+.payment-method-card{display:grid;gap:12px;padding:16px;margin:12px 0;border:1px solid #e5ebf3;border-radius:14px;background:#fcfdff}
+.payment-method-card-header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.payment-method-card-header strong{color:#24334a}
+.payment-method-card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 12px}
+.payment-method-card-grid label{margin:5px 0}
+.payment-method-card-grid textarea{min-height:74px;resize:vertical}
+.payment-method-qr{width:120px;height:120px;object-fit:contain;border:1px solid #e2e8f2;border-radius:10px;background:#fff}
+.payment-method-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.payment-method-actions label{display:flex;align-items:center;gap:7px;margin:0}
+.payment-method-actions input[type=checkbox]{width:auto;margin:0}
 .item input,.item select{width:auto;min-width:90px;margin:0;padding:9px 10px}
 .item button{margin:0}
 .item .muted{margin-top:4px;font-size:11px}
 .product-thumb{width:66px;height:66px;object-fit:cover;border-radius:12px;background:#eef2f7;border:1px solid #e4eaf3}
 #products,#orders,#bookings{min-height:28px;color:#64738a;font-size:13px}
 .status{border-radius:10px}
-@media(max-width:680px){body{padding:16px 13px 38px}.page-intro{align-items:flex-start;flex-direction:column;padding:25px 22px;border-radius:18px}.store-link{align-self:flex-start}.panel{padding:18px;margin:13px 0}.section-heading{margin-top:24px}.toolbar{align-items:flex-start}.item>div:last-child{width:100%}.item input,.item select{flex:1;min-width:100px}}
-@media(max-width:430px){.workspace-pill{font-size:9px;padding:7px 9px}.brand-logo{width:42px;height:42px}.page-intro h1{font-size:28px}#productForm .grid{grid-template-columns:1fr}.login-card{padding:21px}.item{gap:12px}.toolbar{padding:12px}.item>div:first-child{max-width:100%}}
+@media(max-width:680px){body{padding:16px 13px 38px}.page-intro{align-items:flex-start;flex-direction:column;padding:25px 22px;border-radius:18px}.store-link{align-self:flex-start}.panel{padding:18px;margin:13px 0}.section-heading{margin-top:24px}.toolbar{align-items:flex-start}.item>div:last-child,.item>.product-row-actions{width:100%}.item input,.item select{flex:1;min-width:100px}}
+@media(max-width:430px){.workspace-pill{font-size:9px;padding:7px 9px}.brand-logo{width:42px;height:42px}.page-intro h1{font-size:28px}#productForm .grid,.product-detail-grid{grid-template-columns:1fr}.login-card{padding:21px}.item{gap:12px}.toolbar{padding:12px}.item>div:first-child{max-width:100%}}
+@media(max-width:430px){.payment-method-card-grid{grid-template-columns:1fr}.payment-method-card-header{align-items:flex-start;flex-direction:column}}
 </style>
 </head>
 <body><main class="dashboard-shell">
@@ -136,19 +153,37 @@ button:disabled{opacity:.55;cursor:not-allowed;transform:none}
 <label>Color<input id="color" maxlength="40" placeholder="e.g. Black"></label>
 <label>Condition<select id="condition"><option value="">Choose condition (optional)</option><option>New</option><option>Used</option><option>Refurbished</option></select></label>
 </div>
-<label>Description<input id="description" maxlength="180" placeholder="Short product details"></label>
+<label>Description <span class="muted">Optional. For used phones, add only confirmed condition, battery, defect, and included accessory details.</span><textarea id="description" rows="3" maxlength="800" placeholder="e.g. Condition notes, battery health, known defects, or included accessories"></textarea></label>
 <label>Product photo <span class="muted">(JPG, PNG or WebP; max 5 MB)</span><input class="file-input" id="productImage" type="file" accept="image/jpeg,image/png,image/webp"></label>
 <div class="photo-preview-wrap" id="previewWrap" hidden><img id="imagePreview" class="photo-preview" alt="Selected product photo preview" hidden><button id="removeImage" class="remove-photo" type="button" aria-label="Remove selected product photo" title="Remove selected photo" hidden>×</button></div>
 <button type="submit">Add product</button>
 <p id="productFormStatus" class="status" role="status" aria-live="polite"></p>
 </form></section>
-<div class="section-heading"><div><h2>Products & inventory</h2><p class="section-copy">Update stock, product photos, and storefront visibility.</p></div><span class="section-index">02</span></div>
-<section class="panel"><div class="inventory-import"><div><strong>Supplied stock list</strong><p class="section-copy">Import the 57 used phone variants with their stock counts and product photos. Prices and IMEIs are not included; existing products stay unchanged.</p></div><button id="importInventory" class="secondary" type="button">Import stock list</button></div><p id="inventoryImportStatus" class="status" role="status" aria-live="polite"></p><div id="products">Loading products…</div></section>
-<div class="section-heading"><div><h2>Customer orders</h2><p class="section-copy">Review orders and keep customers up to date on fulfilment.</p></div><span class="section-index">03</span></div>
+<div class="section-heading"><div><h2>Products & inventory</h2><p class="section-copy">Update prices, stock, product photos, phone specifications, and storefront details.</p></div><span class="section-index">02</span></div>
+<section class="panel"><div id="products">Loading products…</div></section>
+<div class="section-heading"><div><h2>Payment methods</h2><p class="section-copy">Add the account details and QR codes customers will see at checkout.</p></div><span class="section-index">03</span></div>
+<section class="panel">
+  <div class="payment-method-notice">Active payment method names, account names, account numbers, and QR codes are shown publicly at checkout. Checkout will ask customers to upload a payment screenshot while at least one method is active. Hide a method to remove it from checkout without deleting it.</div>
+  <form id="paymentMethodForm">
+    <div class="grid">
+      <label>Payment method<input id="paymentMethodName" required maxlength="60" placeholder="e.g. KBZPay"></label>
+      <label>Account name<input id="paymentAccountName" required maxlength="100" placeholder="Name on the account"></label>
+      <label>Account or phone number<input id="paymentAccountNumber" required maxlength="60" placeholder="Number customers should pay to"></label>
+      <label>Checkout instructions · optional<textarea id="paymentInstructions" rows="2" maxlength="240" placeholder="Optional payment note"></textarea></label>
+    </div>
+    <label>QR code image · optional <span class="muted">(JPG, PNG or WebP; max 5 MB)</span><input id="paymentQrImage" type="file" accept="image/jpeg,image/png,image/webp"></label>
+    <button id="paymentMethodSubmit" type="submit">Add payment method</button>
+    <p id="paymentMethodFormStatus" class="status" role="status" aria-live="polite"></p>
+  </form>
+  <div id="paymentMethods" aria-live="polite">Loading payment methods…</div>
+  <p id="paymentMethodsStatus" class="status" role="status" aria-live="polite"></p>
+</section>
+<div class="section-heading"><div><h2>Customer orders</h2><p class="section-copy">Review orders, payment proofs, and fulfilment status.</p></div><span class="section-index">04</span></div>
 <section class="panel"><div id="orders">Loading orders…</div></section>
-<div class="section-heading"><div><h2>Reservations & repair bookings</h2><p class="section-copy">Track incoming requests. Completed requests move into the archive below.</p></div><span class="section-index">04</span></div>
+<div class="section-heading"><div><h2>Reservations & repair bookings</h2><p class="section-copy">Track incoming requests. Completed requests move into the archive below.</p></div><span class="section-index">05</span></div>
 <section class="panel"><div id="bookings">Loading bookings…</div><details class="completed-archive"><summary>Completed requests <span id="bookingArchiveCount" class="archive-count">0</span></summary><div id="bookingsArchive">Loading completed requests…</div></details></section>
 </section>
 </main>
-<script type="module" src="admin.js?v=wh-mobile-stock-20261104-2"></script>
+<script type="module" src="admin.js?v=wh-mobile-payments-20261115-1"></script>
 </body></html>
+
