@@ -1,4 +1,6 @@
 import { auth, db, storage } from "./firebase-config.js";
+import { app as firebaseApp } from "./firebase-config.js";
+import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-functions.js";
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 import { collection, addDoc, getDocs, query, orderBy, doc, updateDoc, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 import { ref as storageRef, uploadBytes, uploadBytesResumable, getBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js";
@@ -412,3 +414,37 @@ async function loadOrders(){
   });
  }catch(err){const root=$("orders");if(root)root.textContent="Could not load orders: "+err.message;}
 }
+
+
+const telegramFunctions=getFunctions(firebaseApp,"us-central1");
+const getTelegramBotProfile=httpsCallable(telegramFunctions,"getTelegramBotProfile");
+const updateTelegramBotProfile=httpsCallable(telegramFunctions,"updateTelegramBotProfile");
+async function loadTelegramProfile(){
+  const message=$("telegramProfileStatus"),reload=$("telegramProfileReload");
+  if(!message||!auth.currentUser||auth.currentUser.uid!==ADMIN_UID)return;
+  message.textContent="Loading profile from Telegram…";
+  if(reload)reload.disabled=true;
+  try{
+    const response=await getTelegramBotProfile(),profile=response.data||{};
+    $("telegramBotName").value=profile.name||"";
+    $("telegramBotDescription").value=profile.description||"";
+    $("telegramBotShortDescription").value=profile.shortDescription||"";
+    message.textContent="Loaded from Telegram. Save changes here to update the bot profile.";
+  }catch(error){message.textContent="Could not load the Telegram profile: "+(error?.message||String(error));}
+  finally{if(reload)reload.disabled=false;}
+}
+$("telegramProfileReload")?.addEventListener("click",loadTelegramProfile);
+$("telegramProfileForm")?.addEventListener("submit",async event=>{
+  event.preventDefault();
+  if(!auth.currentUser||auth.currentUser.uid!==ADMIN_UID)return;
+  const submit=$("telegramProfileSubmit"),message=$("telegramProfileStatus");
+  const profile={name:$("telegramBotName").value.trim(),description:$("telegramBotDescription").value.trim(),shortDescription:$("telegramBotShortDescription").value.trim()};
+  if(!profile.name||profile.name.length>64||profile.description.length>512||profile.shortDescription.length>120){
+    message.textContent="Check the limits: name up to 64, description up to 512, and short bio up to 120 characters.";return;
+  }
+  submit.disabled=true;submit.textContent="Saving profile…";message.textContent="Updating Telegram…";
+  try{await updateTelegramBotProfile(profile);message.textContent="Telegram bot profile updated.";}
+  catch(error){message.textContent="Could not update the Telegram profile: "+(error?.message||String(error));}
+  finally{submit.disabled=false;submit.textContent="Save Telegram profile";}
+});
+onAuthStateChanged(auth,user=>{if(user&&user.uid===ADMIN_UID&&$("telegramProfileForm"))loadTelegramProfile();});
