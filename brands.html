@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
+<base href="/">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>WH Mobile</title>
@@ -154,7 +155,10 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:30px 20px 40p
 @media(max-width:800px){#home.home-hero{grid-template-columns:1fr;padding:34px 24px;gap:12px}.hero-visual{min-height:330px}.phone-back{transform:translate(-42px,0) rotate(-12deg)}.phone-front{transform:translate(40px,5px) rotate(8deg)}.float-top{right:5%}.float-bottom{left:4%}.home-benefits{grid-template-columns:1fr;gap:12px}.home-benefits>div{justify-content:flex-start}}
 @media(max-width:480px){#home.home-hero{border-radius:18px;padding:28px 18px}.hero-visual{min-height:285px}.hero-phone{width:135px;height:265px;border-radius:25px}.phone-screen{border-radius:18px}.phone-camera{width:34px;height:34px}.camera-two{top:58px}.camera-three{top:99px}.hero-float{padding:8px 10px}.float-top{top:10px}.float-bottom{bottom:4px}.hero-highlights{gap:8px;flex-direction:column}}
 </style>
-<style>body[data-page="brands"] #home,body[data-page="brands"] .home-benefits,body[data-page="brands"] #order,body[data-page="brands"] #visit{display:none!important}body[data-page="brands"] main.page-intro{max-width:1200px;margin:28px auto 0;padding:0 24px}body[data-page="brands"] main.page-intro h1{font-size:clamp(28px,4vw,42px);margin:0 0 8px}body[data-page="brands"] main.page-intro p{color:var(--muted);margin:0}body[data-page="brands"] #phones{max-width:1200px;margin:24px auto;padding:0 24px}body[data-page="brands"] #order,body[data-page="brands"] #visit{max-width:1000px;margin:28px auto;padding:0 24px}@media(max-width:600px){body[data-page="brands"] main.page-intro{padding:0 16px}}</style></head>
+<style>body[data-page="brands"] #home,body[data-page="brands"] .home-benefits,body[data-page="brands"] #order,body[data-page="brands"] #visit{display:none!important}body[data-page="brands"] main.page-intro{max-width:1200px;margin:28px auto 0;padding:0 24px}body[data-page="brands"] main.page-intro h1{font-size:clamp(28px,4vw,42px);margin:0 0 8px}body[data-page="brands"] main.page-intro p{color:var(--muted);margin:0}body[data-page="brands"] #phones{max-width:1200px;margin:24px auto;padding:0 24px}body[data-page="brands"] #order,body[data-page="brands"] #visit{max-width:1000px;margin:28px auto;padding:0 24px}@media(max-width:600px){body[data-page="brands"] main.page-intro{padding:0 16px}}</style><script>
+if (location.pathname === "/brands.html") location.replace("/brands/" + location.search + location.hash);
+</script>
+</head>
 <body data-page="brands">
 <header class="site-header">
  <div class="main-head">
