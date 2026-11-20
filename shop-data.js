@@ -4,6 +4,7 @@ import {
   collection, getDocs, query, where, addDoc, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import { createPriceContactChooser } from "./price-contact-links.js?v=wh-mobile-price-contacts-20261120-1";
 
 const form = document.getElementById("f");
 const grid = document.getElementById("grid");
@@ -320,13 +321,7 @@ function renderCatalog() {
       add.disabled = product.stock <= 0;
       action = add;
     } else {
-      const ask = document.createElement("a");
-      ask.className = "btn";
-      ask.href = "https://wa.me/959793777772?text=" + encodeURIComponent("Hi WH Mobile, what is today's price for " + product.n + "?");
-      ask.target = "_blank";
-      ask.rel = "noopener noreferrer";
-      ask.textContent = product.stock > 0 ? "Ask for today's price" : "Check availability";
-      action = ask;
+      action = createPriceContactChooser(product.n, product.stock > 0 ? "Ask for today's price" : "Check availability");
     }
 
     card.append(photo, title);
