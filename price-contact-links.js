@@ -1,4 +1,4 @@
-const VIBER_NUMBER = "+959793777771";
+const VIBER_PHONE = "959793777771";
 const TELEGRAM_PHONE = "959793777771";
 
 let stylesInstalled = false;
@@ -39,7 +39,7 @@ export function createPriceContactChooser(productName, label = "Ask for today's 
   options.className = "price-contact-options";
 
   const viber = document.createElement("a");
-  viber.href = "viber://chat?number=" + encodeURIComponent(VIBER_NUMBER) + "&text=" + encodeURIComponent(message);
+  viber.href = "https://viber.me/" + VIBER_PHONE + "?draft=" + encodeURIComponent(message);
   viber.textContent = "Ask on Viber";
 
   const telegram = document.createElement("a");
