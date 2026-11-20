@@ -1,5 +1,6 @@
 import { auth, db } from "./firebase-config.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import { createPriceContactChooser } from "./price-contact-links.js?v=wh-mobile-price-contacts-20261120-1";
 import {
   collection, doc, getDoc, getDocs, limit, orderBy, query,
   serverTimestamp, where, writeBatch
@@ -554,13 +555,7 @@ function showProduct(product, fromFirestore = false) {
     addButton.addEventListener("click", () => addToCart({ id: product.id || productId, name, price: priceNumber, imageUrl: product.imageUrl || "" }));
     actions.append(addButton);
   } else {
-    const ask = document.createElement("a");
-    ask.className = "btn";
-    ask.href = "https://wa.me/959793777772?text=" + encodeURIComponent("Hi WH Mobile, please confirm today's price and availability for " + name + ".");
-    ask.target = "_blank";
-    ask.rel = "noopener noreferrer";
-    ask.textContent = stock > 0 ? "Ask for today's price" : "Check availability";
-    actions.append(ask);
+    actions.append(createPriceContactChooser(name, stock > 0 ? "Ask for today's price" : "Check availability"));
   }
   const phone = document.createElement("a");
   phone.className = "product-secondary-action";
